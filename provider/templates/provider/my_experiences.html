@@ -1,0 +1,525 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Experiences | Explore Kimberley</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f0eb; color: #1a1a1a; display: flex; min-height: 100vh; }
+        a { text-decoration: none; color: inherit; }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar { width: 250px; background: #0f2b26; color: white; min-height: 100vh; padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-brand { padding: 0 12px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 24px; }
+        .sidebar-brand h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        .sidebar-brand h1 span { color: #c8925e; }
+        .sidebar-brand .subtitle { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+        .sidebar-nav { flex: 1; }
+        .sidebar-nav .nav-item { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 10px; color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 500; transition: all 0.25s ease; margin-bottom: 2px; }
+        .sidebar-nav .nav-item:hover { background: rgba(255,255,255,0.06); color: white; }
+        .sidebar-nav .nav-item.active { background: rgba(200,146,94,0.15); color: #c8925e; }
+        .sidebar-nav .nav-item .icon { width: 22px; text-align: center; font-size: 16px; flex-shrink: 0; }
+        .sidebar-nav .nav-item .badge { margin-left: auto; background: #c75b4a; color: white; font-size: 10px; font-weight: 700; padding: 1px 10px; border-radius: 12px; }
+        .sidebar-section-title { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.25); padding: 16px 14px 8px; margin-top: 4px; }
+        .sidebar-footer { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; margin-top: auto; }
+        .sidebar-footer .user-card { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; }
+        .sidebar-footer .user-card .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #c8925e, #e8b88a); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+        .sidebar-footer .user-card .user-info .name { font-size: 13px; font-weight: 600; color: white; }
+        .sidebar-footer .user-card .user-info .role { font-size: 11px; color: rgba(255,255,255,0.4); }
+        .sidebar-footer .user-card .logout-btn { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 6px 10px; border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.75); font-size: 12px; font-weight: 600; white-space: nowrap; }
+
+        /* ===== MAIN ===== */
+        .main-content { flex: 1; padding: 28px 36px 36px; min-height: 100vh; max-width: calc(100% - 250px); }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+        .header-left .page-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #c8925e; margin-bottom: 4px; }
+        .header-left h2 { font-size: 24px; font-weight: 700; color: #0f2b26; }
+        .header-left p { font-size: 13px; color: #8a9a98; margin-top: 4px; }
+        .header-right { display: flex; align-items: center; gap: 14px; }
+        .header-right .notification-btn { position: relative; width: 40px; height: 40px; border-radius: 50%; background: white; color: #4a5a58; font-size: 17px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .header-right .notification-btn .dot { position: absolute; top: 5px; right: 5px; min-width: 18px; height: 18px; background: #c75b4a; color: white; font-size: 10px; font-weight: 700; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+        .header-right .date-display { font-size: 13px; color: #8a9a98; background: white; padding: 9px 18px; border-radius: 10px; font-weight: 500; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+
+        .back-button { display: inline-flex; align-items: center; gap: 8px; color: #1a1a1a; font-size: 13px; font-weight: 500; padding: 8px 16px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin-bottom: 18px; border: 1px solid transparent; transition: 0.2s; }
+        .back-button:hover { border-color: #c8925e; color: #c8925e; transform: translateX(-3px); }
+
+        /* ===== TOOLBAR ===== */
+        .toolbar { background: white; border-radius: 14px; padding: 16px 20px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+        .toolbar .toolbar-left { display: flex; gap: 8px; flex-wrap: wrap; }
+        .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+        .filter-tabs a { padding: 7px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; background: #faf8f6; color: #8a9a98; border: 1px solid #f0ebe6; transition: 0.2s; }
+        .filter-tabs a:hover { border-color: #c8925e; color: #c8925e; }
+        .filter-tabs a.active { background: #c8925e; color: white; border-color: #c8925e; }
+        .filter-tabs a .count { font-size: 11px; opacity: 0.75; margin-left: 4px; }
+
+        .toolbar .search-form { display: flex; gap: 8px; }
+        .toolbar .search-form input { padding: 9px 14px; border: 1px solid #d9dfdc; border-radius: 10px; font-family: inherit; font-size: 13px; width: 220px; background: #faf8f6; transition: 0.2s; }
+        .toolbar .search-form input:focus { outline: none; border-color: #c8925e; background: white; box-shadow: 0 0 0 3px rgba(200,146,94,0.1); }
+        .toolbar .search-form button { background: #c8925e; color: white; border: none; padding: 9px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; transition: 0.2s; }
+        .toolbar .search-form button:hover { background: #b8824f; }
+
+        /* ===== EXPERIENCE CARD ===== */
+        .exp-card { background: white; border-radius: 16px; padding: 0; margin-bottom: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.02); display: flex; overflow: hidden; transition: 0.25s ease; }
+        .exp-card:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.08); transform: translateY(-2px); }
+
+        .exp-card .ec-image { width: 160px; height: 160px; flex-shrink: 0; background: linear-gradient(135deg, #e8e0d8, #d5cdc5); display: flex; align-items: center; justify-content: center; color: #a89a8a; font-size: 40px; overflow: hidden; position: relative; }
+        .exp-card .ec-image img { width: 100%; height: 100%; object-fit: cover; }
+        .exp-card .ec-image .ec-type-tag { position: absolute; top: 10px; left: 10px; background: rgba(15,43,38,0.85); color: white; font-size: 9px; font-weight: 700; padding: 3px 10px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; backdrop-filter: blur(4px); }
+
+        .exp-card .ec-body { flex: 1; padding: 18px 22px; display: flex; flex-direction: column; min-width: 0; }
+
+        .exp-card .ec-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 10px; }
+        .exp-card .ec-title-block { min-width: 0; flex: 1; }
+        .exp-card .ec-name { font-size: 17px; font-weight: 700; color: #0f2b26; margin-bottom: 4px; line-height: 1.3; }
+        .exp-card .ec-location { font-size: 12px; color: #8a9a98; display: flex; align-items: center; gap: 5px; }
+        .exp-card .ec-location i { color: #c8925e; }
+
+        .exp-card .ec-status { display: inline-flex; align-items: center; gap: 5px; padding: 5px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 0.3px; white-space: nowrap; flex-shrink: 0; }
+        .ec-status.published { background: #e6f4ee; color: #1a7a5a; }
+        .ec-status.approved { background: #e6f4ee; color: #1a7a5a; }
+        .ec-status.under_review { background: #fef3e0; color: #b8860b; }
+        .ec-status.rejected { background: #fce8e4; color: #b84a3a; }
+        .ec-status.suspended { background: #fce8e4; color: #b84a3a; }
+        .ec-status.archived { background: #f0ebe6; color: #6b7a78; }
+        .ec-status.submitted { background: #e3edf7; color: #2a5a7a; }
+
+        .exp-card .ec-meta { display: flex; gap: 20px; flex-wrap: wrap; margin: 12px 0; padding: 12px 0; border-top: 1px solid #f0ebe6; border-bottom: 1px solid #f0ebe6; }
+        .exp-card .ec-meta-item { display: flex; flex-direction: column; gap: 2px; }
+        .exp-card .ec-meta-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.7px; font-weight: 700; color: #8a9a98; }
+        .exp-card .ec-meta-value { font-size: 13px; font-weight: 600; color: #0f2b26; }
+        .exp-card .ec-meta-value i { color: #c8925e; margin-right: 4px; font-size: 11px; }
+        .exp-card .ec-meta-value.rating i { color: #f5b342; }
+
+        .exp-card .ec-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+        .exp-card .ec-actions .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; border: none; cursor: pointer; transition: 0.2s; font-family: inherit; }
+        .ec-actions .btn-primary { background: #c8925e; color: white; }
+        .ec-actions .btn-primary:hover { background: #b8824f; transform: translateY(-1px); }
+        .ec-actions .btn-view { background: #f0ebe6; color: #4a5a58; }
+        .ec-actions .btn-view:hover { background: #e5dfd9; }
+        .ec-actions .btn-danger { background: transparent; color: #c75b4a; border: 1px solid #f0cec6; }
+        .ec-actions .btn-danger:hover { background: #fce8e4; border-color: #c75b4a; }
+        .ec-actions .btn-muted { background: transparent; color: #8a9a98; font-size: 11px; padding: 8px 12px; cursor: default; }
+
+        /* ===== EMPTY ===== */
+        .empty-state { text-align: center; padding: 70px 20px; background: white; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+        .empty-state .icon { font-size: 56px; color: #e0d8d0; display: block; margin-bottom: 16px; }
+        .empty-state h3 { font-size: 20px; font-weight: 700; color: #0f2b26; margin-bottom: 8px; }
+        .empty-state p { color: #8a9a98; font-size: 14px; max-width: 400px; margin: 0 auto 20px; line-height: 1.6; }
+        .empty-state a { display: inline-flex; align-items: center; gap: 8px; background: #c8925e; color: white; padding: 11px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; transition: 0.2s; }
+        .empty-state a:hover { background: #b8824f; transform: translateY(-2px); }
+
+        /* ===== MODAL ===== */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15,43,38,0.5); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 16px; padding: 32px 36px; max-width: 460px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: modalIn 0.25s ease; }
+        @keyframes modalIn { from { opacity: 0; transform: translateY(-15px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .modal .modal-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 18px; background: #fce8e4; color: #c75b4a; }
+        .modal h3 { font-size: 20px; font-weight: 700; color: #0f2b26; text-align: center; margin-bottom: 8px; }
+        .modal .modal-subtitle { font-size: 14px; color: #8a9a98; text-align: center; margin-bottom: 24px; line-height: 1.6; }
+        .modal .modal-subtitle strong { color: #0f2b26; font-weight: 600; }
+        .modal .modal-actions { display: flex; gap: 12px; justify-content: center; }
+        .modal .modal-actions button { padding: 11px 28px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; transition: 0.2s; }
+        .modal .btn-cancel { background: #f0ebe6; color: #4a5a58; }
+        .modal .btn-cancel:hover { background: #e5dfd9; }
+        .modal .btn-confirm-danger { background: #c75b4a; color: white; }
+        .modal .btn-confirm-danger:hover { background: #a84535; }
+
+        /* ===== TOAST ===== */
+        .toast-container { position: fixed; top: 24px; right: 24px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; max-width: 380px; width: 100%; }
+        .toast { background: #0f2b26; color: white; padding: 14px 20px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.25); display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; border-left: 4px solid #2d8f6f; animation: slideIn 0.4s ease; }
+        .toast.error { border-left-color: #c75b4a; }
+        .toast.info { border-left-color: #3a6ea5; }
+        .toast .toast-icon { font-size: 18px; flex-shrink: 0; }
+        .toast .toast-icon.success { color: #4ac99a; }
+        .toast .toast-icon.error { color: #e88a7a; }
+        .toast .toast-icon.info { color: #6ba3d1; }
+        .toast .toast-message { flex: 1; line-height: 1.4; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+        .toast.hide { animation: slideOut 0.3s ease forwards; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .exp-card { flex-direction: column; }
+            .exp-card .ec-image { width: 100%; height: 140px; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { width: 72px; padding: 16px 10px; }
+            .sidebar-brand h1 { font-size: 16px; }
+            .sidebar-brand .subtitle { display: none; }
+            .sidebar-nav .nav-item span { display: none; }
+            .sidebar-nav .nav-item .badge { display: none; }
+            .sidebar-section-title { display: none; }
+            .sidebar-footer .user-card .user-info { display: none; }
+            .main-content { padding: 14px; max-width: 100%; }
+            .header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .header-right { width: 100%; justify-content: flex-start; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .toolbar .search-form { width: 100%; }
+            .toolbar .search-form input { width: 100%; }
+            .exp-card .ec-actions .btn { flex: 1; justify-content: center; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h1>Explore <span>Kimberley</span></h1>
+            <div class="subtitle">Provider Dashboard</div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section-title">Main</div>
+            <a href="{% url 'provider:dashboard' %}" class="nav-item">
+                <span class="icon"><i class="fas fa-home"></i></span>
+                <span>Dashboard</span>
+            </a>
+            <a href="{% url 'provider:profile' %}" class="nav-item">
+                <span class="icon"><i class="fas fa-building"></i></span>
+                <span>Profile</span>
+            </a>
+
+            <div class="sidebar-section-title">Management</div>
+            <a href="{% url 'provider:create_experience' %}" class="nav-item">
+                <span class="icon"><i class="fas fa-plus-circle"></i></span>
+                <span>Create Experience</span>
+            </a>
+            <a href="{% url 'provider:my_experiences' %}" class="nav-item active">
+                <span class="icon"><i class="fas fa-box"></i></span>
+                <span>My Experiences</span>
+            </a>
+            <a href="{% url 'provider:reviews' %}" class="nav-item">
+                <span class="icon"><i class="fas fa-star"></i></span>
+                <span>Reviews</span>
+                {% if total_reviews > 0 %}<span class="badge">{{ total_reviews }}</span>{% endif %}
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar">{{ provider.business_name|slice:":1"|default:"P" }}</div>
+                <div class="user-info">
+                    <div class="name">{{ provider.business_name|default:"Provider" }}</div>
+                    <div class="role">Provider</div>
+                </div>
+                <a href="/accounts/logout/" class="logout-btn" title="Sign out">
+                    <i class="fas fa-sign-out-alt"></i> Sign out
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+
+        <a href="{% url 'provider:dashboard' %}" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+
+        <header class="header">
+            <div class="header-left">
+                <div class="page-eyebrow"><i class="fas fa-box"></i> Manage</div>
+                <h2>My Experiences</h2>
+                <p>All your tourism experiences in one place</p>
+            </div>
+            <div class="header-right">
+                <a href="/notifications/" class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    {% if unread_count > 0 %}<span class="dot">{{ unread_count }}</span>{% endif %}
+                </a>
+                <span class="date-display">
+                    <i class="far fa-calendar-alt"></i>
+                    {{ now|date:"M d, Y" }}
+                </span>
+            </div>
+        </header>
+
+        <!-- ===== TOOLBAR ===== -->
+        <div class="toolbar">
+            <div class="filter-tabs">
+                <a href="?status=all" class="{% if not current_status or current_status == 'all' %}active{% endif %}">
+                    All <span class="count">({{ counts.all }})</span>
+                </a>
+                <a href="?status=published" class="{% if current_status == 'published' %}active{% endif %}">
+                    Published <span class="count">({{ counts.published }})</span>
+                </a>
+                <a href="?status=under_review" class="{% if current_status == 'under_review' %}active{% endif %}">
+                    In Review <span class="count">({{ counts.under_review }})</span>
+                </a>
+                <a href="?status=rejected" class="{% if current_status == 'rejected' %}active{% endif %}">
+                    Rejected <span class="count">({{ counts.rejected }})</span>
+                </a>
+                {% if counts.suspended > 0 %}
+                    <a href="?status=suspended" class="{% if current_status == 'suspended' %}active{% endif %}">
+                        Suspended <span class="count">({{ counts.suspended }})</span>
+                    </a>
+                {% endif %}
+            </div>
+
+            <form method="GET" class="search-form">
+                <input type="hidden" name="status" value="{{ current_status }}">
+                <input type="text" name="q" placeholder="Search by name or location..." value="{{ search_query }}">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+
+        <!-- ===== EXPERIENCE LIST ===== -->
+        {% if experiences %}
+            {% for experience in experiences %}
+                <div class="exp-card">
+                    <!-- Image / placeholder -->
+                    <div class="ec-image">
+                        {% if experience.main_image %}
+                            <img src="{{ experience.main_image.url }}" alt="{{ experience.name }}">
+                        {% else %}
+                            <i class="fas fa-image"></i>
+                        {% endif %}
+                        <span class="ec-type-tag">{{ experience.get_listing_type_display }}</span>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="ec-body">
+                        <div class="ec-top">
+                            <div class="ec-title-block">
+                                <div class="ec-name">{{ experience.name }}</div>
+                                <div class="ec-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{ experience.location|default:"Location not set" }}
+                                </div>
+                            </div>
+                            <span class="ec-status {{ experience.status }}">
+                                {% if experience.status == 'published' %}<i class="fas fa-check-circle"></i>
+                                {% elif experience.status == 'under_review' %}<i class="fas fa-clock"></i>
+                                {% elif experience.status == 'rejected' %}<i class="fas fa-times-circle"></i>
+                                {% elif experience.status == 'suspended' %}<i class="fas fa-ban"></i>
+                                {% else %}<i class="fas fa-circle" style="font-size: 6px;"></i>{% endif %}
+                                {{ experience.get_status_display }}
+                            </span>
+                        </div>
+
+                        <div class="ec-meta">
+                            <div class="ec-meta-item">
+                                <span class="ec-meta-label">Category</span>
+                                <span class="ec-meta-value">{{ experience.category.name|default:"Uncategorized" }}</span>
+                            </div>
+
+                            {% if experience.has_price_info %}
+                                <div class="ec-meta-item">
+                                    <span class="ec-meta-label">Price</span>
+                                    <span class="ec-meta-value"><i class="fas fa-tag"></i> {{ experience.price_display }}</span>
+                                </div>
+                            {% endif %}
+
+                            {% if experience.duration_minutes %}
+                                <div class="ec-meta-item">
+                                    <span class="ec-meta-label">Duration</span>
+                                    <span class="ec-meta-value"><i class="fas fa-clock"></i> {{ experience.duration_minutes }} min</span>
+                                </div>
+                            {% endif %}
+
+                            <div class="ec-meta-item">
+                                <span class="ec-meta-label">Rating</span>
+                                <span class="ec-meta-value rating"><i class="fas fa-star"></i> {{ experience.average_rating|floatformat:1 }} · {{ experience.total_reviews }} review{{ experience.total_reviews|pluralize }}</span>
+                            </div>
+
+                        </div>
+
+                        <div class="ec-actions">
+                            {% if experience.status == 'published' %}
+                                <a href="{% url 'provider:experience_detail' experience.id %}" class="btn btn-view">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <a href="{% url 'provider:edit_experience' experience.id %}" class="btn btn-primary">
+                                    <i class="fas fa-pen"></i> Edit
+                                </a>
+                                <button type="button" class="btn btn-danger" onclick="openDeleteModal({{ experience.id }}, '{{ experience.name|escapejs }}')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            {% elif experience.status == 'under_review' %}
+                                <a href="{% url 'provider:experience_detail' experience.id %}" class="btn btn-view">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <a href="{% url 'provider:edit_experience' experience.id %}" class="btn btn-primary">
+                                    <i class="fas fa-pen"></i> Edit
+                                </a>
+                                <button type="button" class="btn btn-danger" onclick="openDeleteModal({{ experience.id }}, '{{ experience.name|escapejs }}')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            {% elif experience.status == 'rejected' %}
+                                <a href="{% url 'provider:experience_detail' experience.id %}" class="btn btn-view">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <a href="{% url 'provider:edit_experience' experience.id %}" class="btn btn-primary">
+                                    <i class="fas fa-redo"></i> Edit & Resubmit
+                                </a>
+                                <button type="button" class="btn btn-danger" onclick="openDeleteModal({{ experience.id }}, '{{ experience.name|escapejs }}')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            {% elif experience.status == 'suspended' %}
+                                <span class="btn btn-muted">
+                                    <i class="fas fa-ban"></i> Suspended by admin — contact support
+                                </span>
+                                <button type="button" class="btn btn-danger" onclick="openDeleteModal({{ experience.id }}, '{{ experience.name|escapejs }}')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            {% else %}
+                                <span class="btn btn-muted">
+                                    <i class="fas fa-clock"></i> {{ experience.get_status_display }}
+                                </span>
+                                <button type="button" class="btn btn-danger" onclick="openDeleteModal({{ experience.id }}, '{{ experience.name|escapejs }}')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-box icon"></i>
+                <h3>{% if search_query %}No matches for "{{ search_query }}"{% else %}No experiences yet{% endif %}</h3>
+                <p>
+                    {% if search_query %}
+                        Try a different search term, or clear the search to see all your experiences.
+                    {% else %}
+                        Create your first tourism experience and start connecting with visitors to Kimberley.
+                    {% endif %}
+                </p>
+                {% if search_query %}
+                    <a href="?status=all"><i class="fas fa-undo"></i> Clear search</a>
+                {% else %}
+                    <a href="{% url 'provider:create_experience' %}"><i class="fas fa-plus"></i> Create Your First Experience</a>
+                {% endif %}
+            </div>
+        {% endif %}
+
+    </main>
+
+    <!-- ===== DELETE MODAL ===== -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal">
+            <div class="modal-icon"><i class="fas fa-trash"></i></div>
+            <h3>Delete this experience?</h3>
+            <p class="modal-subtitle">
+                You are about to permanently delete<br>
+                <strong id="deleteExpName">this experience</strong>.<br>
+                This cannot be undone.
+            </p>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button type="button" class="btn-confirm-danger" id="deleteConfirmBtn" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ===== DELETE FLOW =====
+        let pendingDeleteId = null;
+
+        function openDeleteModal(experienceId, experienceName) {
+            pendingDeleteId = experienceId;
+            document.getElementById('deleteExpName').textContent = experienceName;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            pendingDeleteId = null;
+            document.getElementById('deleteModal').classList.remove('active');
+        }
+
+        function confirmDelete() {
+            if (!pendingDeleteId) return;
+
+            const btn = document.getElementById('deleteConfirmBtn');
+            btn.disabled = true;
+            btn.textContent = 'Deleting...';
+
+            const id = pendingDeleteId;
+
+            fetch(`/providers/delete-experience/${id}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                closeDeleteModal();
+                if (data.success) {
+                    showToast(data.message || 'Experience deleted.', 'success');
+                    // Fade out the card and reload
+                    const card = document.querySelector(`[onclick*="openDeleteModal(${id}"]`)?.closest('.exp-card');
+                    if (card) {
+                        card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                        card.style.opacity = '0';
+                        card.style.transform = 'translateY(-10px)';
+                    }
+                    setTimeout(() => location.reload(), 700);
+                } else {
+                    showToast(data.error || 'Could not delete. Please try again.', 'error');
+                }
+            })
+            .catch(() => {
+                closeDeleteModal();
+                showToast('Network error. Please wait 5 seconds, then try again.', 'error');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.textContent = 'Delete';
+            });
+        }
+
+        // Close on overlay click
+        document.getElementById('deleteModal').addEventListener('click', function (e) {
+            if (e.target === this) closeDeleteModal();
+        });
+
+        // Close on Escape
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closeDeleteModal();
+        });
+
+        // ===== TOAST =====
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+
+            let icon = 'fa-check-circle';
+            let iconColor = 'success';
+            if (type === 'error') { icon = 'fa-exclamation-circle'; iconColor = 'error'; }
+            else if (type === 'info') { icon = 'fa-info-circle'; iconColor = 'info'; }
+
+            toast.innerHTML = `
+                <span class="toast-icon ${iconColor}"><i class="fas ${icon}"></i></span>
+                <span class="toast-message">${message}</span>
+            `;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('hide');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+    </script>
+
+</body>
+</html>

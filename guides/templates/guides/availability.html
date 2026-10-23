@@ -1,0 +1,1125 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Availability | Explore Kimberley</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #f5f0eb;
+            color: #1a1a1a;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 250px;
+            background: #0f2b26;
+            color: white;
+            min-height: 100vh;
+            padding: 24px 16px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            padding: 0 12px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 24px;
+        }
+
+        .sidebar-brand h1 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-brand h1 span {
+            color: #c8925e;
+        }
+
+        .sidebar-brand .subtitle {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.35);
+            margin-top: 2px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+        }
+
+        .sidebar-nav .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.25s ease;
+            margin-bottom: 2px;
+        }
+
+        .sidebar-nav .nav-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: white;
+        }
+
+        .sidebar-nav .nav-item.active {
+            background: rgba(200, 146, 94, 0.15);
+            color: #c8925e;
+        }
+
+        .sidebar-nav .nav-item .icon {
+            width: 22px;
+            text-align: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-nav .nav-item .badge {
+            margin-left: auto;
+            background: #c75b4a;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 10px;
+            border-radius: 12px;
+        }
+
+        .sidebar-section-title {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.25);
+            padding: 16px 14px 8px;
+            margin-top: 4px;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 16px;
+            margin-top: auto;
+        }
+
+        .sidebar-footer .user-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            transition: 0.25s ease;
+        }
+
+        .sidebar-footer .user-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .sidebar-footer .user-card .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c8925e, #e8b88a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .sidebar-footer .user-card .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sidebar-footer .user-card .user-info .name {
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .sidebar-footer .user-card .user-info .role {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .sidebar-footer .user-card .logout {
+            color: rgba(255, 255, 255, 0.3);
+            transition: 0.25s ease;
+            margin-left: auto;
+        }
+
+        .sidebar-footer .user-card .logout:hover {
+            color: #c75b4a;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            padding: 28px 40px 40px;
+            min-height: 100vh;
+            max-width: calc(100% - 250px);
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .header-left h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f2b26;
+        }
+
+        .header-left p {
+            font-size: 13px;
+            color: #8a9a98;
+            margin-top: 2px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-right .notification-btn {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            color: #4a5a58;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-right .notification-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .header-right .notification-btn .dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            min-width: 18px;
+            height: 18px;
+            background: #c75b4a;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 50%;
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+        }
+
+        .header-right .date-display {
+            font-size: 13px;
+            color: #8a9a98;
+            background: white;
+            padding: 8px 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        /* ===== BACK BUTTON ===== */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #1a1a1a;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: 0.2s ease;
+            margin-bottom: 16px;
+            border: 1px solid transparent;
+        }
+
+        .back-button:hover {
+            border-color: #c8925e;
+            transform: translateX(-4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ===== AVAILABILITY LAYOUT ===== */
+        .availability-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 24px;
+            margin-top: 16px;
+        }
+
+        /* ===== MAIN CARD ===== */
+        .availability-card {
+            background: white;
+            border-radius: 14px;
+            padding: 28px 32px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+
+        .availability-card .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0ebe6;
+        }
+
+        .availability-card .card-header .title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0f2b26;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .availability-card .card-header .title i {
+            color: #c8925e;
+        }
+
+        .availability-card .card-header .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.available {
+            background: #e6f4ee;
+            color: #1a7a5a;
+        }
+        .status-badge.unavailable {
+            background: #fce8e4;
+            color: #b84a3a;
+        }
+        .status-badge.no_schedule {
+            background: #fef3e0;
+            color: #b8860b;
+        }
+        .status-badge.pending_verification {
+            background: #fef3e0;
+            color: #b8860b;
+        }
+
+        /* ===== DAY ROWS ===== */
+        .day-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0ebe6;
+            flex-wrap: wrap;
+        }
+
+        .day-row:last-child {
+            border-bottom: none;
+        }
+
+        .day-row .day-label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1a1a1a;
+            min-width: 100px;
+        }
+
+        .day-row .day-label .day-short {
+            display: none;
+        }
+
+        .day-row .toggle-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .day-row .toggle-wrapper .toggle-label {
+            font-size: 12px;
+            color: #8a9a98;
+            cursor: pointer;
+        }
+
+        /* Custom Toggle Switch */
+        .day-row .toggle-switch-small {
+            position: relative;
+            width: 40px;
+            height: 22px;
+            background: #d9dfdc;
+            border-radius: 11px;
+            cursor: pointer;
+            transition: 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .day-row .toggle-switch-small.active {
+            background: #2d8f6f;
+        }
+
+        .day-row .toggle-switch-small .slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        }
+
+        .day-row .toggle-switch-small.active .slider {
+            left: 20px;
+        }
+
+        .day-row .time-inputs {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: auto;
+        }
+
+        .day-row .time-inputs input[type="time"] {
+            padding: 4px 8px;
+            border: 1px solid #d9dfdc;
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: 'Inter', sans-serif;
+            background: #fafafa;
+            color: #1a1a1a;
+            width: 100px;
+        }
+
+        .day-row .time-inputs input[type="time"]:focus {
+            outline: none;
+            border-color: #c8925e;
+            box-shadow: 0 0 0 3px rgba(200, 146, 94, 0.1);
+        }
+
+        .day-row .time-inputs .time-sep {
+            color: #8a9a98;
+            font-size: 12px;
+        }
+
+        /* ===== BLOCKED DATES SIDEBAR ===== */
+        .blocked-sidebar {
+            background: white;
+            border-radius: 14px;
+            padding: 24px 22px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .blocked-sidebar .sidebar-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0f2b26;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0ebe6;
+        }
+
+        .blocked-sidebar .sidebar-title i {
+            color: #c75b4a;
+        }
+
+        .blocked-sidebar .block-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .blocked-sidebar .block-form input[type="date"],
+        .blocked-sidebar .block-form input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid #d9dfdc;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Inter', sans-serif;
+            background: #fafafa;
+            width: 100%;
+        }
+
+        .blocked-sidebar .block-form input:focus {
+            outline: none;
+            border-color: #c8925e;
+            box-shadow: 0 0 0 3px rgba(200, 146, 94, 0.1);
+        }
+
+        .blocked-sidebar .btn-block {
+            background: #c75b4a;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .blocked-sidebar .btn-block:hover {
+            background: #a84535;
+            transform: translateY(-2px);
+        }
+
+        .blocked-sidebar .blocked-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .blocked-sidebar .blocked-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .blocked-sidebar .blocked-list::-webkit-scrollbar-track {
+            background: #f0ebe6;
+            border-radius: 2px;
+        }
+
+        .blocked-sidebar .blocked-list::-webkit-scrollbar-thumb {
+            background: #c8925e;
+            border-radius: 2px;
+        }
+
+        .blocked-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: #faf8f6;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            border-left: 3px solid #c75b4a;
+        }
+
+        .blocked-item .info {
+            font-size: 13px;
+            color: #1a1a1a;
+        }
+
+        .blocked-item .info .reason {
+            font-size: 11px;
+            color: #8a9a98;
+            margin-left: 6px;
+        }
+
+        .blocked-item .btn-unblock {
+            background: transparent;
+            color: #c75b4a;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s ease;
+            padding: 4px;
+        }
+
+        .blocked-item .btn-unblock:hover {
+            color: #a84535;
+            transform: scale(1.1);
+        }
+
+        .empty-blocked {
+            text-align: center;
+            padding: 20px 0;
+            color: #8a9a98;
+        }
+
+        .empty-blocked i {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 8px;
+            color: #e0d8d0;
+        }
+
+        .empty-blocked p {
+            font-size: 13px;
+        }
+
+        /* ===== SAVE BUTTON ===== */
+        .btn-save {
+            background: #2d8f6f;
+            color: white;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s ease;
+            margin-top: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-save:hover {
+            background: #1a7a5a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(45, 143, 111, 0.25);
+        }
+
+        /* ===== ALERT MESSAGES ===== */
+        .alert-message {
+            border-radius: 10px;
+            padding: 12px 18px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .alert-message i {
+            font-size: 18px;
+        }
+
+        .alert-message.success {
+            background: #e6f4ee;
+            border: 1px solid #2d8f6f;
+            color: #1a7a5a;
+        }
+
+        .alert-message.error {
+            background: #fce8e4;
+            border: 1px solid #c75b4a;
+            color: #b84a3a;
+        }
+
+        .alert-message.warning {
+            background: #fef3e0;
+            border: 1px solid #b8860b;
+            color: #8a6d0b;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .availability-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .blocked-sidebar {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 72px;
+                padding: 16px 10px;
+            }
+            .sidebar-brand h1 {
+                font-size: 16px;
+            }
+            .sidebar-brand .subtitle {
+                display: none;
+            }
+            .sidebar-nav .nav-item span {
+                display: none;
+            }
+            .sidebar-nav .nav-item .badge {
+                display: none;
+            }
+            .sidebar-section-title {
+                display: none;
+            }
+            .sidebar-footer .user-card .user-info {
+                display: none;
+            }
+            .main-content {
+                padding: 16px;
+                max-width: 100%;
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .header-right {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            .availability-card {
+                padding: 16px 18px;
+            }
+            .day-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+                padding: 12px 0;
+            }
+            .day-row .day-label {
+                min-width: auto;
+                font-size: 13px;
+            }
+            .day-row .day-label .day-full {
+                display: none;
+            }
+            .day-row .day-label .day-short {
+                display: inline;
+            }
+            .day-row .time-inputs {
+                margin-left: 0;
+            }
+            .day-row .time-inputs input[type="time"] {
+                width: 80px;
+            }
+            .availability-card .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .blocked-sidebar {
+                padding: 16px 18px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .day-row .time-inputs {
+                flex-wrap: wrap;
+            }
+            .day-row .time-inputs input[type="time"] {
+                width: 100%;
+            }
+            .day-row .time-inputs .time-sep {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+            <h1>Explore <span>Kimberley</span></h1>
+            <div class="subtitle">Tourism Platform</div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section-title">Main</div>
+
+            <a href="{% url 'guides:dashboard' %}" class="nav-item {% if active_page == 'dashboard' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-home"></i></span>
+                <span>Dashboard</span>
+            </a>
+
+            <div class="sidebar-section-title">Management</div>
+
+            <a href="{% url 'guides:profile' %}" class="nav-item {% if active_page == 'profile' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-user-cog"></i></span>
+                <span>Profile</span>
+                {% if verification_status == 'pending' %}
+                    <span class="badge" style="background:#b8860b;">!</span>
+                {% endif %}
+            </a>
+
+            <a href="{% url 'guides:availability' %}" class="nav-item {% if active_page == 'availability' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-calendar-check"></i></span>
+                <span>Availability</span>
+                {% if not is_available %}
+                    <span class="badge" style="background:#c75b4a;">Off</span>
+                {% endif %}
+            </a>
+
+            <div class="sidebar-section-title">Operations</div>
+
+            <a href="{% url 'guides:assignments' %}" class="nav-item {% if active_page == 'assignments' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-inbox"></i></span>
+                <span>Assignments</span>
+                {% if pending_assignments > 0 %}
+                    <span class="badge">{{ pending_assignments }}</span>
+                {% endif %}
+            </a>
+
+            <a href="{% url 'guides:my_tours' %}" class="nav-item {% if active_page == 'my_tours' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+                <span>My Tours</span>
+                {% if upcoming_tours > 0 %}
+                    <span class="badge">{{ upcoming_tours }}</span>
+                {% endif %}
+            </a>
+
+            <a href="{% url 'guides:schedule' %}" class="nav-item {% if active_page == 'schedule' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-clock"></i></span>
+                <span>Schedule</span>
+            </a>
+
+            <div class="sidebar-section-title">Performance</div>
+
+            <a href="{% url 'guides:reviews' %}" class="nav-item {% if active_page == 'reviews' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-star"></i></span>
+                <span>Reviews</span>
+                {% if total_reviews > 0 %}
+                    <span class="badge">{{ total_reviews }}</span>
+                {% endif %}
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar">
+                    {% if profile.profile_picture %}
+                        <img src="{{ profile.profile_picture.url }}" alt="{{ user.first_name }}">
+                    {% else %}
+                        {{ user.first_name|slice:":1"|default:"G" }}
+                    {% endif %}
+                </div>
+                <div class="user-info">
+                    <div class="name">{{ user.first_name|default:"Guide" }}</div>
+                    <div class="role">Tour Guide</div>
+                </div>
+                <a href="/accounts/logout/" class="logout-btn" title="Sign out" style="display:inline-flex;align-items:center;gap:6px;margin-left:auto;padding:6px 10px;border:1px solid rgba(255,255,255,0.14);border-radius:8px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.75);font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;"><i class="fas fa-sign-out-alt"></i> Sign out</a>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <a href="{% url 'guides:dashboard' %}" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+
+        <header class="header">
+            <div class="header-left">
+                <h2>Availability Management</h2>
+                <p>Set your working hours and block dates when you're unavailable</p>
+            </div>
+            <div class="header-right">
+                <a href="/notifications/" class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    {% if unread_count > 0 %}
+                        <span class="dot">{{ unread_count }}</span>
+                    {% endif %}
+                </a>
+                <span class="date-display">
+                    <i class="far fa-calendar-alt"></i>
+                    {{ now|date:"M d, Y" }}
+                </span>
+            </div>
+        </header>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert-message {% if message.tags %}{{ message.tags }}{% else %}success{% endif %}">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- AVAILABILITY LAYOUT -->
+        <div class="availability-layout">
+
+            <!-- LEFT COLUMN - WEEKLY SCHEDULE -->
+            <div class="availability-card">
+
+                <div class="card-header">
+                    <div class="title">
+                        <i class="fas fa-clock"></i> Weekly Working Hours
+                    </div>
+                    <span class="status-badge {{ availability_status }}">
+                        {% if availability_status == 'available' %}
+                            <i class="fas fa-check-circle"></i> Available
+                        {% elif availability_status == 'no_schedule' %}
+                            <i class="fas fa-exclamation-triangle"></i> No schedule set
+                        {% elif availability_status == 'pending_verification' %}
+                            <i class="fas fa-clock"></i> Pending verification
+                        {% else %}
+                            <i class="fas fa-times-circle"></i> Unavailable
+                        {% endif %}
+                    </span>
+                </div>
+
+                <form method="POST" action="{% url 'guides:availability' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="update_schedule">
+
+                    <!-- Monday -->
+                    <div class="day-row">
+                        <span class="day-label">
+                            <span class="day-full">Monday</span>
+                            <span class="day-short">Mon</span>
+                        </span>
+                        <div class="toggle-wrapper">
+                            <div class="toggle-switch-small {% if schedule.monday.available %}active{% endif %}"
+                                 onclick="toggleDay(this)">
+                                <div class="slider"></div>
+                            </div>
+                            <input type="hidden" name="monday_available" value="{% if schedule.monday.available %}on{% endif %}">
+                        </div>
+                        <div class="time-inputs">
+                            <input type="time" name="monday_start" value="{{ schedule.monday.start|default:'09:00' }}">
+                            <span class="time-sep">to</span>
+                            <input type="time" name="monday_end" value="{{ schedule.monday.end|default:'17:00' }}">
+                        </div>
+                    </div>
+
+                    <!-- Tuesday -->
+                    <div class="day-row">
+                        <span class="day-label">
+                            <span class="day-full">Tuesday</span>
+                            <span class="day-short">Tue</span>
+                        </span>
+                        <div class="toggle-wrapper">
+                            <div class="toggle-switch-small {% if schedule.tuesday.available %}active{% endif %}"
+                                 onclick="toggleDay(this)">
+                                <div class="slider"></div>
+                            </div>
+                            <input type="hidden" name="tuesday_available" value="{% if schedule.tuesday.available %}on{% endif %}">
+                        </div>
+                        <div class="time-inputs">
+                            <input type="time" name="tuesday_start" value="{{ schedule.tuesday.start|default:'09:00' }}">
+                            <span class="time-sep">to</span>
+                            <input type="time" name="tuesday_end" value="{{ schedule.tuesday.end|default:'17:00' }}">
+                        </div>
+                    </div>
+
+                    <!-- Wednesday -->
+                    <div class="day-row">
+                        <span class="day-label">
+                            <span class="day-full">Wednesday</span>
+                            <span class="day-short">Wed</span>
+                        </span>
+                        <div class="toggle-wrapper">
+                            <div class="toggle-switch-small {% if schedule.wednesday.available %}active{% endif %}"
+                                 onclick="toggleDay(this)">
+                                <div class="slider"></div>
+                            </div>
+                            <input type="hidden" name="wednesday_available" value="{% if schedule.wednesday.available %}on{% endif %}">
+                        </div>
+                        <div class="time-inputs">
+                            <input type="time" name="wednesday_start" value="{{ schedule.wednesday.start|default:'09:00' }}">
+                            <span class="time-sep">to</span>
+                            <input type="time" name="wednesday_end" value="{{ schedule.wednesday.end|default:'17:00' }}">
+                        </div>
+                    </div>
+
+                    <!-- Thursday -->
+                    <div class="day-row">
+                        <span class="day-label">
+                            <span class="day-full">Thursday</span>
+                            <span class="day-short">Thu</span>
+                        </span>
+                        <div class="toggle-wrapper">
+                            <div class="toggle-switch-small {% if schedule.thursday.available %}active{% endif %}"
+                                 onclick="toggleDay(this)">
+                                <div class="slider"></div>
+                            </div>
+                            <input type="hidden" name="thursday_available" value="{% if schedule.thursday.available %}on{% endif %}">
+                        </div>
+                        <div class="time-inputs">
+                            <input type="time" name="thursday_start" value="{{ schedule.thursday.start|default:'09:00' }}">
+                            <span class="time-sep">to</span>
+                            <input type="time" name="thursday_end" value="{{ schedule.thursday.end|default:'17:00' }}">
+                        </div>
+                    </div>
+
+                    <!-- Friday -->
+                    <div class="day-row">
+                        <span class="day-label">
+                            <span class="day-full">Friday</span>
+                            <span class="day-short">Fri</span>
+                        </span>
+                        <div class="toggle-wrapper">
+                            <div class="toggle-switch-small {% if schedule.friday.available %}active{% endif %}"
+                                 onclick="toggleDay(this)">
+                                <div class="slider"></div>
+                            </div>
+                            <input type="hidden" name="friday_available" value="{% if schedule.friday.available %}on{% endif %}">
+                        </div>
+                        <div class="time-inputs">
+                            <input type="time" name="friday_start" value="{{ schedule.friday.start|default:'09:00' }}">
+                            <span class="time-sep">to</span>
+                            <input type="time" name="friday_end" value="{{ schedule.friday.end|default:'17:00' }}">
+                        </div>
+                    </div>
+
+                    <!-- Saturday -->
+                    <div class="day-row">
+                        <span class="day-label">
+                            <span class="day-full">Saturday</span>
+                            <span class="day-short">Sat</span>
+                        </span>
+                        <div class="toggle-wrapper">
+                            <div class="toggle-switch-small {% if schedule.saturday.available %}active{% endif %}"
+                                 onclick="toggleDay(this)">
+                                <div class="slider"></div>
+                            </div>
+                            <input type="hidden" name="saturday_available" value="{% if schedule.saturday.available %}on{% endif %}">
+                        </div>
+                        <div class="time-inputs">
+                            <input type="time" name="saturday_start" value="{{ schedule.saturday.start|default:'09:00' }}">
+                            <span class="time-sep">to</span>
+                            <input type="time" name="saturday_end" value="{{ schedule.saturday.end|default:'17:00' }}">
+                        </div>
+                    </div>
+
+                    <!-- Sunday -->
+                    <div class="day-row">
+                        <span class="day-label">
+                            <span class="day-full">Sunday</span>
+                            <span class="day-short">Sun</span>
+                        </span>
+                        <div class="toggle-wrapper">
+                            <div class="toggle-switch-small {% if schedule.sunday.available %}active{% endif %}"
+                                 onclick="toggleDay(this)">
+                                <div class="slider"></div>
+                            </div>
+                            <input type="hidden" name="sunday_available" value="{% if schedule.sunday.available %}on{% endif %}">
+                        </div>
+                        <div class="time-inputs">
+                            <input type="time" name="sunday_start" value="{{ schedule.sunday.start|default:'09:00' }}">
+                            <span class="time-sep">to</span>
+                            <input type="time" name="sunday_end" value="{{ schedule.sunday.end|default:'17:00' }}">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-save">
+                        <i class="fas fa-save"></i> Save Weekly Schedule
+                    </button>
+
+                </form>
+
+            </div>
+
+            <!-- RIGHT COLUMN - BLOCKED DATES -->
+            <div class="blocked-sidebar">
+
+                <div class="sidebar-title">
+                    <i class="fas fa-ban"></i> Blocked Dates
+                </div>
+
+                <form method="POST" action="{% url 'guides:availability' %}" class="block-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="block_date">
+                    <input type="date" name="date" required>
+                    <input type="text" name="reason" placeholder="Reason (optional)">
+                    <button type="submit" class="btn-block">
+                        <i class="fas fa-plus"></i> Block Date
+                    </button>
+                </form>
+
+                <div class="blocked-list">
+                    {% if blocked_dates %}
+                        {% for blocked in blocked_dates %}
+                            <div class="blocked-item">
+                                <div class="info">
+                                    {{ blocked.date }}
+                                    {% if blocked.reason %}
+                                        <span class="reason">— {{ blocked.reason }}</span>
+                                    {% endif %}
+                                </div>
+                                <form method="POST" action="{% url 'guides:availability' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="unblock_date">
+                                    <input type="hidden" name="date" value="{{ blocked.date }}">
+                                    <button type="submit" class="btn-unblock" title="Unblock">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-blocked">
+                            <i class="fas fa-calendar-check"></i>
+                            <p>No blocked dates</p>
+                            <span style="font-size:12px; color:#b8c5c2;">Use the form above to block dates</span>
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <script>
+        function toggleDay(element) {
+            element.classList.toggle('active');
+            const hiddenInput = element.nextElementSibling;
+            if (element.classList.contains('active')) {
+                hiddenInput.value = 'on';
+            } else {
+                hiddenInput.value = '';
+            }
+        }
+    </script>
+
+</body>
+</html>

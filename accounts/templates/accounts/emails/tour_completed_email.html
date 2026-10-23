@@ -1,0 +1,100 @@
+{% autoescape off %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body style="font-family: 'Helvetica Neue', Arial, sans-serif; background: #f0ebe5; margin: 0; padding: 0;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background: #f0ebe5;">
+        <tr>
+            <td align="center" style="padding: 40px 20px;">
+
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width: 600px; width: 100%; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(15, 43, 38, 0.08);">
+
+                    <!-- Header -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #0f2b26 0%, #1a4a40 100%); padding: 40px; text-align: center;">
+                            <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">
+                                Explore <span style="color: #c8925e;">Kimberley</span>
+                            </h1>
+                        </td>
+                    </tr>
+
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 44px;">
+                            <h2 style="color: #0f2b26; margin: 0 0 16px; font-size: 22px; font-weight: 700;">
+                                Your tour is complete 🎉
+                            </h2>
+
+                            <p style="color: #4a5a58; line-height: 1.7; font-size: 15px; margin: 0 0 16px;">
+                                Hi {{ tourist_name }},
+                            </p>
+
+                            <p style="color: #4a5a58; line-height: 1.7; font-size: 15px; margin: 0 0 24px;">
+                                We hope your tour on <strong style="color: #0f2b26;">{{ tour_date|date:"l, d F Y" }}</strong> with
+                                <strong style="color: #0f2b26;">{{ subject_line }}</strong> was everything you hoped for.
+                            </p>
+
+                            <p style="color: #4a5a58; line-height: 1.7; font-size: 15px; margin: 0 0 32px;">
+                                Would you take a minute to leave a review? It helps other travellers discover the best of Kimberley, and it means a lot to the people who made your trip special.
+                            </p>
+
+                            <div style="text-align: center; margin: 32px 0;">
+                                <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center">
+                                    <tr>
+                                        <td align="center" style="background: linear-gradient(135deg, #c8925e, #b8824f); border-radius: 10px;">
+                                            <a href="{{ review_url }}" style="display: inline-block; padding: 16px 40px; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700;">
+                                                Leave a Review &nbsp;→
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <p style="color: #4a5a58; line-height: 1.7; font-size: 14px; margin: 0 0 16px;">
+                                Or copy and paste this link into your browser:
+                            </p>
+
+                            <div style="background: #faf8f6; border-left: 3px solid #c8925e; padding: 14px 18px; border-radius: 6px; margin-bottom: 24px; word-break: break-all;">
+                                <a href="{{ review_url }}" style="color: #c8925e; text-decoration: none; font-size: 12px; font-family: monospace;">
+                                    {{ review_url }}
+                                </a>
+                            </div>
+
+                            <!-- Divider -->
+                            <div style="border-top: 1px solid #f0ebe6; margin: 32px 0 24px;"></div>
+
+                            <!-- Help -->
+                            <p style="color: #8a9a98; font-size: 13px; line-height: 1.6; margin: 0;">
+                                <strong style="color: #4a5a58;">Need help?</strong>
+                                Just reply to this email or contact us at
+                                <a href="mailto:{{ support_email }}" style="color: #c8925e; text-decoration: none; font-weight: 600;">
+                                    {{ support_email }}
+                                </a>
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background: #0f2b26; padding: 24px 40px; text-align: center;">
+                            <p style="color: rgba(255, 255, 255, 0.5); margin: 0; font-size: 11px; line-height: 1.5;">
+                                &copy; {{ current_year }} Explore Kimberley · All rights reserved
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+
+                <p style="color: #8a9a98; font-size: 11px; margin: 20px 0 0; text-align: center;">
+                    This is an automated message. Please do not reply unless necessary.
+                </p>
+
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+{% endautoescape %}

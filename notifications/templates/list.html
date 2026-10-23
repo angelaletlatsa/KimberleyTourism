@@ -1,0 +1,224 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | Explore Kimberley</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body style="
+    margin:0;
+    font-family:'Inter', Arial, sans-serif;
+    background:#f7f4ef;
+    color:#1f3d3a;
+">
+
+<!-- NAVBAR -->
+<nav style="
+    height:68px;
+    background:#1f3d3a;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 6%;
+    box-sizing:border-box;
+">
+    <a href="/" style="
+        color:white;
+        text-decoration:none;
+        font-size:21px;
+        font-weight:700;
+        letter-spacing:-0.5px;
+    ">
+        Explore <span style="color:#d69b5b;">Kimberley</span>
+    </a>
+
+    <div style="display:flex; align-items:center; gap:20px;">
+        <span style="color:#d69b5b; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">
+            <i class="fas fa-user"></i> {{ user.profile.role|title }}
+        </span>
+        <span style="color:#cbd5d3; font-size:13px;">{{ user.first_name }}</span>
+        <a href="/accounts/logout/" style="color:#aebdbb; text-decoration:none; font-size:12px; padding:6px 14px; border-radius:6px; border:1px solid rgba(255,255,255,0.15);">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main style="padding:30px 6%; max-width:1000px; margin:auto; box-sizing:border-box;">
+
+    <!-- Back Button -->
+    <div style="margin-bottom:20px;">
+        <a href="javascript:history.back()" style="
+            display:inline-block;
+            color:#1f3d3a;
+            text-decoration:none;
+            font-size:13px;
+            padding:8px 16px;
+            border-radius:7px;
+            background:white;
+            box-shadow:0 2px 5px rgba(0,0,0,0.05);
+        ">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+        <div>
+            <h1 style="margin:0; font-size:28px; font-weight:600;">
+                <i class="fas fa-bell" style="color:#d69b5b;"></i> Notifications
+            </h1>
+            <p style="color:#89918f; font-size:14px; margin:5px 0 0;">
+                {% if unread_count > 0 %}
+                    You have <strong style="color:#d69b5b;">{{ unread_count }}</strong> unread notification{{ unread_count|pluralize }}
+                {% else %}
+                    All caught up!
+                {% endif %}
+            </p>
+        </div>
+        {% if notifications %}
+            <form method="POST" action="{% url 'notifications:mark_all_read' %}">
+                {% csrf_token %}
+                <button type="submit" style="
+                    background:none;
+                    border:none;
+                    color:#d69b5b;
+                    cursor:pointer;
+                    font-size:13px;
+                    font-weight:500;
+                    padding:8px 16px;
+                    border-radius:7px;
+                    border:1px solid #d69b5b;
+                    transition:0.2s;
+                ">
+                    <i class="fas fa-check-double"></i> Mark All Read
+                </button>
+            </form>
+        {% endif %}
+    </div>
+
+    <!-- Notifications -->
+    {% if notifications %}
+        <div style="display:grid; gap:2px; background:white; border-radius:12px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+            {% for notification in notifications %}
+                <div style="
+                    display:flex;
+                    align-items:center;
+                    gap:16px;
+                    padding:16px 20px;
+                    background:{% if not notification.is_read %}#faf8f6{% else %}white{% endif %};
+                    border-left:4px solid {% if notification.is_read %}#e0d8d0{% else %}#c8925e{% endif %};
+                    transition:0.2s;
+                ">
+                    <!-- Icon -->
+                    <div style="
+                        width:40px;
+                        height:40px;
+                        border-radius:50%;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        flex-shrink:0;
+                        background:{% if notification.notification_type == 'booking_confirmed' %}#d4edda{% elif notification.notification_type == 'booking_cancelled' %}#f8d7da{% elif notification.notification_type == 'booking_created' %}#fff3cd{% else %}#e3edf7{% endif %};
+                        color:{% if notification.notification_type == 'booking_confirmed' %}#155724{% elif notification.notification_type == 'booking_cancelled' %}#721c24{% elif notification.notification_type == 'booking_created' %}#856404{% else %}#004085{% endif %};
+                    ">
+                        <i class="fas fa-{% if notification.notification_type == 'booking_confirmed' %}check-circle{% elif notification.notification_type == 'booking_cancelled' %}times-circle{% elif notification.notification_type == 'booking_created' %}clock{% elif notification.notification_type == 'booking_reminder' %}bell{% elif notification.notification_type == 'experience_approved' %}check{% elif notification.notification_type == 'experience_rejected' %}times{% else %}bell{% endif %}"></i>
+                    </div>
+
+                    <!-- Content -->
+                    <div style="flex:1;">
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <div>
+                                <div style="font-weight:600; font-size:14px; color:#1a1a1a;">
+                                    {{ notification.title }}
+                                </div>
+                                <div style="font-size:13px; color:#687572; margin-top:2px;">
+                                    {{ notification.message }}
+                                </div>
+                                <div style="font-size:11px; color:#89918f; margin-top:4px;">
+                                    {{ notification.created_at|timesince }} ago
+                                    {% if notification.entity_type %}
+                                        • {{ notification.entity_type }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if not notification.is_read %}
+                                <form method="POST" action="{% url 'notifications:mark_read' notification.id %}" style="margin:0;">
+                                    {% csrf_token %}
+                                    <button type="submit" style="
+                                        background:none;
+                                        border:none;
+                                        color:#89918f;
+                                        cursor:pointer;
+                                        font-size:11px;
+                                        padding:2px 8px;
+                                        border-radius:4px;
+                                        transition:0.2s;
+                                    ">
+                                        Mark read
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                        {% if notification.link %}
+                            <a href="{{ notification.link }}" style="
+                                display:inline-block;
+                                margin-top:6px;
+                                color:#d69b5b;
+                                text-decoration:none;
+                                font-size:12px;
+                                font-weight:500;
+                            ">
+                                View Details →
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    <!-- Unread dot -->
+                    {% if not notification.is_read %}
+                        <div style="
+                            width:8px;
+                            height:8px;
+                            border-radius:50%;
+                            background:#c8925e;
+                            flex-shrink:0;
+                        "></div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="
+            text-align:center;
+            padding:60px 20px;
+            background:white;
+            border-radius:12px;
+        ">
+            <i class="fas fa-bell-slash" style="font-size:48px; color:#d9dfdc; margin-bottom:15px;"></i>
+            <h2 style="margin:0 0 10px;">No notifications</h2>
+            <p style="color:#89918f; margin:0;">You're all caught up!</p>
+        </div>
+    {% endif %}
+
+</main>
+
+<!-- FOOTER -->
+<footer style="background:#142b29; color:white; padding:25px 6%; margin-top:40px; box-sizing:border-box;">
+    <div style="max-width:1200px; margin:auto; display:flex; justify-content:space-between; align-items:center;">
+        <div style="color:#849693; font-size:11px;">© 2026 Explore Kimberley. All rights reserved.</div>
+        <div style="display:flex; gap:18px;">
+            <a href="#" style="color:#849693; text-decoration:none; font-size:11px;">Privacy Policy</a>
+            <a href="#" style="color:#849693; text-decoration:none; font-size:11px;">Terms of Use</a>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

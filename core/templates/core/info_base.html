@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} | Explore Kimberley</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, Helvetica, sans-serif; background: #f7f4ef; color: #1f3d3a; }
+        a { color: inherit; }
+        .site-header { background: #1f3d3a; color: white; }
+        .site-nav { max-width: 1120px; min-height: 68px; margin: auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+        .brand { color: white; text-decoration: none; font-size: 22px; font-weight: bold; white-space: nowrap; }
+        .brand span { color: #d69b5b; }
+        .nav-links { display: flex; flex-wrap: wrap; gap: 24px; }
+        .nav-links a { color: white; text-decoration: none; font-size: 14px; }
+        .nav-links a:hover, .nav-links a[aria-current="page"] { color: #e6b783; }
+        main { max-width: 920px; min-height: 65vh; margin: 48px auto; padding: 0 24px; }
+        .eyebrow { color: #b77c3f; font-size: 12px; font-weight: bold; letter-spacing: 1.5px; text-transform: uppercase; }
+        h1 { margin: 8px 0 18px; font-size: clamp(32px, 5vw, 46px); }
+        h2 { margin-top: 32px; font-size: 22px; }
+        p, li { color: #53625f; font-size: 16px; line-height: 1.7; }
+        .content-card { padding: 32px; background: white; border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,.05); }
+        .site-footer { padding: 22px 24px; background: #142b29; color: #aebdbb; text-align: center; font-size: 13px; }
+        .site-footer a { color: #e6b783; }
+        @media (max-width: 620px) {
+            .site-nav { align-items: flex-start; flex-direction: column; padding-top: 16px; padding-bottom: 16px; }
+            .nav-links { gap: 12px 18px; }
+            main { margin: 28px auto; }
+            .content-card { padding: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <nav class="site-nav" aria-label="Main navigation">
+            <a class="brand" href="{% url 'home' %}">Explore <span>Kimberley</span></a>
+            <div class="nav-links">
+                <a href="{% url 'about' %}" {% if active_page == 'about' %}aria-current="page"{% endif %}>About Kimberley</a>
+                <a href="{% url 'how_it_works' %}" {% if active_page == 'how_it_works' %}aria-current="page"{% endif %}>How It Works</a>
+                <a href="{% url 'contact' %}" {% if active_page == 'contact' %}aria-current="page"{% endif %}>Contact</a>
+            </div>
+        </nav>
+    </header>
+    <main>
+        <article class="content-card">
+            <div class="eyebrow">Explore Kimberley</div>
+            {% block content %}{% endblock %}
+        </article>
+    </main>
+    <footer class="site-footer">
+        <p>Explore Kimberley · Northern Cape, South Africa</p>
+        <a href="{% url 'home' %}">Return to the home page</a>
+    </footer>
+</body>
+</html>

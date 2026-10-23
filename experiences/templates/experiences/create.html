@@ -1,0 +1,307 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Experience | Explore Kimberley</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body style="
+    margin:0;
+    font-family:'Inter', Arial, sans-serif;
+    background:#f7f4ef;
+    color:#1f3d3a;
+">
+
+<!-- NAVBAR -->
+<nav style="
+    height:68px;
+    background:#1f3d3a;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 6%;
+    box-sizing:border-box;
+">
+    <a href="/" style="
+        color:white;
+        text-decoration:none;
+        font-size:21px;
+        font-weight:700;
+        letter-spacing:-0.5px;
+    ">
+        Explore <span style="color:#d69b5b;">Kimberley</span>
+    </a>
+
+    <div style="display:flex; align-items:center; gap:20px;">
+        <span style="color:#d69b5b; font-size:11px; font-weight:600; text-transform:uppercase;">
+            <i class="fas fa-store"></i> Provider
+        </span>
+        <span style="color:#cbd5d3; font-size:13px;">{{ user.first_name }}</span>
+        <a href="/accounts/logout/" style="color:#aebdbb; text-decoration:none; font-size:12px; padding:6px 14px; border-radius:6px; border:1px solid rgba(255,255,255,0.15);">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main style="padding:30px 6%; max-width:800px; margin:auto; box-sizing:border-box;">
+
+    <!-- Back button -->
+    <div style="margin-bottom:20px;">
+        <a href="#" onclick="window.history.back(); return false;" style="
+            display:inline-block;
+            color:#1f3d3a;
+            text-decoration:none;
+            font-size:13px;
+            padding:8px 16px;
+            border-radius:7px;
+            background:white;
+            box-shadow:0 2px 5px rgba(0,0,0,0.05);
+        ">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <div style="margin-bottom:30px;">
+        <h1 style="margin:0; font-size:28px; font-weight:600;">
+            <i class="fas fa-plus-circle" style="color:#d69b5b;"></i> Create Experience
+        </h1>
+        <p style="color:#89918f; font-size:14px; margin:5px 0 0;">
+            Fill in the details to create a new tourism experience.
+        </p>
+    </div>
+
+    <!-- Errors -->
+    {% if errors %}
+        <div style="
+            background:#fff5f1;
+            border:1px solid #edcfc3;
+            border-left:4px solid #c96d4c;
+            border-radius:7px;
+            padding:15px 20px;
+            margin-bottom:20px;
+        ">
+            <ul style="margin:0; padding-left:20px; color:#874c3b; font-size:13px;">
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <!-- Form -->
+    <form method="POST" style="
+        background:white;
+        padding:30px;
+        border-radius:12px;
+        box-shadow:0 2px 10px rgba(0,0,0,0.05);
+    ">
+        {% csrf_token %}
+
+        <div style="display:grid; gap:20px;">
+
+            <!-- Name -->
+            <div>
+                <label style="display:block; font-weight:600; font-size:13px; margin-bottom:5px;">
+                    Experience Name *
+                </label>
+                <input type="text" name="name" value="{{ name }}" required style="
+                    width:100%;
+                    padding:10px 14px;
+                    border:1px solid #d9dfdc;
+                    border-radius:7px;
+                    font-family:inherit;
+                    font-size:13px;
+                    box-sizing:border-box;
+                " placeholder="e.g. Big Hole Tour Experience">
+            </div>
+
+            <!-- Short Description -->
+            <div>
+                <label style="display:block; font-weight:600; font-size:13px; margin-bottom:5px;">
+                    Short Description
+                </label>
+                <input type="text" name="short_description" value="{{ short_description }}" style="
+                    width:100%;
+                    padding:10px 14px;
+                    border:1px solid #d9dfdc;
+                    border-radius:7px;
+                    font-family:inherit;
+                    font-size:13px;
+                    box-sizing:border-box;
+                " placeholder="Brief summary (max 300 characters)">
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label style="display:block; font-weight:600; font-size:13px; margin-bottom:5px;">
+                    Full Description *
+                </label>
+                <textarea name="description" rows="5" required style="
+                    width:100%;
+                    padding:10px 14px;
+                    border:1px solid #d9dfdc;
+                    border-radius:7px;
+                    font-family:inherit;
+                    font-size:13px;
+                    box-sizing:border-box;
+                    resize:vertical;
+                " placeholder="Detailed description of the experience...">{{ description }}</textarea>
+            </div>
+
+            <!-- Category -->
+            <div>
+                <label style="display:block; font-weight:600; font-size:13px; margin-bottom:5px;">
+                    Category *
+                </label>
+                <select name="category" required style="
+                    width:100%;
+                    padding:10px 14px;
+                    border:1px solid #d9dfdc;
+                    border-radius:7px;
+                    font-family:inherit;
+                    font-size:13px;
+                    background:white;
+                ">
+                    <option value="">Select a category</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Location -->
+            <div>
+                <label style="display:block; font-weight:600; font-size:13px; margin-bottom:5px;">
+                    Location *
+                </label>
+                <input type="text" name="location" value="{{ location }}" required style="
+                    width:100%;
+                    padding:10px 14px;
+                    border:1px solid #d9dfdc;
+                    border-radius:7px;
+                    font-family:inherit;
+                    font-size:13px;
+                    box-sizing:border-box;
+                " placeholder="e.g. Kimberley City Centre">
+            </div>
+
+            <!-- Price & Capacity Row -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                <div>
+                    <label style="display:block; font-weight:600; font-size:13px; margin-bottom:5px;">
+                        Price (R) *
+                    </label>
+                    <input type="number" name="price" value="{{ price }}" step="0.01" min="0" required style="
+                        width:100%;
+                        padding:10px 14px;
+                        border:1px solid #d9dfdc;
+                        border-radius:7px;
+                        font-family:inherit;
+                        font-size:13px;
+                        box-sizing:border-box;
+                    " placeholder="0.00">
+                </div>
+                <div>
+                    <label style="display:block; font-weight:600; font-size:13px; margin-bottom:5px;">
+                        Duration (minutes) *
+                    </label>
+                    <input type="number" name="duration_minutes" value="{{ duration_minutes }}" min="1" required style="
+                        width:100%;
+                        padding:10px 14px;
+                        border:1px solid #d9dfdc;
+                        border-radius:7px;
+                        font-family:inherit;
+                        font-size:13px;
+                        box-sizing:border-box;
+                    " placeholder="60">
+                </div>
+            </div>
+
+            <!-- Capacity Row -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                <div>
+                    <label style="display:block; font-weight:600; font-size:13px; margin-bottom:5px;">
+                        Max Capacity
+                    </label>
+                    <input type="number" name="capacity" value="{{ capacity|default:10 }}" min="1" style="
+                        width:100%;
+                        padding:10px 14px;
+                        border:1px solid #d9dfdc;
+                        border-radius:7px;
+                        font-family:inherit;
+                        font-size:13px;
+                        box-sizing:border-box;
+                    ">
+                </div>
+                <div>
+                    <label style="display:block; font-weight:600; font-size:13px; margin-bottom:5px;">
+                        Min Participants
+                    </label>
+                    <input type="number" name="min_participants" value="{{ min_participants|default:1 }}" min="1" style="
+                        width:100%;
+                        padding:10px 14px;
+                        border:1px solid #d9dfdc;
+                        border-radius:7px;
+                        font-family:inherit;
+                        font-size:13px;
+                        box-sizing:border-box;
+                    ">
+                </div>
+            </div>
+
+            <!-- Availability -->
+            <div>
+                <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                    <input type="checkbox" name="is_available" {% if is_available %}checked{% endif %}>
+                    <span style="font-weight:600; font-size:13px;">Available for Booking</span>
+                </label>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" style="
+                background:#d69b5b;
+                color:white;
+                border:none;
+                padding:12px 30px;
+                border-radius:7px;
+                font-family:inherit;
+                font-size:15px;
+                font-weight:600;
+                cursor:pointer;
+                margin-top:10px;
+            ">
+                <i class="fas fa-save"></i> Create Experience
+            </button>
+
+        </div>
+    </form>
+
+</main>
+
+<!-- FOOTER -->
+<footer style="
+    background:#142b29;
+    color:white;
+    padding:25px 6%;
+    margin-top:40px;
+    box-sizing:border-box;
+">
+    <div style="max-width:1200px; margin:auto; display:flex; justify-content:space-between; align-items:center;">
+        <div style="color:#849693; font-size:11px;">© 2026 Explore Kimberley. All rights reserved.</div>
+        <div style="display:flex; gap:18px;">
+            <a href="#" style="color:#849693; text-decoration:none; font-size:11px;">Privacy Policy</a>
+            <a href="#" style="color:#849693; text-decoration:none; font-size:11px;">Terms of Use</a>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

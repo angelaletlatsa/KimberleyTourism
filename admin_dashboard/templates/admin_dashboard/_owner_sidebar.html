@@ -1,0 +1,9 @@
+{% if user.is_superuser %}
+<div class="sidebar-section">
+    <div class="sidebar-section-title">Owner</div>
+    <a href="{% url 'admin_dashboard:admin_management' %}" class="nav-item{% if request.resolver_match.url_name == 'admin_management' %} active{% endif %}">
+        <span class="icon"><i class="fas fa-shield-alt"></i></span><span>Administrators</span>
+        {% if total_pending > 0 %}<span class="badge">{{ total_pending }}</span>{% endif %}
+    </a>
+</div>
+{% endif %}

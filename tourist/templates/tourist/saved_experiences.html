@@ -1,0 +1,994 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Experiences | Explore Kimberley</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #f5f0eb;
+            color: #1a1a1a;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 250px;
+            background: #0f2b26;
+            color: white;
+            min-height: 100vh;
+            padding: 24px 16px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            padding: 0 12px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 24px;
+        }
+
+        .sidebar-brand h1 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-brand h1 span {
+            color: #c8925e;
+        }
+
+        .sidebar-brand .subtitle {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.35);
+            margin-top: 2px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+        }
+
+        .sidebar-section-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: rgba(255, 255, 255, 0.3);
+            padding: 16px 14px 8px;
+            margin-top: 4px;
+        }
+
+        .sidebar-nav .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.25s ease;
+            margin-bottom: 2px;
+        }
+
+        .sidebar-nav .nav-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: white;
+        }
+
+        .sidebar-nav .nav-item.active {
+            background: rgba(200, 146, 94, 0.15);
+            color: #c8925e;
+        }
+
+        .sidebar-nav .nav-item .icon {
+            width: 22px;
+            text-align: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-nav .nav-item .badge {
+            margin-left: auto;
+            background: #c8925e;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 10px;
+            border-radius: 12px;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 16px;
+            margin-top: auto;
+        }
+
+        .sidebar-footer .user-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            transition: 0.25s ease;
+        }
+
+        .sidebar-footer .user-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .sidebar-footer .user-card .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c8925e, #e8b88a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-footer .user-card .user-info .name {
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .sidebar-footer .user-card .user-info .role {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .sidebar-footer .user-card .logout {
+            color: rgba(255, 255, 255, 0.3);
+            transition: 0.25s ease;
+        }
+
+        .sidebar-footer .user-card .logout:hover {
+            color: #c75b4a;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            padding: 28px 40px 40px;
+            min-height: 100vh;
+            max-width: calc(100% - 250px);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .header-left h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f2b26;
+        }
+
+        .header-left p {
+            font-size: 13px;
+            color: #8a9a98;
+            margin-top: 2px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-right .notification-btn {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            color: #4a5a58;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-right .notification-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .header-right .notification-btn .dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            min-width: 18px;
+            height: 18px;
+            background: #c75b4a;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 50%;
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+        }
+
+        .header-right .date-display {
+            font-size: 13px;
+            color: #8a9a98;
+            background: white;
+            padding: 8px 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #1a1a1a;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: 0.2s ease;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+        }
+
+        .back-button:hover {
+            border-color: #c8925e;
+            transform: translateX(-2px);
+        }
+
+        /* ===== SAVED GRID ===== */
+        .saved-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .saved-card {
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+            transition: 0.3s ease;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            position: relative;
+        }
+
+        .saved-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        .saved-card .image-placeholder {
+            height: 140px;
+            background: linear-gradient(135deg, #e8e0d8, #d5cdc5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #a89a8a;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .saved-card .image-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .saved-card .image-placeholder i {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 6px;
+            opacity: 0.5;
+        }
+
+        .saved-card .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            color: #c75b4a;
+            font-size: 16px;
+            line-height: 1;
+            cursor: pointer;
+            transition: 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+        }
+
+        .saved-card .remove-btn:hover {
+            background: #c75b4a;
+            transform: scale(1.1);
+        }
+
+        .saved-card .card-body {
+            padding: 16px 18px 18px;
+        }
+
+        .saved-card .card-body .category-tag {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #c8925e;
+            background: rgba(200, 146, 94, 0.1);
+            padding: 2px 12px;
+            border-radius: 20px;
+            margin-bottom: 6px;
+        }
+
+        .saved-card .card-body .name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+
+        .saved-card .card-body .location {
+            font-size: 13px;
+            color: #8a9a98;
+            margin-bottom: 6px;
+        }
+
+        .saved-card .card-body .rating {
+            font-size: 13px;
+            color: #8a9a98;
+        }
+
+        .saved-card .card-body .rating i {
+            color: #f5b342;
+            margin-right: 4px;
+        }
+
+        .saved-card .card-body .price-duration {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #f0ebe6;
+        }
+
+        .saved-card .card-body .price {
+            flex: 1;
+            min-width: 0;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.25;
+            color: #1a1a1a;
+        }
+
+        .saved-card .card-body .saved-date {
+            font-size: 11px;
+            color: #8a9a98;
+        }
+
+        .saved-card .card-body .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .saved-card .card-body .actions a,
+        .saved-card .card-body .actions form {
+            flex: 1;
+        }
+
+        .saved-card .card-body .actions .view-btn {
+            display: block;
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: 0.2s ease;
+            background: #faf8f6;
+            color: #1a1a1a;
+            text-decoration: none;
+            width: 100%;
+        }
+
+        .saved-card .card-body .actions .view-btn:hover {
+            background: #c8925e;
+            color: white;
+        }
+
+        .saved-card .card-body .actions .add-plan-btn {
+            display: block;
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: 0.2s ease;
+            background: #0f2b26;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .saved-card .card-body .actions .add-plan-btn:hover {
+            background: #c8925e;
+            transform: translateY(-2px);
+        }
+
+        .saved-card .card-body .actions .add-plan-btn i {
+            margin-right: 4px;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .empty-state .icon {
+            font-size: 56px;
+            color: #d9dfdc;
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: #8a9a98;
+            font-size: 14px;
+            max-width: 400px;
+            margin: 0 auto 20px;
+        }
+
+        .empty-state a {
+            display: inline-block;
+            background: #c8925e;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.2s ease;
+            text-decoration: none;
+        }
+
+        .empty-state a:hover {
+            background: #d4a373;
+            transform: translateY(-2px);
+        }
+
+        .empty-state .empty-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 380px;
+            width: 100%;
+        }
+
+        .toast {
+            background: #0f2b26;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.4s ease;
+            font-size: 14px;
+            font-weight: 500;
+            min-height: 56px;
+            border-left: 4px solid #c8925e;
+        }
+
+        .toast.success {
+            border-left-color: #2d8f6f;
+        }
+
+        .toast.info {
+            border-left-color: #3a6ea5;
+        }
+
+        .toast.remove {
+            border-left-color: #c75b4a;
+        }
+
+        .toast .toast-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+            width: 24px;
+            text-align: center;
+        }
+
+        .toast .toast-icon.success {
+            color: #2d8f6f;
+        }
+
+        .toast .toast-icon.info {
+            color: #3a6ea5;
+        }
+
+        .toast .toast-icon.remove {
+            color: #c75b4a;
+        }
+
+        .toast .toast-message {
+            flex: 1;
+            line-height: 1.4;
+        }
+
+        .toast .toast-close {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            transition: 0.2s ease;
+        }
+
+        .toast .toast-close:hover {
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        .toast.hide {
+            animation: slideOut 0.3s ease forwards;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .saved-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 72px;
+                padding: 16px 10px;
+            }
+            .sidebar-brand h1 {
+                font-size: 16px;
+            }
+            .sidebar-brand .subtitle {
+                display: none;
+            }
+            .sidebar-nav .nav-item span {
+                display: none;
+            }
+            .sidebar-nav .nav-item .badge {
+                display: none;
+            }
+            .sidebar-footer .user-card .user-info {
+                display: none;
+            }
+            .sidebar-footer .user-card .logout span {
+                display: none;
+            }
+            .main-content {
+                padding: 16px;
+                max-width: 100%;
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            .header-right {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            .saved-grid {
+                grid-template-columns: 1fr;
+            }
+            .saved-card .card-body .actions {
+                flex-direction: column;
+            }
+            .toast-container {
+                top: 12px;
+                right: 12px;
+                left: 12px;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+            <h1>Explore <span>Kimberley</span></h1>
+            <div class="subtitle">Tourism Platform</div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section-title">Main</div>
+
+            <a href="/tourist/dashboard/" class="nav-item">
+                <span class="icon"><i class="fas fa-home"></i></span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{% url 'experiences:list' %}" class="nav-item">
+                <span class="icon"><i class="fas fa-compass"></i></span>
+                <span>Discover</span>
+            </a>
+
+            <a href="#" class="nav-item active">
+                <span class="icon"><i class="fas fa-heart"></i></span>
+                <span>Saved Experiences</span>
+                {% if saved_experiences %}
+                    <span class="badge">{{ saved_experiences|length }}</span>
+                {% endif %}
+            </a>
+
+            <div class="sidebar-section-title">My Trip</div>
+
+            <a href="/tourist/plan-my-trip/" class="nav-item">
+                <span class="icon"><i class="fas fa-map"></i></span>
+                <span>Plan My Trip</span>
+            </a>
+
+            <a href="/itineraries/" class="nav-item">
+                <span class="icon"><i class="fas fa-map-signs"></i></span>
+                <span>My Itinerary</span>
+                {% if itinerary_count > 0 %}
+                    <span class="badge">{{ itinerary_count }}</span>
+                {% endif %}
+            </a>
+
+            <div class="sidebar-section-title">Bookings &amp; Reviews</div>
+
+            <a href="/tourist/guides/" class="nav-item">
+                <span class="icon"><i class="fas fa-users"></i></span>
+                <span>Tour Guides</span>
+            </a>
+
+            <a href="/bookings/my/" class="nav-item">
+                <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+                <span>My Bookings</span>
+                {% if upcoming_count > 0 %}
+                    <span class="badge">{{ upcoming_count }}</span>
+                {% endif %}
+            </a>
+
+            <a href="/reviews/my/" class="nav-item">
+                <span class="icon"><i class="fas fa-star"></i></span>
+                <span>My Reviews</span>
+                {% if review_count > 0 %}
+                    <span class="badge">{{ review_count }}</span>
+                {% endif %}
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar">{{ user.first_name|slice:":1"|default:"G" }}</div>
+                <div class="user-info">
+                    <div class="name">{{ user.first_name|default:"Guest" }}</div>
+                    <div class="role">Tourist</div>
+                </div>
+                {% if user.is_authenticated %}
+                    <a href="/accounts/logout/" class="logout-btn" title="Sign out" style="display:inline-flex;align-items:center;gap:6px;margin-left:auto;padding:6px 10px;border:1px solid rgba(255,255,255,0.14);border-radius:8px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.75);font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;"><i class="fas fa-sign-out-alt"></i> Sign out</a>
+                {% else %}
+                    <a href="/accounts/login/" class="logout" title="Login">
+                        <i class="fas fa-sign-in-alt"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+
+        <a href="
+            {% if is_planning %}
+                /tourist/plan-my-trip/?step=2
+            {% else %}
+                /tourist/dashboard/
+            {% endif %}
+        " class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            {% if is_planning %}
+                Back to Plan My Trip
+            {% else %}
+                Back to Dashboard
+            {% endif %}
+        </a>
+
+        <header class="header">
+            <div class="header-left">
+                <h2><i class="fas fa-heart" style="color:#c8925e;"></i> Saved Experiences</h2>
+                <p>Experiences you've saved for later</p>
+            </div>
+            <div class="header-right">
+                {% if user.is_authenticated %}
+                    <a href="/notifications/" class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        {% if unread_count > 0 %}
+                            <span class="dot">{{ unread_count }}</span>
+                        {% endif %}
+                    </a>
+                {% endif %}
+                <span class="date-display">
+                    <i class="far fa-calendar-alt"></i>
+                    {{ now|date:"M d, Y" }}
+                </span>
+            </div>
+        </header>
+
+        {% if saved_experiences %}
+            <div class="saved-grid">
+                {% for saved in saved_experiences %}
+                    <div class="saved-card" data-experience-id="{{ saved.experience.id }}">
+                        <div class="image-placeholder">
+                            {% if saved.experience.main_image %}
+                                <img src="{{ saved.experience.main_image.url }}" alt="{{ saved.experience.name }}" onerror="this.onerror=null;this.src='{% static 'images/kimberley.jpg' %}';">
+                            {% else %}
+                                <i class="fas fa-image"></i>
+                                <span>{{ saved.experience.name }}</span>
+                            {% endif %}
+                            <button class="remove-btn" onclick="removeSaved({{ saved.experience.id }}, this)" title="Remove from saved">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="category-tag">{{ saved.experience.category.name|default:"Experience" }}</div>
+                            <div class="name">{{ saved.experience.name }}</div>
+                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ saved.experience.location }}</div>
+                            <div class="rating">
+                                <i class="fas fa-star"></i> {{ saved.experience.average_rating|floatformat:1 }}
+                                ({{ saved.experience.total_reviews }} reviews)
+                            </div>
+                            <div class="price-duration">
+                                <div class="price">
+                                    {% if saved.experience.has_price_bracket %}
+                                        {{ saved.experience.price_display }}
+                                    {% else %}
+                                        <span style="color:#8a9a98; font-weight:500;">Price on request</span>
+                                    {% endif %}
+                                </div>
+                                <div class="saved-date">Saved {{ saved.saved_at|date:"d M Y" }}</div>
+                            </div>
+                            <div class="actions">
+                                <a href="{% url 'experiences:detail' saved.experience.id %}" class="view-btn">
+                                    <i class="fas fa-eye"></i> View Details
+                                </a>
+                                {% if is_planning %}
+                                    <form method="POST" action="{% url 'tourist:plan_my_trip' %}" style="display:inline; flex:1;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="add_experience">
+                                        <input type="hidden" name="experience_id" value="{{ saved.experience.id }}">
+                                        <button type="submit" class="add-plan-btn">
+                                            <i class="fas fa-plus"></i> Add to Plan
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-heart icon" style="color:#e0d8d0;"></i>
+                <h3>No saved experiences</h3>
+                <p>Save experiences you'd like to explore later.</p>
+                <div class="empty-actions">
+                    <a href="{% url 'experiences:list' %}">Discover Experiences</a>
+                    {% if not is_planning %}
+                        <a href="/tourist/plan-my-trip/" style="background:#0f2b26;">Plan a Trip</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+    </main>
+
+    <script>
+        // ===== TOAST SYSTEM =====
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+
+            let iconClass = 'fa-check-circle';
+            let iconColor = 'success';
+            if (type === 'info') {
+                iconClass = 'fa-info-circle';
+                iconColor = 'info';
+            } else if (type === 'remove') {
+                iconClass = 'fa-heart';
+                iconColor = 'remove';
+            }
+
+            toast.innerHTML = `
+                <span class="toast-icon ${iconColor}"><i class="fas ${iconClass}"></i></span>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.classList.add('hide');
+                    setTimeout(() => {
+                        if (toast.parentElement) {
+                            toast.remove();
+                        }
+                    }, 300);
+                }
+            }, 4000);
+        }
+
+        // ===== REMOVE SAVED =====
+        function removeSaved(experienceId, button) {
+            const card = button.closest('.saved-card');
+
+            fetch(`/tourist/toggle-save/${experienceId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.is_saved) {
+                    if (card) {
+                        card.style.transition = 'all 0.3s ease';
+                        card.style.transform = 'scale(0.9)';
+                        card.style.opacity = '0';
+                        setTimeout(() => {
+                            card.remove();
+                            const badge = document.querySelector('.sidebar-nav .nav-item.active .badge');
+                            if (badge) {
+                                const count = parseInt(badge.textContent) - 1;
+                                if (count > 0) {
+                                    badge.textContent = count;
+                                } else {
+                                    badge.remove();
+                                }
+                            }
+                            const remainingCards = document.querySelectorAll('.saved-card');
+                            if (remainingCards.length === 0) {
+                                location.reload();
+                            }
+                        }, 300);
+                    }
+                    showToast(data.message, 'remove');
+                }
+            })
+            .catch(error => {
+                showToast('Something went wrong. Please try again.', 'info');
+                console.error('Error:', error);
+            });
+        }
+
+        // ===== CSRF TOKEN HELPER =====
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+
+</body>
+</html>

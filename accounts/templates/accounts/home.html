@@ -1,0 +1,584 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Kimberley</title>
+</head>
+
+<body style="
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background:#f7f4ef;
+    color:#1f3d3a;
+">
+
+    <!-- NAVBAR -->
+
+    <nav style="
+        height:68px;
+        background:#1f3d3a;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        padding:0 6%;
+        box-sizing:border-box;
+    ">
+
+        <a href="#" style="
+            text-decoration:none;
+            color:white;
+            font-size:24px;
+            font-weight:bold;
+            letter-spacing:-0.5px;
+        ">
+            Explore <span style="color:#d69b5b;">Kimberley</span>
+        </a>
+
+        <div style="
+            display:flex;
+            align-items:center;
+            gap:28px;
+        ">
+
+            <a href="{% url 'about' %}" style="
+                color:white;
+                text-decoration:none;
+                font-size:14px;
+            ">
+                About Kimberley
+            </a>
+
+            <a href="{% url 'how_it_works' %}" style="
+                color:white;
+                text-decoration:none;
+                font-size:14px;
+            ">
+                How It Works
+            </a>
+
+            <a href="{% url 'contact' %}" style="
+                color:white;
+                text-decoration:none;
+                font-size:14px;
+            ">
+                Contact
+            </a>
+
+        </div>
+
+    </nav>
+
+
+    <!-- HERO -->
+
+    <section style="
+        height:455px;
+        background-image:
+            linear-gradient(
+                rgba(20,48,45,0.50),
+                rgba(20,48,45,0.50)
+            ),
+            url('{% static "images/kimberley.jpg" %}');
+        background-size:cover;
+        background-position:center;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        text-align:center;
+        padding:20px;
+        box-sizing:border-box;
+    ">
+
+        <div style="
+            max-width:800px;
+            color:white;
+        ">
+
+            <div style="
+                display:inline-block;
+                background:#d69b5b;
+                padding:8px 18px;
+                border-radius:30px;
+                font-size:12px;
+                font-weight:bold;
+                letter-spacing:1.4px;
+                margin-bottom:18px;
+                box-shadow:0 5px 20px rgba(0,0,0,0.20);
+            ">
+                NORTHERN CAPE • SOUTH AFRICA
+            </div>
+
+            <h1 style="
+                margin:0;
+                font-size:56px;
+                line-height:1.05;
+                letter-spacing:-1.5px;
+                text-shadow:0 3px 15px rgba(0,0,0,0.35);
+            ">
+                Welcome to Kimberley
+            </h1>
+
+            <p style="
+                margin:18px auto 27px;
+                max-width:620px;
+                font-size:18px;
+                line-height:1.5;
+                text-shadow:0 2px 8px rgba(0,0,0,0.35);
+            ">
+                Take a closer look at the places, experiences,
+                food and people that make Kimberley special.
+            </p>
+
+
+            <!-- LOGIN -->
+
+            <a href="{% url 'accounts:login' %}" style="
+                display:inline-block;
+                background:#d69b5b;
+                color:white;
+                text-decoration:none;
+                padding:13px 27px;
+                border-radius:7px;
+                font-size:15px;
+                font-weight:bold;
+                box-shadow:0 5px 20px rgba(214,155,91,0.40);
+                margin-right:7px;
+            ">
+                Login
+            </a>
+
+
+            <!-- REGISTER -->
+
+            <a href="{% url 'accounts:register' %}" style="
+                display:inline-block;
+                background:white;
+                color:#1f3d3a;
+                text-decoration:none;
+                padding:13px 27px;
+                border-radius:7px;
+                font-size:15px;
+                font-weight:bold;
+                margin-right:7px;
+                box-shadow:0 5px 18px rgba(0,0,0,0.15);
+            ">
+                Register
+            </a>
+        </div>
+
+    </section>
+
+
+    <!-- DISCOVER -->
+
+    <section style="
+        padding:32px 6% 38px;
+        box-sizing:border-box;
+        background:#f7f4ef;
+    ">
+
+        <div style="
+            max-width:1120px;
+            margin:auto;
+        ">
+
+            <div style="
+                margin-bottom:18px;
+            ">
+
+                <div style="
+                    color:#d69b5b;
+                    font-size:12px;
+                    font-weight:bold;
+                    letter-spacing:1.5px;
+                    margin-bottom:5px;
+                ">
+                    DISCOVER
+                </div>
+
+                <h2 style="
+                    margin:0;
+                    font-size:29px;
+                    letter-spacing:-0.5px;
+                ">
+                    Explore Kimberley
+                </h2>
+
+            </div>
+
+
+            <!-- CARDS -->
+
+            <div style="
+                display:grid;
+                grid-template-columns:repeat(4,1fr);
+                gap:17px;
+            ">
+
+
+                <!-- ATTRACTIONS -->
+
+                <a href="#" style="
+                    text-decoration:none;
+                    color:inherit;
+                    background:white;
+                    border-radius:11px;
+                    overflow:hidden;
+                    box-shadow:0 4px 14px rgba(0,0,0,0.08);
+                ">
+
+                    <img src="{% static 'images/attractions.jpg' %}" style="
+                        width:100%;
+                        height:125px;
+                        object-fit:cover;
+                        display:block;
+                    ">
+
+                    <div style="
+                        padding:14px 15px 16px;
+                    ">
+
+                        <h3 style="
+                            margin:0 0 5px;
+                            font-size:17px;
+                        ">
+                            Attractions
+                        </h3>
+
+                        <p style="
+                            margin:0;
+                            color:#777;
+                            font-size:13px;
+                            line-height:1.4;
+                        ">
+                            Explore Kimberley's history and landmarks.
+                        </p>
+
+                    </div>
+
+                </a>
+
+
+                <!-- ACTIVITIES -->
+
+                <a href="#" style="
+                    text-decoration:none;
+                    color:inherit;
+                    background:white;
+                    border-radius:11px;
+                    overflow:hidden;
+                    box-shadow:0 4px 14px rgba(0,0,0,0.08);
+                ">
+
+                    <img src="{% static 'images/activities.jpg' %}" style="
+                        width:100%;
+                        height:125px;
+                        object-fit:cover;
+                        display:block;
+                    ">
+
+                    <div style="
+                        padding:14px 15px 16px;
+                    ">
+
+                        <h3 style="
+                            margin:0 0 5px;
+                            font-size:17px;
+                        ">
+                            Activities
+                        </h3>
+
+                        <p style="
+                            margin:0;
+                            color:#777;
+                            font-size:13px;
+                            line-height:1.4;
+                        ">
+                            Find experiences and things to do.
+                        </p>
+
+                    </div>
+
+                </a>
+
+
+                <!-- ACCOMMODATION -->
+
+                <a href="#" style="
+                    text-decoration:none;
+                    color:inherit;
+                    background:white;
+                    border-radius:11px;
+                    overflow:hidden;
+                    box-shadow:0 4px 14px rgba(0,0,0,0.08);
+                ">
+
+                    <img src="{% static 'images/accommodation.jpg' %}" style="
+                        width:100%;
+                        height:125px;
+                        object-fit:cover;
+                        display:block;
+                    ">
+
+                    <div style="
+                        padding:14px 15px 16px;
+                    ">
+
+                        <h3 style="
+                            margin:0 0 5px;
+                            font-size:17px;
+                        ">
+                            Places to Stay
+                        </h3>
+
+                        <p style="
+                            margin:0;
+                            color:#777;
+                            font-size:13px;
+                            line-height:1.4;
+                        ">
+                            Find accommodation for your visit.
+                        </p>
+
+                    </div>
+
+                </a>
+
+
+                <!-- RESTAURANTS -->
+
+                <a href="#" style="
+                    text-decoration:none;
+                    color:inherit;
+                    background:white;
+                    border-radius:11px;
+                    overflow:hidden;
+                    box-shadow:0 4px 14px rgba(0,0,0,0.08);
+                ">
+
+                    <img src="{% static 'images/restaurant.jpg' %}" style="
+                        width:100%;
+                        height:125px;
+                        object-fit:cover;
+                        display:block;
+                    ">
+
+                    <div style="
+                        padding:14px 15px 16px;
+                    ">
+
+                        <h3 style="
+                            margin:0 0 5px;
+                            font-size:17px;
+                        ">
+                            Food & Dining
+                        </h3>
+
+                        <p style="
+                            margin:0;
+                            color:#777;
+                            font-size:13px;
+                            line-height:1.4;
+                        ">
+                            Discover restaurants and local food.
+                        </p>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+
+    <footer style="
+        background:#142b29;
+        color:white;
+        padding:38px 6% 18px;
+        box-sizing:border-box;
+    ">
+
+        <div style="
+            max-width:1120px;
+            margin:auto;
+        ">
+
+            <div style="
+                display:grid;
+                grid-template-columns:2fr 1fr 1.3fr;
+                gap:60px;
+                padding-bottom:28px;
+            ">
+
+
+                <!-- BRAND -->
+
+                <div>
+
+                    <div style="
+                        font-size:21px;
+                        font-weight:bold;
+                        margin-bottom:10px;
+                    ">
+                        Explore <span style="color:#d69b5b;">Kimberley</span>
+                    </div>
+
+                    <p style="
+                        margin:0;
+                        max-width:300px;
+                        color:#aebdbb;
+                        font-size:13px;
+                        line-height:1.6;
+                    ">
+                        Discover Kimberley, plan your experience
+                        and connect with local guides.
+                    </p>
+
+                </div>
+
+
+                <!-- QUICK LINKS -->
+
+                <div>
+
+                    <h4 style="
+                        margin:0 0 12px;
+                        color:white;
+                        font-size:13px;
+                        letter-spacing:0.5px;
+                    ">
+                        QUICK LINKS
+                    </h4>
+
+                    <a href="{% url 'about' %}" style="
+                        display:block;
+                        color:#aebdbb;
+                        text-decoration:none;
+                        font-size:13px;
+                        margin-bottom:8px;
+                    ">
+                        About Kimberley
+                    </a>
+
+                    <a href="{% url 'how_it_works' %}" style="
+                        display:block;
+                        color:#aebdbb;
+                        text-decoration:none;
+                        font-size:13px;
+                        margin-bottom:8px;
+                    ">
+                        How It Works
+                    </a>
+
+                    <a href="{% url 'contact' %}" style="
+                        display:block;
+                        color:#aebdbb;
+                        text-decoration:none;
+                        font-size:13px;
+                    ">
+                        Contact
+                    </a>
+
+                </div>
+
+
+                <!-- CONTACT -->
+
+                <div>
+
+                    <h4 style="
+                        margin:0 0 12px;
+                        color:white;
+                        font-size:13px;
+                        letter-spacing:0.5px;
+                    ">
+                        GET IN TOUCH
+                    </h4>
+
+                    <p style="
+                        margin:0 0 7px;
+                        color:#aebdbb;
+                        font-size:13px;
+                    ">
+                        Kimberley, Northern Cape
+                    </p>
+
+                    <p style="
+                        margin:0 0 7px;
+                        color:#aebdbb;
+                        font-size:13px;
+                    ">
+                        South Africa
+                    </p>
+
+                    <a href="{% url 'contact' %}" style="
+                        color:#d69b5b;
+                        text-decoration:none;
+                        font-size:13px;
+                    ">
+                        Contact us →
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- FOOTER BOTTOM -->
+
+            <div style="
+                border-top:1px solid rgba(255,255,255,0.12);
+                padding-top:16px;
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+            ">
+
+                <div style="
+                    color:#849693;
+                    font-size:11px;
+                ">
+                    © 2026 Explore Kimberley. All rights reserved.
+                </div>
+
+                <div style="
+                    display:flex;
+                    gap:18px;
+                ">
+
+                    <a href="#" style="
+                        color:#849693;
+                        text-decoration:none;
+                        font-size:11px;
+                    ">
+                        Privacy Policy
+                    </a>
+
+                    <a href="#" style="
+                        color:#849693;
+                        text-decoration:none;
+                        font-size:11px;
+                    ">
+                        Terms of Use
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+</body>
+
+</html>

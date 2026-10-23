@@ -1,0 +1,539 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Itinerary | Explore Kimberley</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f0eb; color: #1a1a1a; display: flex; min-height: 100vh; }
+        a { text-decoration: none; color: inherit; }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar { width: 250px; background: #0f2b26; color: white; min-height: 100vh; padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-brand { padding: 0 12px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 24px; }
+        .sidebar-brand h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        .sidebar-brand h1 span { color: #c8925e; }
+        .sidebar-brand .subtitle { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+        .sidebar-nav { flex: 1; }
+        .sidebar-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255,255,255,0.3); padding: 16px 14px 8px; margin-top: 4px; }
+        .sidebar-nav .nav-item { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 10px; color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 500; transition: all 0.25s ease; margin-bottom: 2px; }
+        .sidebar-nav .nav-item:hover { background: rgba(255,255,255,0.06); color: white; }
+        .sidebar-nav .nav-item.active { background: rgba(200,146,94,0.15); color: #c8925e; }
+        .sidebar-nav .nav-item .icon { width: 22px; text-align: center; font-size: 16px; flex-shrink: 0; }
+        .sidebar-nav .nav-item .badge { margin-left: auto; background: #c8925e; color: white; font-size: 10px; font-weight: 700; padding: 1px 10px; border-radius: 12px; }
+        .sidebar-footer { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; margin-top: auto; }
+        .sidebar-footer .user-card { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; }
+        .sidebar-footer .user-card .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #c8925e, #e8b88a); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; flex-shrink: 0; overflow: hidden; }
+        .sidebar-footer .user-card .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .sidebar-footer .user-card .user-info .name { font-size: 13px; font-weight: 600; color: white; }
+        .sidebar-footer .user-card .user-info .role { font-size: 11px; color: rgba(255,255,255,0.4); }
+        .sidebar-footer .user-card .logout-btn { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 6px 10px; border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.75); font-size: 12px; font-weight: 600; white-space: nowrap; }
+        .sidebar-footer .user-card .logout-btn:hover { background: rgba(199,91,74,0.15); color: #e88a7a; border-color: rgba(199,91,74,0.3); }
+
+        /* ===== MAIN ===== */
+        .main-content { flex: 1; padding: 28px 40px 40px; min-height: 100vh; max-width: calc(100% - 250px); }
+
+        /* ===== HEADER ===== */
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+        .header-left h2 { font-size: 22px; font-weight: 700; color: #0f2b26; display: flex; align-items: center; gap: 10px; }
+        .header-left h2 i { color: #c8925e; }
+        .header-left p { font-size: 13px; color: #8a9a98; margin-top: 4px; }
+        .header-right { display: flex; align-items: center; gap: 14px; }
+        .header-right .notification-btn { position: relative; width: 40px; height: 40px; border-radius: 50%; background: white; color: #4a5a58; font-size: 17px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: 0.2s; }
+        .header-right .notification-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+        .header-right .notification-btn .dot { position: absolute; top: 5px; right: 5px; min-width: 18px; height: 18px; background: #c75b4a; color: white; font-size: 10px; font-weight: 700; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+        .header-right .date-display { font-size: 13px; color: #8a9a98; background: white; padding: 9px 18px; border-radius: 10px; font-weight: 500; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+
+        /* ===== BACK BUTTON ===== */
+        .back-button { display: inline-flex; align-items: center; gap: 8px; color: #1a1a1a; font-size: 13px; font-weight: 500; padding: 8px 16px; border-radius: 10px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: 0.2s; margin-bottom: 20px; border: 1px solid transparent; }
+        .back-button:hover { border-color: #c8925e; transform: translateX(-2px); }
+
+        /* ===== SUCCESS BANNER ===== */
+        .success-banner { background: #e6f4ee; border: 1px solid #2d8f6f; border-radius: 12px; padding: 16px 24px; margin-bottom: 22px; color: #1a7a5a; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; }
+        .success-banner i { font-size: 20px; }
+
+        /* ===== HERO ===== */
+        .hero { background: linear-gradient(135deg, #0f2b26 0%, #1a4a42 45%, #2a6b60 100%); border-radius: 20px; padding: 32px 36px; margin-bottom: 26px; color: white; position: relative; overflow: hidden; box-shadow: 0 6px 30px rgba(15,43,38,0.22); }
+        .hero::before { content: ''; position: absolute; top: -60%; right: -10%; width: 460px; height: 460px; background: radial-gradient(circle, rgba(200,146,94,0.15) 0%, transparent 65%); border-radius: 50%; }
+        .hero::after { content: ''; position: absolute; bottom: -100px; right: 25%; width: 240px; height: 240px; background: radial-gradient(circle, rgba(200,146,94,0.08) 0%, transparent 70%); border-radius: 50%; }
+        .hero-inner { position: relative; z-index: 1; }
+        .hero-inner .eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.6px; color: #c8925e; margin-bottom: 8px; }
+        .hero-inner h1 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.2; margin-bottom: 8px; }
+        .hero-inner .dates { font-size: 14px; color: rgba(255,255,255,0.72); display: flex; align-items: center; gap: 8px; }
+        .hero-inner .dates i { color: #c8925e; }
+        .hero-stats { display: flex; gap: 22px; margin-top: 22px; flex-wrap: wrap; }
+        .hero-stat { display: flex; flex-direction: column; gap: 3px; padding: 12px 20px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; min-width: 140px; }
+        .hero-stat .num { font-size: 22px; font-weight: 800; color: white; line-height: 1; letter-spacing: -0.4px; }
+        .hero-stat .num.gold { color: #e8b88a; }
+        .hero-stat .lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255,255,255,0.5); }
+
+        /* ===== BUDGET WARNING ===== */
+        .budget-warning { background: #fce8e4; border-left: 4px solid #c75b4a; border-radius: 12px; padding: 16px 22px; margin-bottom: 22px; color: #a84535; display: flex; align-items: flex-start; gap: 14px; font-size: 14px; line-height: 1.55; }
+        .budget-warning .warn-icon { width: 40px; height: 40px; border-radius: 10px; background: #c75b4a; color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .budget-warning strong { color: #8a2f22; }
+
+        /* ===== DAY GROUP ===== */
+        .day-group { margin-bottom: 26px; }
+        .day-header { display: flex; align-items: center; gap: 14px; padding: 12px 20px; background: linear-gradient(135deg, #0f2b26, #1a4a42); color: white; border-radius: 14px 14px 0 0; font-size: 14px; font-weight: 700; letter-spacing: 0.2px; }
+        .day-header .day-badge { background: #c8925e; color: white; font-size: 11px; font-weight: 800; padding: 3px 12px; border-radius: 12px; letter-spacing: 0.4px; }
+        .day-header .day-date { color: rgba(255,255,255,0.85); font-weight: 500; font-size: 13px; }
+        .day-header .day-count { margin-left: auto; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 0.6px; }
+
+        /* ===== ITINERARY ITEM CARD ===== */
+        .itin-list { background: white; border-radius: 0 0 14px 14px; padding: 16px 20px 20px; box-shadow: 0 4px 20px rgba(15,43,38,0.06); border: 1px solid rgba(0,0,0,0.02); border-top: none; }
+
+        .item-card { display: flex; gap: 16px; padding: 16px 18px; background: #faf8f6; border-radius: 14px; margin-bottom: 10px; transition: 0.2s; border-left: 4px solid #c8925e; align-items: center; }
+        .item-card:last-child { margin-bottom: 0; }
+        .item-card:hover { background: #f5f0eb; transform: translateX(3px); box-shadow: 0 4px 14px rgba(200,146,94,0.1); }
+
+        .item-card .item-icon { width: 46px; height: 46px; border-radius: 12px; background: linear-gradient(135deg, #c8925e, #e8b88a); color: white; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(200,146,94,0.25); }
+
+        .item-card .item-body { flex: 1; min-width: 0; }
+        .item-card .item-name { font-weight: 700; font-size: 15px; color: #0f2b26; line-height: 1.3; }
+        .item-card .item-category { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #c8925e; margin-top: 3px; }
+        .item-card .item-meta { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; }
+        .item-card .item-meta span { font-size: 12px; color: #6b7a78; display: inline-flex; align-items: center; gap: 5px; }
+        .item-card .item-meta i { color: #c8925e; font-size: 11px; }
+        .item-card .item-notes { font-size: 12px; color: #687572; margin-top: 8px; padding: 8px 12px; background: white; border-radius: 8px; border-left: 2px solid #c8925e; }
+
+        .item-card .item-actions { display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap; }
+        .item-card .item-actions a,
+        .item-card .item-actions button { display: inline-flex; align-items: center; gap: 5px; padding: 7px 12px; border-radius: 9px; font-size: 12px; font-weight: 600; transition: 0.2s; border: 1px solid transparent; cursor: pointer; font-family: inherit; }
+        .item-card .item-actions .view-btn { background: white; color: #0f2b26; border-color: #e5e0da; }
+        .item-card .item-actions .view-btn:hover { background: #0f2b26; color: white; border-color: #0f2b26; }
+        .item-card .item-actions .remove-btn { background: #fce8e4; color: #c75b4a; border-color: #f5d5cd; }
+        .item-card .item-actions .remove-btn:hover { background: #c75b4a; color: white; border-color: #c75b4a; }
+
+        /* ===== ACTION BAR ===== */
+        .action-bar { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+        .action-bar a,
+        .action-bar button { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 11px; font-weight: 700; font-size: 14px; transition: 0.2s; border: none; cursor: pointer; font-family: inherit; }
+        .action-bar .btn-back { background: white; color: #0f2b26; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .action-bar .btn-back:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.09); }
+        .action-bar .btn-plan { background: #c8925e; color: white; box-shadow: 0 4px 14px rgba(200,146,94,0.35); }
+        .action-bar .btn-plan:hover { background: #d4a373; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(200,146,94,0.45); }
+        .action-bar .btn-discover { background: #2d8f6f; color: white; box-shadow: 0 4px 14px rgba(45,143,111,0.3); }
+        .action-bar .btn-discover:hover { background: #1a7a5a; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(45,143,111,0.4); }
+        .action-bar .btn-delete { background: #fce8e4; color: #c75b4a; border: 1px solid #f5d5cd; margin-left: auto; }
+        .action-bar .btn-delete:hover { background: #c75b4a; color: white; border-color: #c75b4a; transform: translateY(-2px); }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state { text-align: center; padding: 70px 30px; background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(15,43,38,0.06); position: relative; overflow: hidden; }
+        .empty-state::before { content: ''; position: absolute; top: -80px; right: -80px; width: 260px; height: 260px; background: radial-gradient(circle, rgba(200,146,94,0.08) 0%, transparent 70%); border-radius: 50%; }
+        .empty-state .icon { width: 90px; height: 90px; border-radius: 50%; background: linear-gradient(135deg, #c8925e, #e8b88a); color: white; display: inline-flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 20px; box-shadow: 0 8px 24px rgba(200,146,94,0.3); }
+        .empty-state h3 { font-size: 22px; font-weight: 700; color: #0f2b26; margin-bottom: 8px; position: relative; }
+        .empty-state p { color: #8a9a98; font-size: 14px; max-width: 420px; margin: 0 auto 24px; line-height: 1.6; position: relative; }
+        .empty-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; position: relative; }
+        .empty-actions a { display: inline-flex; align-items: center; gap: 8px; padding: 12px 26px; border-radius: 11px; font-weight: 700; font-size: 14px; transition: 0.2s; }
+        .empty-actions .btn-plan { background: #c8925e; color: white; box-shadow: 0 4px 14px rgba(200,146,94,0.35); }
+        .empty-actions .btn-plan:hover { background: #d4a373; transform: translateY(-2px); }
+        .empty-actions .btn-discover { background: white; color: #0f2b26; border: 1px solid #e5e0da; }
+        .empty-actions .btn-discover:hover { border-color: #0f2b26; transform: translateY(-2px); }
+
+        /* ===== DELETE MODAL (in-app, no browser confirm) ===== */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15,43,38,0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 9998; padding: 20px; }
+        .modal-overlay.show { display: flex; }
+        .modal { background: white; border-radius: 18px; padding: 32px 34px; max-width: 460px; width: 100%; box-shadow: 0 20px 60px rgba(15,43,38,0.3); position: relative; }
+        .modal .modal-icon { width: 60px; height: 60px; border-radius: 50%; background: #fce8e4; color: #c75b4a; display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 16px; }
+        .modal h3 { font-size: 20px; font-weight: 700; color: #0f2b26; margin-bottom: 8px; }
+        .modal p { font-size: 14px; color: #6b7a78; line-height: 1.6; margin-bottom: 24px; }
+        .modal .modal-actions { display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap; }
+        .modal .modal-actions button,
+        .modal .modal-actions a { padding: 11px 22px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; border: none; transition: 0.2s; font-family: inherit; }
+        .modal .modal-actions .btn-cancel { background: #f0ebe6; color: #4a5a58; }
+        .modal .modal-actions .btn-cancel:hover { background: #e5dfd9; }
+        .modal .modal-actions .btn-confirm { background: #c75b4a; color: white; }
+        .modal .modal-actions .btn-confirm:hover { background: #a84535; transform: translateY(-2px); }
+
+        /* ===== TOAST ===== */
+        .toast-container { position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; max-width: 380px; width: 100%; }
+        .toast { background: #0f2b26; color: white; padding: 14px 20px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 12px; animation: slideIn 0.4s ease; font-size: 14px; font-weight: 500; min-height: 56px; border-left: 4px solid #c8925e; }
+        .toast.success { border-left-color: #2d8f6f; }
+        .toast.info { border-left-color: #3a6ea5; }
+        .toast.remove { border-left-color: #c75b4a; }
+        .toast .toast-icon { font-size: 18px; flex-shrink: 0; width: 24px; text-align: center; }
+        .toast .toast-icon.success { color: #2d8f6f; }
+        .toast .toast-icon.info { color: #6ba3d1; }
+        .toast .toast-icon.remove { color: #e88a7a; }
+        .toast .toast-message { flex: 1; line-height: 1.4; }
+        .toast .toast-close { background: none; border: none; color: rgba(255,255,255,0.5); cursor: pointer; font-size: 16px; padding: 4px; transition: 0.2s; }
+        .toast .toast-close:hover { color: white; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+        .toast.hide { animation: slideOut 0.3s ease forwards; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .hero-inner h1 { font-size: 24px; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { width: 72px; padding: 16px 10px; }
+            .sidebar-brand h1 { font-size: 16px; }
+            .sidebar-brand .subtitle { display: none; }
+            .sidebar-nav .nav-item span { display: none; }
+            .sidebar-nav .nav-item .badge { display: none; }
+            .sidebar-section-title { display: none; }
+            .sidebar-footer .user-card .user-info { display: none; }
+            .sidebar-footer .user-card .logout-btn span { display: none; }
+            .main-content { padding: 16px; max-width: 100%; }
+            .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .header-right { width: 100%; justify-content: flex-start; }
+            .hero { padding: 22px 24px; }
+            .hero-inner h1 { font-size: 21px; }
+            .hero-stats { gap: 12px; }
+            .hero-stat { padding: 10px 16px; min-width: 110px; }
+            .hero-stat .num { font-size: 18px; }
+            .item-card { flex-direction: column; align-items: stretch; }
+            .item-card .item-actions { justify-content: flex-start; }
+            .action-bar { flex-direction: column; }
+            .action-bar a, .action-bar button { width: 100%; justify-content: center; }
+            .action-bar .btn-delete { margin-left: 0; }
+            .toast-container { top: 12px; right: 12px; left: 12px; max-width: 100%; }
+            .budget-warning { flex-direction: column; text-align: center; }
+            .modal { padding: 24px; }
+            .modal .modal-actions { flex-direction: column-reverse; }
+            .modal .modal-actions button, .modal .modal-actions a { width: 100%; justify-content: center; text-align: center; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h1>Explore <span>Kimberley</span></h1>
+            <div class="subtitle">Tourist Dashboard</div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section-title">Main</div>
+            <a href="/tourist/dashboard/" class="nav-item">
+                <span class="icon"><i class="fas fa-home"></i></span>
+                <span>Dashboard</span>
+            </a>
+            <a href="{% url 'experiences:list' %}" class="nav-item">
+                <span class="icon"><i class="fas fa-compass"></i></span>
+                <span>Discover</span>
+            </a>
+
+            <div class="sidebar-section-title">My Trip</div>
+            <a href="/tourist/saved/" class="nav-item">
+                <span class="icon"><i class="fas fa-heart"></i></span>
+                <span>Saved Experiences</span>
+            </a>
+            <a href="/tourist/plan-my-trip/" class="nav-item">
+                <span class="icon"><i class="fas fa-map"></i></span>
+                <span>Plan My Trip</span>
+            </a>
+            <a href="#" class="nav-item active">
+                <span class="icon"><i class="fas fa-map-signs"></i></span>
+                <span>My Itinerary</span>
+                {% if itinerary_count > 0 %}<span class="badge">{{ itinerary_count }}</span>{% endif %}
+            </a>
+
+            <div class="sidebar-section-title">Bookings &amp; Reviews</div>
+            <a href="/tourist/guides/" class="nav-item">
+                <span class="icon"><i class="fas fa-users"></i></span>
+                <span>Tour Guides</span>
+            </a>
+            <a href="/bookings/my/" class="nav-item">
+                <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+                <span>My Bookings</span>
+                {% if upcoming_count > 0 %}<span class="badge">{{ upcoming_count }}</span>{% endif %}
+            </a>
+            <a href="/reviews/my/" class="nav-item">
+                <span class="icon"><i class="fas fa-star"></i></span>
+                <span>My Reviews</span>
+                {% if review_count > 0 %}<span class="badge">{{ review_count }}</span>{% endif %}
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar">
+                    {% if profile.profile_picture %}
+                        <img src="{{ profile.profile_picture.url }}" alt="{{ user.first_name }}">
+                    {% else %}
+                        {{ user.first_name|slice:":1"|default:"G" }}
+                    {% endif %}
+                </div>
+                <div class="user-info">
+                    <div class="name">{{ user.first_name|default:"Guest" }}</div>
+                    <div class="role">Tourist</div>
+                </div>
+                <a href="/accounts/logout/" class="logout-btn" title="Sign out">
+                    <i class="fas fa-sign-out-alt"></i> Sign out
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ===== TOAST CONTAINER ===== -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ===== DELETE MODAL ===== -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal">
+            <div class="modal-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <h3>Delete this trip?</h3>
+            <p>This will permanently remove <strong>{% if itinerary %}{{ itinerary.name }}{% else %}this trip{% endif %}</strong> and all its experiences from your itinerary. This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Keep Trip</button>
+                {% if itinerary %}
+                    <a href="{% url 'itineraries:delete' itinerary.id %}" class="btn-confirm">Yes, Delete</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+
+        <a href="/tourist/dashboard/" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+
+        {% if saved %}
+            <div class="success-banner">
+                <i class="fas fa-check-circle"></i>
+                <span>Your trip plan has been saved successfully!</span>
+            </div>
+        {% endif %}
+
+        <header class="header">
+            <div class="header-left">
+                <h2><i class="fas fa-map-signs"></i> My Itinerary</h2>
+                <p>Your planned experiences at a glance</p>
+            </div>
+            <div class="header-right">
+                <a href="/notifications/" class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    {% if unread_count > 0 %}<span class="dot">{{ unread_count }}</span>{% endif %}
+                </a>
+                <span class="date-display">
+                    <i class="far fa-calendar-alt"></i>
+                    {{ now|date:"M d, Y" }}
+                </span>
+            </div>
+        </header>
+
+        {% if itinerary %}
+
+            <!-- ===== HERO ===== -->
+            <div class="hero">
+                <div class="hero-inner">
+                    <div class="eyebrow">✦ Your Kimberley Adventure</div>
+                    <h1>{{ itinerary.name|default:"My Kimberley Trip" }}</h1>
+                    <div class="dates">
+                        <i class="fas fa-calendar-alt"></i>
+                        {{ itinerary.start_date|date:"d M Y" }} — {{ itinerary.end_date|date:"d M Y" }}
+                    </div>
+
+                    <div class="hero-stats">
+                        <div class="hero-stat">
+                            <div class="num">{{ items|length }}</div>
+                            <div class="lbl">Experience{{ items|length|pluralize }}</div>
+                        </div>
+                        <div class="hero-stat">
+                            <div class="num gold">{{ cost_display }}</div>
+                            <div class="lbl">Estimated Cost</div>
+                        </div>
+                        {% if total_duration > 0 %}
+                            <div class="hero-stat">
+                                <div class="num">{{ total_duration }}h</div>
+                                <div class="lbl">Total Duration</div>
+                            </div>
+                        {% endif %}
+                        {% if budget_total > 0 %}
+                            <div class="hero-stat">
+                                <div class="num">R{{ budget_total|floatformat:0 }}</div>
+                                <div class="lbl">Your Budget</div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== BUDGET WARNING ===== -->
+            {% if over_budget > 0 %}
+                <div class="budget-warning">
+                    <div class="warn-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div>
+                        You are over budget by <strong>R{{ over_budget|floatformat:2 }}</strong>.
+                        Your current plan is <strong>{{ cost_display }}</strong> against a budget of R{{ budget_total|floatformat:0 }}.
+                        You can continue, but please review your spending.
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- ===== DAY-BY-DAY ITEMS ===== -->
+            {% if items %}
+                {% regroup items by date as items_by_day %}
+                {% for day_group in items_by_day %}
+                    <div class="day-group">
+                        <div class="day-header">
+                            <span class="day-badge">DAY {{ forloop.counter }}</span>
+                            <span class="day-date">{{ day_group.grouper|date:"l, d M Y" }}</span>
+                            <span class="day-count">{{ day_group.list|length }} item{{ day_group.list|length|pluralize }}</span>
+                        </div>
+                        <div class="itin-list">
+                            {% for item in day_group.list %}
+                                <div class="item-card">
+                                    <div class="item-icon">
+                                        {% if item.experience.listing_type == 'food_dining' %}
+                                            <i class="fas fa-utensils"></i>
+                                        {% elif item.experience.listing_type == 'places_to_stay' %}
+                                            <i class="fas fa-bed"></i>
+                                        {% elif item.experience.listing_type == 'attractions' %}
+                                            <i class="fas fa-camera"></i>
+                                        {% else %}
+                                            <i class="fas fa-hiking"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="item-body">
+                                        <div class="item-name">{{ item.experience.name }}</div>
+                                        <div class="item-category">{{ item.experience.get_listing_type_display|default:"Experience" }}</div>
+                                        <div class="item-meta">
+                                            <span><i class="fas fa-clock"></i> {{ item.time|time:"H:i" }}</span>
+                                            {% if item.experience.duration_minutes %}
+                                                <span><i class="fas fa-hourglass-half"></i> {{ item.experience.duration_minutes }} min</span>
+                                            {% endif %}
+                                            <span><i class="fas fa-tag"></i> {{ item.experience.price_display_short }}</span>
+                                            {% if item.experience.location %}
+                                                <span><i class="fas fa-map-marker-alt"></i> {{ item.experience.location|truncatechars:28 }}</span>
+                                            {% endif %}
+                                        </div>
+                                        {% if item.notes %}
+                                            <div class="item-notes">📝 {{ item.notes }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="item-actions">
+                                        <a href="{% url 'experiences:detail' item.experience.id %}" class="view-btn">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                        <form method="POST" action="{% url 'itineraries:remove' item.id %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="remove-btn">
+                                                <i class="fas fa-trash-alt"></i> Remove
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- ===== ACTION BAR ===== -->
+            <div class="action-bar">
+                <a href="/tourist/plan-my-trip/?step=2" class="btn-plan">
+                    <i class="fas fa-plus"></i> Add More Experiences
+                </a>
+                <a href="{% url 'experiences:list' %}" class="btn-discover">
+                    <i class="fas fa-compass"></i> Discover
+                </a>
+                <a href="/tourist/plan-my-trip/?step=1" class="btn-back">
+                    <i class="fas fa-pencil-alt"></i> Edit Trip Details
+                </a>
+                <button type="button" class="btn-delete" onclick="openDeleteModal()">
+                    <i class="fas fa-trash-alt"></i> Delete Trip
+                </button>
+            </div>
+
+        {% else %}
+
+            <!-- ===== EMPTY STATE ===== -->
+            <div class="empty-state">
+                <div class="icon"><i class="fas fa-map"></i></div>
+                <h3>No itinerary yet</h3>
+                <p>Start planning your Kimberley adventure. Add experiences, set your dates, and we'll build your day-by-day itinerary.</p>
+                <div class="empty-actions">
+                    <a href="/tourist/plan-my-trip/?step=1" class="btn-plan">
+                        <i class="fas fa-map"></i> Plan a Trip
+                    </a>
+                    <a href="{% url 'experiences:list' %}" class="btn-discover">
+                        <i class="fas fa-compass"></i> Discover Experiences
+                    </a>
+                </div>
+            </div>
+
+        {% endif %}
+
+    </main>
+
+    <script>
+        // ===== DELETE MODAL =====
+        function openDeleteModal() {
+            document.getElementById('deleteModal').classList.add('show');
+        }
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+        }
+        // Close modal on overlay click
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if (e.target === this) closeDeleteModal();
+        });
+        // Close modal on Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeDeleteModal();
+        });
+
+        // ===== TOAST SYSTEM =====
+        function showToast(message, type) {
+            type = type || 'success';
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+
+            let iconClass = 'fa-check-circle';
+            if (type === 'info') iconClass = 'fa-info-circle';
+            else if (type === 'remove') iconClass = 'fa-trash-alt';
+
+            toast.innerHTML = `
+                <span class="toast-icon ${type}"><i class="fas ${iconClass}"></i></span>
+                <span class="toast-message"></span>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            toast.querySelector('.toast-message').textContent = message;
+
+            container.appendChild(toast);
+
+            setTimeout(function() {
+                if (toast.parentElement) {
+                    toast.classList.add('hide');
+                    setTimeout(function() {
+                        if (toast.parentElement) toast.remove();
+                    }, 300);
+                }
+            }, 4000);
+        }
+
+        // ===== TOAST FROM URL (?toast=...) =====
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const toastMsg = urlParams.get('toast');
+            if (toastMsg) {
+                showToast(toastMsg, 'success');
+                const newUrl = window.location.pathname;
+                window.history.replaceState({}, document.title, newUrl);
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,213 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Experiences | Explore Kimberley</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body style="
+    margin:0;
+    font-family:'Inter', Arial, sans-serif;
+    background:#f7f4ef;
+    color:#1f3d3a;
+">
+
+<!-- NAVBAR -->
+<nav style="
+    height:68px;
+    background:#1f3d3a;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 6%;
+    box-sizing:border-box;
+">
+    <a href="/" style="
+        color:white;
+        text-decoration:none;
+        font-size:21px;
+        font-weight:700;
+        letter-spacing:-0.5px;
+    ">
+        Explore <span style="color:#d69b5b;">Kimberley</span>
+    </a>
+
+    <div style="display:flex; align-items:center; gap:20px;">
+        <span style="color:#d69b5b; font-size:11px; font-weight:600; text-transform:uppercase;">
+            <i class="fas fa-store"></i> Provider
+        </span>
+        <span style="color:#cbd5d3; font-size:13px;">{{ user.first_name }}</span>
+        <a href="/accounts/logout/" style="color:#aebdbb; text-decoration:none; font-size:12px; padding:6px 14px; border-radius:6px; border:1px solid rgba(255,255,255,0.15);">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main style="padding:30px 6%; max-width:1200px; margin:auto; box-sizing:border-box;">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+        <div>
+            <h1 style="margin:0; font-size:28px; font-weight:600;">My Experiences</h1>
+            <p style="color:#89918f; font-size:14px; margin:5px 0 0;">
+                Manage your tourism experiences
+            </p>
+        </div>
+        <a href="{% url 'experiences:create' %}" style="
+            background:#d69b5b;
+            color:white;
+            text-decoration:none;
+            padding:10px 22px;
+            border-radius:7px;
+            font-weight:500;
+        ">
+            <i class="fas fa-plus"></i> Add New
+        </a>
+    </div>
+
+    <!-- Status Legend -->
+    <div style="
+        display:flex;
+        gap:15px;
+        margin-bottom:20px;
+        padding:15px 20px;
+        background:white;
+        border-radius:8px;
+    ">
+        <span style="font-size:12px; font-weight:600;">Status:</span>
+        <span style="font-size:12px;"><span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#f0ece8;"></span> Draft</span>
+        <span style="font-size:12px;"><span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#fff3cd;"></span> Submitted</span>
+        <span style="font-size:12px;"><span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#cce5ff;"></span> Under Review</span>
+        <span style="font-size:12px;"><span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#d4edda;"></span> Published</span>
+        <span style="font-size:12px;"><span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#f8d7da;"></span> Suspended</span>
+    </div>
+
+    <!-- Experiences List -->
+    {% if experiences %}
+        <div style="display:grid; gap:15px;">
+            {% for experience in experiences %}
+                <div style="
+                    background:white;
+                    border-radius:12px;
+                    padding:20px;
+                    box-shadow:0 2px 10px rgba(0,0,0,0.05);
+                    display:grid;
+                    grid-template-columns:auto 1fr auto;
+                    gap:20px;
+                    align-items:center;
+                ">
+                    <!-- Status Dot -->
+                    <div>
+                        <div style="
+                            width:12px;
+                            height:12px;
+                            border-radius:50%;
+                            background:{% if experience.status == 'published' %}#d4edda{% elif experience.status == 'draft' %}#f0ece8{% elif experience.status == 'submitted' %}#fff3cd{% elif experience.status == 'under_review' %}#cce5ff{% else %}#f8d7da{% endif %};
+                        "></div>
+                    </div>
+
+                    <!-- Details -->
+                    <div>
+                        <h3 style="margin:0; font-size:16px; font-weight:600;">{{ experience.name }}</h3>
+                        <div style="display:flex; gap:15px; margin-top:5px; font-size:12px; color:#89918f;">
+                            <span><i class="fas fa-tag"></i> {{ experience.category.name|default:"Uncategorized" }}</span>
+                            <span><i class="fas fa-map-marker-alt"></i> {{ experience.location }}</span>
+                            <span><i class="fas fa-money-bill"></i> R{{ experience.price }}</span>
+                            <span><i class="fas fa-star" style="color:#f5b342;"></i> {{ experience.get_rating_display }}</span>
+                            <span>
+                                <span style="
+                                    display:inline-block;
+                                    padding:2px 12px;
+                                    border-radius:20px;
+                                    font-size:10px;
+                                    font-weight:600;
+                                    background:{% if experience.status == 'published' %}#d4edda; color:#155724{% elif experience.status == 'draft' %}#f0ece8; color:#687572{% elif experience.status == 'submitted' %}#fff3cd; color:#856404{% elif experience.status == 'under_review' %}#cce5ff; color:#004085{% else %}#f8d7da; color:#721c24{% endif %};
+                                ">
+                                    {{ experience.get_status_display }}
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div>
+                        <a href="{% url 'experiences:detail' experience.id %}" style="
+                            color:#1f3d3a;
+                            text-decoration:none;
+                            padding:6px 14px;
+                            border:1px solid #d9dfdc;
+                            border-radius:6px;
+                            font-size:12px;
+                            margin-right:8px;
+                        ">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        {% if experience.status == 'draft' %}
+                            <a href="#" style="
+                                color:white;
+                                text-decoration:none;
+                                padding:6px 14px;
+                                background:#d69b5b;
+                                border-radius:6px;
+                                font-size:12px;
+                            ">
+                                <i class="fas fa-paper-plane"></i> Submit
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="
+            text-align:center;
+            padding:60px 20px;
+            background:white;
+            border-radius:12px;
+        ">
+            <i class="fas fa-store" style="font-size:48px; color:#d9dfdc; margin-bottom:15px;"></i>
+            <h2 style="margin:0 0 10px;">No experiences yet</h2>
+            <p style="color:#89918f; margin:0;">Start by creating your first tourism experience.</p>
+            <a href="{% url 'experiences:create' %}" style="
+                display:inline-block;
+                margin-top:15px;
+                background:#d69b5b;
+                color:white;
+                text-decoration:none;
+                padding:10px 22px;
+                border-radius:7px;
+                font-weight:500;
+            ">
+                <i class="fas fa-plus"></i> Create Experience
+            </a>
+        </div>
+    {% endif %}
+
+</main>
+
+<!-- FOOTER -->
+<footer style="
+    background:#142b29;
+    color:white;
+    padding:25px 6%;
+    margin-top:40px;
+    box-sizing:border-box;
+">
+    <div style="max-width:1200px; margin:auto; display:flex; justify-content:space-between; align-items:center;">
+        <div style="color:#849693; font-size:11px;">© 2026 Explore Kimberley. All rights reserved.</div>
+        <div style="display:flex; gap:18px;">
+            <a href="#" style="color:#849693; text-decoration:none; font-size:11px;">Privacy Policy</a>
+            <a href="#" style="color:#849693; text-decoration:none; font-size:11px;">Terms of Use</a>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

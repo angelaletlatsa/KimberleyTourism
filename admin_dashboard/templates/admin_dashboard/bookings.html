@@ -1,0 +1,359 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookings | Explore Kimberley</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f0eb; color: #1a1a1a; display: flex; min-height: 100vh; }
+        a { text-decoration: none; color: inherit; }
+
+        /* Sidebar */
+        .sidebar { width: 250px; background: #0f2b26; color: white; min-height: 100vh; padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-brand { padding: 0 12px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); margin-bottom: 24px; }
+        .sidebar-brand h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        .sidebar-brand h1 span { color: #c8925e; }
+        .sidebar-brand .subtitle { font-size: 11px; color: rgba(255, 255, 255, 0.35); margin-top: 2px; }
+        .sidebar-nav { flex: 1; }
+        .sidebar-section { margin-bottom: 16px; }
+        .sidebar-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255, 255, 255, 0.3); padding: 8px 14px; margin-bottom: 4px; }
+        .sidebar-nav .nav-item { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 10px; color: rgba(255, 255, 255, 0.6); font-size: 14px; font-weight: 500; transition: all 0.25s ease; margin-bottom: 2px; }
+        .sidebar-nav .nav-item:hover { background: rgba(255, 255, 255, 0.06); color: white; }
+        .sidebar-nav .nav-item.active { background: rgba(200, 146, 94, 0.15); color: #c8925e; }
+        .sidebar-nav .nav-item .icon { width: 22px; text-align: center; font-size: 16px; flex-shrink: 0; }
+        .sidebar-nav .nav-item .badge { margin-left: auto; background: #c75b4a; color: white; font-size: 10px; font-weight: 700; padding: 1px 10px; border-radius: 12px; }
+        .sidebar-footer { border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 16px; margin-top: auto; }
+        .sidebar-footer .user-card { display: flex; align-items: center; gap: 12px; padding: 10px 12px; }
+        .sidebar-footer .user-card .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #c8925e, #e8b88a); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; flex-shrink: 0; }
+        .sidebar-footer .user-card .user-info .name { font-size: 13px; font-weight: 600; color: white; }
+        .sidebar-footer .user-card .user-info .role { font-size: 11px; color: rgba(255, 255, 255, 0.4); }
+        .sidebar-footer .user-card .logout { color: rgba(255, 255, 255, 0.3); }
+
+        /* Main */
+        .main-content { flex: 1; padding: 28px 40px 40px; min-height: 100vh; max-width: calc(100% - 250px); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+        .header-left h2 { font-size: 26px; font-weight: 700; color: #0f2b26; }
+        .header-left p { font-size: 14px; color: #8a9a98; margin-top: 4px; }
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .header-right .notification-btn { position: relative; width: 42px; height: 42px; border-radius: 50%; border: none; background: white; color: #4a5a58; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); }
+        .header-right .notification-btn .dot { position: absolute; top: 6px; right: 6px; min-width: 18px; height: 18px; background: #c75b4a; color: white; font-size: 10px; font-weight: 700; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+        .header-right .date-display { font-size: 13px; color: #8a9a98; background: white; padding: 10px 20px; border-radius: 10px; font-weight: 500; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); }
+
+        /* Status stats */
+        .status-stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; margin-bottom: 24px; }
+        .status-stat-card { background: white; border-radius: 14px; padding: 18px 20px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); border: 1px solid rgba(0, 0, 0, 0.02); border-left: 4px solid #c8925e; transition: 0.25s ease; cursor: pointer; }
+        .status-stat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
+        .status-stat-card.all { border-left-color: #7a5a9a; }
+        .status-stat-card.pending { border-left-color: #f5b342; }
+        .status-stat-card.confirmed { border-left-color: #2d8f6f; }
+        .status-stat-card.completed { border-left-color: #3a6ea5; }
+        .status-stat-card.cancelled { border-left-color: #c75b4a; }
+        .status-stat-card.no_show { border-left-color: #6b7a78; }
+        .status-stat-card .status-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #8a9a98; margin-bottom: 4px; }
+        .status-stat-card .status-value { font-size: 22px; font-weight: 700; color: #0f2b26; }
+
+        /* Filters */
+        .filters-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+        .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+        .filter-tabs a { padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 500; background: white; color: #8a9a98; border: 1px solid #e5e0da; transition: 0.2s ease; }
+        .filter-tabs a:hover { border-color: #c8925e; color: #c8925e; }
+        .filter-tabs a.active { background: #c8925e; color: white; border-color: #c8925e; }
+        .search-form { display: flex; gap: 8px; }
+        .search-form input { padding: 10px 16px; border: 1px solid #d9dfdc; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 14px; width: 250px; background: white; }
+        .search-form input:focus { outline: none; border-color: #c8925e; }
+        .search-form button { background: #c8925e; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; }
+
+        /* Table */
+        .data-table { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); border: 1px solid rgba(0, 0, 0, 0.02); overflow-x: auto; }
+        .data-table table { width: 100%; border-collapse: collapse; min-width: 1100px; }
+        .data-table th { text-align: left; padding: 16px 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #8a9a98; background: #faf8f6; border-bottom: 1px solid #f0ebe6; }
+        .data-table td { padding: 16px 20px; font-size: 14px; color: #1a1a1a; border-bottom: 1px solid #f0ebe6; vertical-align: middle; }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tr:hover td { background: #faf8f6; }
+
+        .user-pair { display: flex; align-items: center; gap: 8px; font-size: 13px; flex-wrap: wrap; }
+        .user-pair .arrow { color: #c8925e; font-size: 12px; }
+
+        .status-badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .status-badge.pending { background: #fef3e0; color: #b8860b; }
+        .status-badge.confirmed { background: #e6f4ee; color: #1a7a5a; }
+        .status-badge.completed { background: #e3edf7; color: #2a5a7a; }
+        .status-badge.cancelled { background: #fce8e4; color: #b84a3a; }
+        .status-badge.rejected { background: #fce8e4; color: #b84a3a; }
+        .status-badge.no_show { background: #f0ebe6; color: #687572; }
+
+        /* Assignment indicator */
+        .assignment-cell {
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            white-space: nowrap;
+        }
+
+        .assignment-cell.confirmed { background: #e6f4ee; color: #1a7a5a; }
+        .assignment-cell.awaiting { background: #fef3e0; color: #b8860b; }
+        .assignment-cell.none { background: #f0ebe6; color: #8a9a98; }
+
+        .btn-view { padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 600; background: #e8f0fe; color: #2a5a7a; display: inline-flex; align-items: center; gap: 4px; transition: 0.2s; }
+        .btn-view:hover { background: #3a6ea5; color: white; }
+
+        /* Pagination */
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 24px; }
+        .pagination a, .pagination span { display: inline-block; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; }
+        .pagination a { background: white; color: #1a1a1a; border: 1px solid #d9dfdc; }
+        .pagination a:hover { border-color: #c8925e; color: #c8925e; }
+        .pagination .current { background: #c8925e; color: white; }
+
+        /* Empty */
+        .empty-state { text-align: center; padding: 80px 20px; background: white; border-radius: 16px; }
+        .empty-state i { font-size: 64px; color: #e0d8d0; display: block; margin-bottom: 20px; }
+        .empty-state h3 { font-size: 22px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
+        .empty-state p { color: #8a9a98; font-size: 14px; max-width: 400px; margin: 0 auto 20px; }
+        .empty-state .empty-action { display: inline-block; padding: 10px 24px; background: #c8925e; color: white; border-radius: 10px; font-weight: 600; font-size: 14px; }
+        .empty-state .empty-action:hover { background: #b8824f; }
+
+        @media (max-width: 1200px) { .status-stats { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) {
+            .sidebar { width: 72px; padding: 16px 10px; }
+            .sidebar-brand h1 { font-size: 16px; }
+            .sidebar-brand .subtitle, .sidebar-section-title, .sidebar-nav .nav-item span, .sidebar-nav .nav-item .badge, .sidebar-footer .user-card .user-info { display: none; }
+            .main-content { padding: 16px; max-width: 100%; }
+            .header { flex-direction: column; align-items: flex-start; }
+            .status-stats { grid-template-columns: 1fr 1fr; }
+            .filters-row { flex-direction: column; align-items: stretch; }
+            .search-form input { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h1>Explore <span>Kimberley</span></h1>
+            <div class="subtitle">Tourism Platform</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Main</div>
+                <a href="{% url 'admin_dashboard:dashboard' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-home"></i></span><span>Dashboard</span>
+                </a>
+            </div>
+            {% include "admin_dashboard/_owner_sidebar.html" %}
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">User Management</div>
+                <a href="{% url 'admin_dashboard:all_users' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-users"></i></span><span>All Users</span>
+                </a>
+                <a href="{% url 'admin_dashboard:providers' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-building"></i></span><span>Providers</span>
+                    {% if pending_providers_count > 0 %}<span class="badge">{{ pending_providers_count }}</span>{% endif %}
+                </a>
+                <a href="{% url 'admin_dashboard:guides' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-user-tie"></i></span><span>Guides</span>
+                    {% if pending_guides_count > 0 %}<span class="badge">{{ pending_guides_count }}</span>{% endif %}
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Content</div>
+                <a href="{% url 'admin_dashboard:experiences' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-suitcase"></i></span><span>Experiences</span>
+                    {% if pending_experiences_count > 0 %}<span class="badge">{{ pending_experiences_count }}</span>{% endif %}
+                </a>
+                <a href="{% url 'admin_dashboard:reviews' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-star"></i></span><span>Reviews</span>
+                    {% if pending_reviews_count > 0 %}<span class="badge">{{ pending_reviews_count }}</span>{% endif %}
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Operations</div>
+                <a href="{% url 'admin_dashboard:bookings' %}" class="nav-item active">
+                    <span class="icon"><i class="fas fa-calendar-alt"></i></span><span>Bookings</span>
+                    {% if total_bookings > 0 %}<span class="badge">{{ total_bookings }}</span>{% endif %}
+                </a>
+                <a href="{% url 'admin_dashboard:pending_assignments' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-user-check"></i></span><span>Assignments</span>
+                    {% if pending_assignments_count > 0 %}<span class="badge">{{ pending_assignments_count }}</span>{% endif %}
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Insights</div>
+                <a href="{% url 'admin_dashboard:analytics' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-chart-bar"></i></span><span>Analytics</span>
+                </a>
+                <a href="{% url 'admin_dashboard:audit_logs' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-history"></i></span><span>Audit Logs</span>
+                </a>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar">{{ user.first_name|slice:":1"|default:"A" }}</div>
+                <div class="user-info">
+                    <div class="name">{{ user.first_name|default:"Admin" }}</div>
+                    <div class="role">Administrator</div>
+                </div>
+                <a href="/accounts/logout/" class="logout-btn" title="Sign out" style="display:inline-flex;align-items:center;gap:6px;margin-left:auto;padding:6px 10px;border:1px solid rgba(255,255,255,0.14);border-radius:8px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.75);font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;"><i class="fas fa-sign-out-alt"></i> Sign out</a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="header-left">
+                <h2>Bookings</h2>
+                <p>{{ counts.all }} booking{{ counts.all|pluralize }} on the platform</p>
+            </div>
+            <div class="header-right">
+                <a href="/notifications/" class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    {% if unread_count > 0 %}<span class="dot">{{ unread_count }}</span>{% endif %}
+                </a>
+                <span class="date-display"><i class="far fa-calendar-alt"></i> {{ now|date:"M d, Y" }}</span>
+            </div>
+        </header>
+
+        <!-- Status Stats -->
+        <div class="status-stats">
+            <div class="status-stat-card all" onclick="window.location.href='?status=all'">
+                <div class="status-label">Total</div>
+                <div class="status-value">{{ counts.all }}</div>
+            </div>
+            <div class="status-stat-card pending" onclick="window.location.href='?status=pending'">
+                <div class="status-label">Pending</div>
+                <div class="status-value">{{ counts.pending }}</div>
+            </div>
+            <div class="status-stat-card confirmed" onclick="window.location.href='?status=confirmed'">
+                <div class="status-label">Confirmed</div>
+                <div class="status-value">{{ counts.confirmed }}</div>
+            </div>
+            <div class="status-stat-card completed" onclick="window.location.href='?status=completed'">
+                <div class="status-label">Completed</div>
+                <div class="status-value">{{ counts.completed }}</div>
+            </div>
+            <div class="status-stat-card cancelled" onclick="window.location.href='?status=cancelled'">
+                <div class="status-label">Cancelled</div>
+                <div class="status-value">{{ counts.cancelled }}</div>
+            </div>
+            <div class="status-stat-card no_show" onclick="window.location.href='?status=no_show'">
+                <div class="status-label">No Show</div>
+                <div class="status-value">{{ counts.no_show }}</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-row">
+            <div class="filter-tabs">
+                <a href="?status=all{% if search %}&search={{ search }}{% endif %}" class="{% if current_status == 'all' %}active{% endif %}">All</a>
+                <a href="?status=pending{% if search %}&search={{ search }}{% endif %}" class="{% if current_status == 'pending' %}active{% endif %}">Pending</a>
+                <a href="?status=confirmed{% if search %}&search={{ search }}{% endif %}" class="{% if current_status == 'confirmed' %}active{% endif %}">Confirmed</a>
+                <a href="?status=completed{% if search %}&search={{ search }}{% endif %}" class="{% if current_status == 'completed' %}active{% endif %}">Completed</a>
+                <a href="?status=cancelled{% if search %}&search={{ search }}{% endif %}" class="{% if current_status == 'cancelled' %}active{% endif %}">Cancelled</a>
+                <a href="?status=rejected{% if search %}&search={{ search }}{% endif %}" class="{% if current_status == 'rejected' %}active{% endif %}">Rejected</a>
+                <a href="?status=no_show{% if search %}&search={{ search }}{% endif %}" class="{% if current_status == 'no_show' %}active{% endif %}">No Show</a>
+            </div>
+            <form method="GET" class="search-form">
+                <input type="hidden" name="status" value="{{ current_status }}">
+                <input type="text" name="search" placeholder="Search bookings..." value="{{ search }}">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+
+        {% if bookings %}
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Tourist → Guide</th>
+                            <th>Experience</th>
+                            <th>Date &amp; Time</th>
+                            <th>People</th>
+                            <th>Status</th>
+                            <th>Assignment</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                            <tr>
+                                <td style="font-weight: 600; color: #8a9a98;">#{{ booking.id }}</td>
+                                <td>
+                                    <div class="user-pair">
+                                        <span>{{ booking.visitor.profile.user.get_full_name|default:booking.visitor.profile.user.username|truncatechars:15 }}</span>
+                                        {% if booking.guide %}
+                                            <i class="fas fa-arrow-right arrow"></i>
+                                            <span>{{ booking.guide.profile.user.get_full_name|default:booking.guide.profile.user.username|truncatechars:15 }}</span>
+                                        {% else %}
+                                            <i class="fas fa-arrow-right arrow"></i>
+                                            <span style="color: #8a9a98;">No guide</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>{{ booking.experience.name|default:"—"|truncatechars:25 }}</td>
+                                <td>
+                                    {{ booking.booking_date|date:"d M Y" }}
+                                    <div style="font-size: 12px; color: #8a9a98;">{{ booking.booking_time|time:"H:i" }}</div>
+                                </td>
+                                <td>{{ booking.number_of_participants }}</td>
+                                <td>
+                                    <span class="status-badge {{ booking.status }}">
+                                        {{ booking.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if booking.admin_approved %}
+                                        <span class="assignment-cell confirmed">
+                                            <i class="fas fa-check-circle"></i> Confirmed
+                                        </span>
+                                    {% elif booking.is_awaiting_admin %}
+                                        <span class="assignment-cell awaiting">
+                                            <i class="fas fa-clock"></i> Awaiting
+                                        </span>
+                                    {% else %}
+                                        <span class="assignment-cell none">—</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'admin_dashboard:booking_detail' booking.id %}" class="btn-view">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if bookings.has_other_pages %}
+                <div class="pagination">
+                    {% if bookings.has_previous %}<a href="?page={{ bookings.previous_page_number }}&status={{ current_status }}{% if search %}&search={{ search }}{% endif %}">‹ Previous</a>{% endif %}
+                    <span class="current">Page {{ bookings.number }} of {{ bookings.paginator.num_pages }}</span>
+                    {% if bookings.has_next %}<a href="?page={{ bookings.next_page_number }}&status={{ current_status }}{% if search %}&search={{ search }}{% endif %}">Next ›</a>{% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-calendar-alt"></i>
+                <h3>No bookings found</h3>
+                <p>{% if search %}No bookings match your search.{% else %}When tourists book guides, bookings will appear here.{% endif %}</p>
+                {% if search %}
+                    <a href="?status=all" class="empty-action">Clear Search</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </main>
+
+</body>
+</html>

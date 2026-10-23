@@ -1,0 +1,41 @@
+# Environment secrets
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+venv/
+.venv/
+env/
+ENV/
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Generated project inventory snapshots
+apps_report.txt
+project_files.txt
+structure.txt
+templates_dump.txt
+urls.txt
+
+# Academic working documents, not required to run the site
+NPRJ740_Final_Project_Report_KimberleyTourism_DRAFT.docx
+PHASE1_PROJECT_PROPOSAL.md
+PHASE2_SYSTEM_ANALYSIS_DESIGN_IMPLEMENTATION.md
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db

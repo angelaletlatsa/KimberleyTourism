@@ -1,0 +1,541 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discover Experiences | Explore Kimberley</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f0eb; color: #1a1a1a; display: flex; min-height: 100vh; }
+        a { text-decoration: none; color: inherit; }
+
+        .sidebar { width: 250px; background: #0f2b26; color: white; min-height: 100vh; padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-brand { padding: 0 12px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); margin-bottom: 24px; }
+        .sidebar-brand h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        .sidebar-brand h1 span { color: #c8925e; }
+        .sidebar-brand .subtitle { font-size: 11px; color: rgba(255, 255, 255, 0.35); margin-top: 2px; }
+        .sidebar-nav { flex: 1; }
+        .sidebar-nav .nav-item { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 10px; color: rgba(255, 255, 255, 0.6); font-size: 14px; font-weight: 500; transition: all 0.25s ease; margin-bottom: 2px; }
+        .sidebar-nav .nav-item:hover { background: rgba(255, 255, 255, 0.06); color: white; }
+        .sidebar-nav .nav-item.active { background: rgba(200, 146, 94, 0.15); color: #c8925e; }
+        .sidebar-nav .nav-item .icon { width: 22px; text-align: center; font-size: 16px; flex-shrink: 0; }
+        .sidebar-nav .nav-item .badge { margin-left: auto; background: #c8925e; color: white; font-size: 10px; font-weight: 700; padding: 1px 10px; border-radius: 12px; }
+        .sidebar-footer { border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 16px; margin-top: auto; }
+        .sidebar-footer .user-card { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; transition: 0.25s ease; }
+        .sidebar-footer .user-card:hover { background: rgba(255, 255, 255, 0.06); }
+        .sidebar-footer .user-card .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #c8925e, #e8b88a); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; flex-shrink: 0; }
+        .sidebar-footer .user-card .user-info .name { font-size: 13px; font-weight: 600; color: white; }
+        .sidebar-footer .user-card .user-info .role { font-size: 11px; color: rgba(255, 255, 255, 0.4); }
+        .sidebar-footer .user-card .logout { color: rgba(255, 255, 255, 0.3); transition: 0.25s ease; }
+        .sidebar-footer .user-card .logout:hover { color: #c75b4a; }
+
+        .main-content { flex: 1; padding: 28px 40px 40px; min-height: 100vh; max-width: calc(100% - 250px); }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header-left h2 { font-size: 22px; font-weight: 700; color: #0f2b26; }
+        .header-left p { font-size: 13px; color: #8a9a98; margin-top: 2px; }
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .header-right .notification-btn { position: relative; width: 40px; height: 40px; border-radius: 50%; border: none; background: white; color: #4a5a58; font-size: 18px; cursor: pointer; transition: 0.2s ease; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); display: flex; align-items: center; justify-content: center; text-decoration: none; }
+        .header-right .notification-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08); }
+        .header-right .notification-btn .dot { position: absolute; top: -2px; right: -2px; min-width: 18px; height: 18px; background: #c75b4a; color: white; font-size: 10px; font-weight: 700; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+        .header-right .date-display { font-size: 13px; color: #8a9a98; background: white; padding: 8px 18px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); }
+
+        .back-button { display: inline-flex; align-items: center; gap: 8px; color: #1a1a1a; font-size: 13px; font-weight: 500; padding: 8px 16px; border-radius: 8px; background: white; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); transition: 0.2s ease; margin-bottom: 20px; border: 1px solid transparent; text-decoration: none; }
+        .back-button:hover { border-color: #c8925e; transform: translateX(-2px); }
+
+        .filters-form { background: white; border-radius: 14px; padding: 24px 28px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); margin-bottom: 28px; border: 1px solid rgba(0, 0, 0, 0.02); }
+        .filters-row { display: grid; grid-template-columns: repeat(4, 1fr) auto; gap: 16px; align-items: end; }
+        .filter-group label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #8a9a98; margin-bottom: 4px; }
+        .filter-group input, .filter-group select { width: 100%; padding: 10px 14px; border: 1px solid #d9dfdc; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 13px; background: white; transition: 0.2s ease; }
+        .filter-group input:focus, .filter-group select:focus { outline: none; border-color: #c8925e; box-shadow: 0 0 0 3px rgba(200, 146, 94, 0.1); }
+        .btn-filter { background: #c8925e; color: white; border: none; padding: 10px 28px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.2s ease; height: 44px; white-space: nowrap; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-filter:hover { background: #d4a373; transform: translateY(-2px); }
+        .btn-clear {
+            background: #fdf2f0;
+            color: #c75b4a;
+            border: 1px solid #f4d4ce;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s ease;
+            height: 44px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-clear:hover {
+            background: #c75b4a;
+            color: white;
+            border-color: #c75b4a;
+            transform: translateY(-1px);
+        }
+        .btn-clear i { font-size: 11px; }
+        .filter-actions { display: flex; gap: 10px; align-items: end; }
+
+        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 20px; flex-wrap: wrap; }
+        .results-header .search-sort { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .results-header .search-inline {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            background: white;
+            border: 1px solid #d9dfdc;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: 0.2s ease;
+            min-width: 260px;
+        }
+        .results-header .search-inline:focus-within {
+            border-color: #c8925e;
+            box-shadow: 0 0 0 3px rgba(200, 146, 94, 0.1);
+        }
+        .results-header .search-inline i {
+            color: #8a9a98;
+            padding: 0 4px 0 14px;
+            font-size: 13px;
+        }
+        .results-header .search-inline input {
+            border: none;
+            outline: none;
+            padding: 8px 14px 8px 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            background: transparent;
+            width: 100%;
+        }
+        .results-header .search-inline button {
+            border: none;
+            background: #c8925e;
+            color: white;
+            padding: 8px 14px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: 0.2s ease;
+            font-family: inherit;
+        }
+        .results-header .search-inline button:hover { background: #b8824f; }
+        .results-header .count { font-size: 14px; color: #8a9a98; }
+        .results-header .count strong { color: #1a1a1a; }
+        .results-header .sort-group { display: flex; align-items: center; gap: 10px; }
+        .results-header .sort-group label { font-size: 12px; color: #8a9a98; }
+        .results-header .sort-group select { padding: 8px 14px; border: 1px solid #d9dfdc; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 13px; background: white; cursor: pointer; }
+
+        .exp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .exp-card { background: white; border-radius: 14px; overflow: hidden; transition: 0.3s ease; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); border: 1px solid rgba(0, 0, 0, 0.02); position: relative; }
+        .exp-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08); }
+        .exp-card .image-placeholder { height: 160px; background: linear-gradient(135deg, #e8e0d8, #d5cdc5); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #a89a8a; font-size: 14px; position: relative; }
+        .exp-card .image-placeholder img { width: 100%; height: 100%; object-fit: cover; }
+        .exp-card .save-btn { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border-radius: 50%; background: rgba(255, 255, 255, 0.95); border: none; color: #8a9a98; font-size: 16px; cursor: pointer; transition: 0.25s ease; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12); }
+        .exp-card .save-btn:hover { transform: scale(1.1); }
+        .exp-card .save-btn.saved { color: #c75b4a; background: rgba(255, 255, 255, 0.95); }
+        .exp-card .save-btn.saved i { color: #c75b4a; }
+        .exp-card .card-body { padding: 18px 20px 20px; }
+        .exp-card .card-body .category-tag { display: inline-block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #c8925e; background: rgba(200, 146, 94, 0.1); padding: 2px 12px; border-radius: 20px; margin-bottom: 8px; }
+        .exp-card .card-body .name { font-size: 17px; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; }
+        .exp-card .card-body .location { font-size: 13px; color: #8a9a98; margin-bottom: 8px; }
+        .exp-card .card-body .rating { font-size: 13px; color: #8a9a98; }
+        .exp-card .card-body .rating i { color: #f5b342; margin-right: 4px; }
+        .exp-card .card-body .price-duration { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #f0ebe6; }
+        .exp-card .card-body .price { flex: 1; min-width: 0; font-size: 14px; font-weight: 700; line-height: 1.25; color: #1a1a1a; }
+        .exp-card .card-body .price i { color: #c8925e; margin-right: 4px; }
+        .exp-card .card-body .duration { flex-shrink: 0; font-size: 13px; color: #8a9a98; }
+        .exp-card .card-body .actions { display: flex; gap: 8px; margin-top: 14px; }
+        .exp-card .card-body .actions .view-btn { flex: 1; text-align: center; padding: 10px; background: #faf8f6; color: #1a1a1a; border-radius: 8px; font-weight: 500; font-size: 13px; transition: 0.2s ease; text-decoration: none; }
+        .exp-card .card-body .actions .view-btn:hover { background: #c8925e; color: white; }
+        .exp-card .card-body .actions .add-plan-btn { flex: 1; text-align: center; padding: 10px; background: #0f2b26; color: white; border-radius: 8px; font-weight: 500; font-size: 13px; transition: 0.2s ease; text-decoration: none; border: none; cursor: pointer; }
+        .exp-card .card-body .actions .add-plan-btn:hover { background: #c8925e; transform: translateY(-2px); }
+        .exp-card .card-body .actions .add-plan-btn i { margin-right: 4px; }
+
+        .empty-state { text-align: center; padding: 60px 20px; background: white; border-radius: 14px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); }
+        .empty-state .icon { font-size: 56px; color: #d9dfdc; display: block; margin-bottom: 16px; }
+        .empty-state h3 { font-size: 20px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
+        .empty-state p { color: #8a9a98; font-size: 14px; max-width: 500px; margin: 0 auto 20px; }
+        .empty-state .empty-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+
+        .toast-container { position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; max-width: 380px; width: 100%; }
+        .toast { background: #0f2b26; color: white; padding: 14px 20px; border-radius: 10px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); display: flex; align-items: center; gap: 12px; animation: slideIn 0.4s ease; font-size: 14px; font-weight: 500; min-height: 56px; border-left: 4px solid #c8925e; }
+        .toast.success { border-left-color: #2d8f6f; }
+        .toast.info { border-left-color: #3a6ea5; }
+        .toast.remove { border-left-color: #c75b4a; }
+        .toast .toast-icon { font-size: 18px; flex-shrink: 0; width: 24px; text-align: center; }
+        .toast .toast-icon.success { color: #2d8f6f; }
+        .toast .toast-icon.info { color: #3a6ea5; }
+        .toast .toast-icon.remove { color: #c75b4a; }
+        .toast .toast-message { flex: 1; line-height: 1.4; }
+        .toast .toast-close { background: none; border: none; color: rgba(255, 255, 255, 0.5); cursor: pointer; font-size: 16px; padding: 4px; transition: 0.2s ease; }
+        .toast .toast-close:hover { color: white; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+        .toast.hide { animation: slideOut 0.3s ease forwards; }
+
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 30px; }
+        .pagination a, .pagination span { display: inline-block; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; transition: 0.2s ease; }
+        .pagination a { background: white; color: #1a1a1a; border: 1px solid #d9dfdc; text-decoration: none; }
+        .pagination a:hover { border-color: #c8925e; color: #c8925e; }
+        .pagination .current { background: #c8925e; color: white; }
+
+        @media (max-width: 1200px) {
+            .filters-row { grid-template-columns: 1fr 1fr; }
+            .exp-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { width: 72px; padding: 16px 10px; }
+            .sidebar-brand h1 { font-size: 16px; }
+            .sidebar-brand .subtitle, .sidebar-section-title, .sidebar-nav .nav-item span, .sidebar-nav .nav-item .badge, .sidebar-footer .user-card .user-info { display: none; }
+            .main-content { padding: 16px; max-width: 100%; }
+            .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .header-right { width: 100%; justify-content: flex-start; }
+            .filters-row { grid-template-columns: 1fr; }
+            .filters-form { padding: 16px; }
+            .exp-grid { grid-template-columns: 1fr; }
+            .results-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .filter-actions { width: 100%; }
+            .filter-actions .btn-filter, .filter-actions .btn-clear { flex: 1; justify-content: center; }
+            .toast-container { top: 12px; right: 12px; left: 12px; max-width: 100%; }
+            .exp-card .card-body .actions { flex-direction: column; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h1>Explore <span>Kimberley</span></h1>
+            <div class="subtitle">Tourist Dashboard</div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/tourist/dashboard/" class="nav-item">
+                <span class="icon"><i class="fas fa-home"></i></span><span>Dashboard</span>
+            </a>
+            <a href="{% url 'experiences:list' %}" class="nav-item active">
+                <span class="icon"><i class="fas fa-compass"></i></span><span>Discover</span>
+            </a>
+            <a href="/tourist/saved/" class="nav-item">
+                <span class="icon"><i class="fas fa-heart"></i></span><span>Saved Experiences</span>
+                {% if saved_count > 0 %}<span class="badge" id="saved-badge-sidebar">{{ saved_count }}</span>{% endif %}
+            </a>
+            <a href="/tourist/plan-my-trip/" class="nav-item">
+                <span class="icon"><i class="fas fa-map"></i></span><span>Plan My Trip</span>
+            </a>
+            <a href="/itineraries/" class="nav-item">
+                <span class="icon"><i class="fas fa-map-signs"></i></span><span>My Itinerary</span>
+                {% if itinerary_count > 0 %}<span class="badge">{{ itinerary_count }}</span>{% endif %}
+            </a>
+            <a href="/tourist/guides/" class="nav-item">
+                <span class="icon"><i class="fas fa-users"></i></span><span>Tour Guides</span>
+            </a>
+            <a href="/bookings/my/" class="nav-item">
+                <span class="icon"><i class="fas fa-calendar-alt"></i></span><span>My Bookings</span>
+                {% if upcoming_count > 0 %}<span class="badge">{{ upcoming_count }}</span>{% endif %}
+            </a>
+            <a href="/reviews/my/" class="nav-item">
+                <span class="icon"><i class="fas fa-star"></i></span><span>My Reviews</span>
+                {% if review_count > 0 %}<span class="badge">{{ review_count }}</span>{% endif %}
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar">{{ user.first_name|slice:":1"|default:"G" }}</div>
+                <div class="user-info">
+                    <div class="name">{{ user.first_name|default:"Guest" }}</div>
+                    <div class="role">Tourist</div>
+                </div>
+                {% if user.is_authenticated %}
+                    <a href="/accounts/logout/" class="logout-btn" title="Sign out" style="display:inline-flex;align-items:center;gap:6px;margin-left:auto;padding:6px 10px;border:1px solid rgba(255,255,255,0.14);border-radius:8px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.75);font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;"><i class="fas fa-sign-out-alt"></i> Sign out</a>
+                {% else %}
+                    <a href="/accounts/login/" class="logout-btn" title="Sign in"><i class="fas fa-sign-in-alt"></i> Sign in</a>
+                {% endif %}
+            </div>
+        </div>
+    </aside>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <main class="main-content">
+
+        <a href="{% if is_planning %}/tourist/plan-my-trip/?step=2{% else %}/tourist/dashboard/{% endif %}" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            {% if is_planning %}Back to Plan My Trip{% else %}Back to Dashboard{% endif %}
+        </a>
+
+        <header class="header">
+            <div class="header-left">
+                <h2>Discover Experiences</h2>
+                <p>Find amazing tours and activities in Kimberley</p>
+            </div>
+            <div class="header-right">
+                {% if user.is_authenticated %}
+                    <a href="/notifications/" class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        {% if unread_count > 0 %}<span class="dot">{{ unread_count }}</span>{% endif %}
+                    </a>
+                {% endif %}
+                <span class="date-display"><i class="far fa-calendar-alt"></i> {{ now|date:"M d, Y" }}</span>
+            </div>
+        </header>
+
+        <form method="GET" class="filters-form" id="filterForm">
+            {% if is_planning %}<input type="hidden" name="planning" value="1">{% endif %}
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label>Category</label>
+                    <select name="category" id="filterCategory">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Location</label>
+                    <input type="text" name="location" id="filterLocation" placeholder="e.g. Kimberley" value="{{ location }}">
+                </div>
+                <div class="filter-group">
+                    <label>Rating</label>
+                    <select name="rating" id="filterRating">
+                        <option value="">Any rating</option>
+                        <option value="4" {% if rating == '4' %}selected{% endif %}>4+ stars</option>
+                        <option value="3" {% if rating == '3' %}selected{% endif %}>3+ stars</option>
+                        <option value="2" {% if rating == '2' %}selected{% endif %}>2+ stars</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Opening Hours</label>
+                    <select name="opening_hours" id="filterOpening">
+                        <option value="">Any time</option>
+                        <option value="open_now" {% if opening_hours == 'open_now' %}selected{% endif %}>Open now</option>
+                        <option value="morning" {% if opening_hours == 'morning' %}selected{% endif %}>Morning (6am - 12pm)</option>
+                        <option value="afternoon" {% if opening_hours == 'afternoon' %}selected{% endif %}>Afternoon (12pm - 5pm)</option>
+                        <option value="evening" {% if opening_hours == 'evening' %}selected{% endif %}>Evening (5pm - 10pm)</option>
+                    </select>
+                </div>
+                <div class="filter-group filter-actions">
+                    <button type="submit" class="btn-filter"><i class="fas fa-search"></i> Filter</button>
+                    <a href="{% url 'experiences:list' %}{% if is_planning %}?planning=1{% endif %}" class="btn-clear" id="clearFilters">
+                        <i class="fas fa-times"></i> Clear All
+                    </a>
+                </div>
+            </div>
+        </form>
+
+        <div class="results-header">
+            <div class="count"><strong>{{ total_count }}</strong> experience{{ total_count|pluralize }} found</div>
+            <div class="search-sort">
+                <form method="GET" class="search-inline">
+                    {% if is_planning %}<input type="hidden" name="planning" value="1">{% endif %}
+                    {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+                    {% if location %}<input type="hidden" name="location" value="{{ location }}">{% endif %}
+                    {% if rating %}<input type="hidden" name="rating" value="{{ rating }}">{% endif %}
+                    {% if opening_hours %}<input type="hidden" name="opening_hours" value="{{ opening_hours }}">{% endif %}
+                    {% if sort %}<input type="hidden" name="sort" value="{{ sort }}">{% endif %}
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="q" value="{{ q|default:'' }}" placeholder="Search experiences…">
+                    <button type="submit">Search</button>
+                </form>
+
+                <div class="sort-group">
+                    <label>Sort by:</label>
+                    <select name="sort" id="sortSelect">
+                        <option value="-created_at" {% if sort == '-created_at' %}selected{% endif %}>Newest</option>
+                        <option value="name" {% if sort == 'name' %}selected{% endif %}>Name A-Z</option>
+                        <option value="-average_rating" {% if sort == '-average_rating' %}selected{% endif %}>Highest Rated</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        {% if experiences %}
+            <div class="exp-grid">
+                {% for exp in experiences %}
+                    <div class="exp-card" data-experience-id="{{ exp.id }}">
+                        <div class="image-placeholder">
+                            {% if exp.main_image %}
+                                <img src="{{ exp.main_image.url }}" alt="{{ exp.name }}" onerror="this.onerror=null;this.src='{% static 'images/kimberley.jpg' %}';">
+                            {% else %}
+                                <img src="{% static 'images/kimberley.jpg' %}" alt="{{ exp.name }}">
+                            {% endif %}
+                            <button class="save-btn {% if exp.is_saved %}saved{% endif %}"
+                                    data-experience-id="{{ exp.id }}"
+                                    onclick="toggleSave({{ exp.id }}, this)">
+                                <i class="{% if exp.is_saved %}fas{% else %}far{% endif %} fa-heart"></i>
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="category-tag">{{ exp.category.name|default:"Experience" }}</div>
+                            <div class="name">{{ exp.name }}</div>
+                            <div class="location"><i class="fas fa-map-marker-alt"></i> {{ exp.location }}</div>
+                            <div class="rating">
+                                <i class="fas fa-star"></i> {{ exp.average_rating|floatformat:1 }}
+                                ({{ exp.total_reviews }} reviews)
+                            </div>
+                            <div class="price-duration">
+                                <div class="price">
+                                    {# CHANGED: now uses exp.price_display — provider's own range #}
+                                    <i class="fas fa-tag"></i> {{ exp.price_display }}
+                                </div>
+                                <div class="duration">
+                                    {% if exp.listing_type == 'food_dining' and exp.cuisine_type %}
+                                        <i class="fas fa-utensils"></i> {{ exp.cuisine_type }}
+                                    {% elif exp.listing_type == 'places_to_stay' and exp.check_in_time %}
+                                        <i class="fas fa-sign-in-alt"></i> {{ exp.check_in_time|time:"H:i" }}
+                                    {% elif exp.listing_type == 'attractions' and exp.duration_minutes %}
+                                        <i class="fas fa-clock"></i> {{ exp.duration_minutes }} min
+                                    {% elif exp.listing_type == 'activities' and exp.duration_minutes %}
+                                        <i class="fas fa-clock"></i> {{ exp.duration_minutes }} min
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="actions">
+                                <a href="{% url 'experiences:detail' exp.id %}" class="view-btn">View Details</a>
+                                {% if is_planning %}
+                                    <form method="POST" action="{% url 'tourist:plan_my_trip' %}" style="display:inline; flex:1;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="add_experience">
+                                        <input type="hidden" name="experience_id" value="{{ exp.id }}">
+                                        <button type="submit" class="add-plan-btn">
+                                            <i class="fas fa-plus"></i> Add to Plan
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            {% if experiences.has_other_pages %}
+                <div class="pagination">
+                    {% if experiences.has_previous %}
+                        <a href="?page={{ experiences.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if location %}&location={{ location }}{% endif %}{% if rating %}&rating={{ rating }}{% endif %}{% if opening_hours %}&opening_hours={{ opening_hours }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}{% if is_planning %}&planning=1{% endif %}">‹ Previous</a>
+                    {% endif %}
+                    <span class="current">Page {{ experiences.number }} of {{ experiences.paginator.num_pages }}</span>
+                    {% if experiences.has_next %}
+                        <a href="?page={{ experiences.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if category %}&category={{ category }}{% endif %}{% if location %}&location={{ location }}{% endif %}{% if rating %}&rating={{ rating }}{% endif %}{% if opening_hours %}&opening_hours={{ opening_hours }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}{% if is_planning %}&planning=1{% endif %}">Next ›</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-search icon"></i>
+                <h3>No experiences found</h3>
+                <p>We couldn't find experiences matching your criteria. Try adjusting your filters.</p>
+                <div class="empty-actions">
+                    <a href="{% url 'experiences:list' %}{% if is_planning %}?planning=1{% endif %}" class="btn-filter">
+                        <i class="fas fa-redo"></i> View All Experiences
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+
+    </main>
+
+    <script>
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+
+            let iconClass = 'fa-check-circle';
+            let iconColor = 'success';
+            if (type === 'info') { iconClass = 'fa-info-circle'; iconColor = 'info'; }
+            else if (type === 'remove') { iconClass = 'fa-heart'; iconColor = 'remove'; }
+
+            toast.innerHTML = `
+                <span class="toast-icon ${iconColor}"><i class="fas ${iconClass}"></i></span>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            container.appendChild(toast);
+            setTimeout(function() {
+                if (toast.parentElement) {
+                    toast.classList.add('hide');
+                    setTimeout(function() { if (toast.parentElement) toast.remove(); }, 300);
+                }
+            }, 4000);
+        }
+
+        function toggleSave(experienceId, button) {
+            const icon = button.querySelector('i');
+
+            fetch(`/tourist/toggle-save/${experienceId}/`, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-Type': 'application/json' },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.is_saved) {
+                    icon.classList.remove('far'); icon.classList.add('fas');
+                    button.classList.add('saved');
+                    showToast(data.message, 'success');
+                } else {
+                    icon.classList.remove('fas'); icon.classList.add('far');
+                    button.classList.remove('saved');
+                    showToast(data.message, 'remove');
+                }
+                const badge = document.getElementById('saved-badge-sidebar');
+                if (data.saved_count > 0) {
+                    if (badge) badge.textContent = data.saved_count;
+                    else {
+                        const sidebarNav = document.querySelector('.sidebar-nav');
+                        const savedLink = sidebarNav.querySelector('a[href="/tourist/saved/"]');
+                        if (savedLink) {
+                            const newBadge = document.createElement('span');
+                            newBadge.className = 'badge';
+                            newBadge.id = 'saved-badge-sidebar';
+                            newBadge.textContent = data.saved_count;
+                            savedLink.appendChild(newBadge);
+                        }
+                    }
+                } else if (badge) badge.remove();
+            })
+            .catch(error => {
+                showToast('Something went wrong. Please try again.', 'info');
+                console.error('Error:', error);
+            });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const sortSelect = document.getElementById('sortSelect');
+            if (sortSelect) {
+                sortSelect.addEventListener('change', function() {
+                    const currentUrl = new URL(window.location.href);
+                    currentUrl.searchParams.set('sort', this.value);
+                    window.location.href = currentUrl.toString();
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

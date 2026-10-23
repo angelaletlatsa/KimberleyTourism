@@ -1,0 +1,456 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Explore Kimberley</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f0eb; color: #1a1a1a; display: flex; min-height: 100vh; }
+        a { text-decoration: none; color: inherit; }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar { width: 250px; background: #0f2b26; color: white; min-height: 100vh; padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-brand { padding: 0 12px 24px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 24px; }
+        .sidebar-brand h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        .sidebar-brand h1 span { color: #c8925e; }
+        .sidebar-brand .subtitle { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+        .sidebar-nav { flex: 1; }
+        .sidebar-nav .nav-item { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 10px; color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 500; transition: all 0.25s ease; margin-bottom: 2px; }
+        .sidebar-nav .nav-item:hover { background: rgba(255,255,255,0.06); color: white; }
+        .sidebar-nav .nav-item.active { background: rgba(200,146,94,0.15); color: #c8925e; }
+        .sidebar-nav .nav-item .icon { width: 22px; text-align: center; font-size: 16px; flex-shrink: 0; }
+        .sidebar-nav .nav-item .badge { margin-left: auto; background: #c75b4a; color: white; font-size: 10px; font-weight: 700; padding: 1px 10px; border-radius: 12px; }
+        .sidebar-section-title { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.25); padding: 16px 14px 8px; margin-top: 4px; }
+        .sidebar-footer { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; margin-top: auto; }
+        .sidebar-footer .user-card { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; }
+        .sidebar-footer .user-card .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #c8925e, #e8b88a); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; flex-shrink: 0; overflow: hidden; }
+        .sidebar-footer .user-card .user-info .name { font-size: 13px; font-weight: 600; color: white; }
+        .sidebar-footer .user-card .user-info .role { font-size: 11px; color: rgba(255,255,255,0.4); }
+        .sidebar-footer .user-card .logout-btn { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 6px 10px; border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.75); font-size: 12px; font-weight: 600; white-space: nowrap; }
+
+        /* ===== MAIN ===== */
+        .main-content { flex: 1; padding: 28px 36px 36px; min-height: 100vh; max-width: calc(100% - 250px); }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+        .header-left .page-eyebrow { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: #c8925e; margin-bottom: 4px; }
+        .header-left h2 { font-size: 24px; font-weight: 700; color: #0f2b26; }
+        .header-left p { font-size: 13px; color: #8a9a98; margin-top: 4px; }
+        .header-right { display: flex; align-items: center; gap: 14px; }
+        .header-right .notification-btn { position: relative; width: 40px; height: 40px; border-radius: 50%; background: white; color: #4a5a58; font-size: 17px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .header-right .notification-btn .dot { position: absolute; top: 5px; right: 5px; min-width: 18px; height: 18px; background: #c75b4a; color: white; font-size: 10px; font-weight: 700; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+        .header-right .date-display { font-size: 13px; color: #8a9a98; background: white; padding: 9px 18px; border-radius: 10px; font-weight: 500; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+
+        /* ===== LAYOUT ===== */
+        .dash-grid { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+
+        .card { background: white; border-radius: 16px; padding: 22px 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.02); margin-bottom: 20px; }
+        .card:last-child { margin-bottom: 0; }
+        .card-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 12px; }
+        .card-title-row h3 { font-size: 14px; font-weight: 700; color: #0f2b26; display: flex; align-items: center; gap: 9px; }
+        .card-title-row h3 i { color: #c8925e; font-size: 14px; }
+        .card-title-row .link { font-size: 11px; font-weight: 600; color: #c8925e; display: inline-flex; align-items: center; gap: 4px; }
+        .card-title-row .link:hover { color: #d4a373; }
+
+        /* ===== BUSINESS HEALTH — dense card with 3 metrics ===== */
+        .health-card { background: linear-gradient(135deg, #0f2b26 0%, #1a4a42 55%, #2a6b60 100%); border-radius: 16px; padding: 24px 26px; margin-bottom: 20px; color: white; box-shadow: 0 4px 20px rgba(15,43,38,0.2); position: relative; overflow: hidden; }
+        .health-card::after { content: ''; position: absolute; top: -80px; right: -60px; width: 260px; height: 260px; background: radial-gradient(circle, rgba(200,146,94,0.18) 0%, transparent 65%); border-radius: 50%; }
+
+        .health-card .hc-top { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 22px; gap: 16px; flex-wrap: wrap; }
+        .health-card .hc-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1.2px; color: #c8925e; font-weight: 700; }
+        .health-card .hc-sub { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+
+        .health-card .hc-ring { position: relative; width: 72px; height: 72px; flex-shrink: 0; }
+        .health-card .hc-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+        .health-card .hc-ring .ring-bg { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 6; }
+        .health-card .hc-ring .ring-fg { fill: none; stroke: #c8925e; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 176; transition: stroke-dashoffset 0.8s ease; }
+        .health-card .hc-ring .ring-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .health-card .hc-ring .ring-label .num { font-size: 18px; font-weight: 800; line-height: 1; }
+        .health-card .hc-ring .ring-label .txt { font-size: 8px; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+        .health-card .hc-metrics { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: rgba(255,255,255,0.06); border-radius: 12px; overflow: hidden; }
+        .health-card .hc-metric { padding: 18px 20px; background: rgba(255,255,255,0.03); }
+        .health-card .hc-metric .hm-value { font-size: 26px; font-weight: 800; line-height: 1; letter-spacing: -0.5px; }
+        .health-card .hc-metric .hm-value.gold { color: #e8b88a; }
+        .health-card .hc-metric .hm-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255,255,255,0.5); font-weight: 700; margin-top: 6px; }
+        .health-card .hc-metric .hm-hint { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 8px; }
+
+        /* ===== ATTENTION RAIL ===== */
+        .attention-card { background: linear-gradient(135deg, #fef3e0 0%, #fff8ec 100%); border-left: 5px solid #b8860b; border-radius: 14px; padding: 20px 22px; }
+        .attention-card.clear { background: linear-gradient(135deg, #e6f4ee 0%, #f0faf4 100%); border-left-color: #2d8f6f; }
+        .attention-card .ac-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #8a6d0b; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        .attention-card.clear .ac-title { color: #1a7a5a; }
+        .attention-card .ac-title i { font-size: 14px; }
+        .attention-card .ac-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .attention-card .ac-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: white; border-radius: 10px; font-size: 12px; color: #8a6d0b; line-height: 1.5; }
+        .attention-card.clear .ac-item { color: #1a7a5a; }
+        .attention-card .ac-item i { color: #b8860b; flex-shrink: 0; }
+        .attention-card.clear .ac-item i { color: #2d8f6f; }
+        .attention-card .ac-item strong { color: #6b5408; font-weight: 700; }
+        .attention-card.clear .ac-item strong { color: #0f5c40; }
+        .attention-card .ac-cta { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 10px; background: #c8925e; color: white; font-weight: 600; font-size: 12px; margin-top: 14px; }
+        .attention-card .ac-cta:hover { background: #b8824f; }
+
+        /* ===== EXPERIENCES PERFORMANCE LIST ===== */
+        .exp-perf { display: flex; flex-direction: column; gap: 12px; }
+        .exp-perf .ep-row { display: flex; gap: 14px; padding: 14px 16px; background: #faf8f6; border-radius: 12px; border-left: 3px solid #c8925e; transition: 0.2s; align-items: center; }
+        .exp-perf .ep-row:hover { background: #f5f0eb; transform: translateX(3px); }
+        .exp-perf .ep-icon { width: 44px; height: 44px; border-radius: 12px; background: white; display: flex; align-items: center; justify-content: center; color: #c8925e; font-size: 18px; flex-shrink: 0; border: 1px solid #f0ebe6; }
+        .exp-perf .ep-body { flex: 1; min-width: 0; }
+        .exp-perf .ep-title { font-size: 14px; font-weight: 600; color: #0f2b26; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .exp-perf .ep-meta { font-size: 11px; color: #8a9a98; margin-top: 4px; display: flex; gap: 14px; flex-wrap: wrap; }
+        .exp-perf .ep-meta i { margin-right: 3px; color: #c8925e; }
+        .exp-perf .ep-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+        .exp-perf .ep-status-badge { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+        .exp-perf .ep-status-badge.published { background: #e6f4ee; color: #1a7a5a; }
+        .exp-perf .ep-status-badge.under_review { background: #fef3e0; color: #b8860b; }
+        .exp-perf .ep-status-badge.rejected { background: #fce8e4; color: #b84a3a; }
+        .exp-perf .ep-status-badge.suspended { background: #f0ebe6; color: #6b7a78; }
+        .exp-perf .ep-rating { font-size: 11px; color: #8a9a98; }
+        .exp-perf .ep-rating i { color: #f5b342; margin-right: 2px; }
+
+        /* ===== 14-DAY HEATMAP ===== */
+        .heatmap-wrap { display: grid; grid-template-columns: repeat(14, 1fr); gap: 5px; margin-bottom: 14px; }
+        .heat-cell { aspect-ratio: 1 / 1; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #8a9a98; background: #faf8f6; border: 1px solid #f0ebe6; position: relative; transition: 0.2s; }
+        .heat-cell .hc-count { font-size: 12px; font-weight: 800; color: #0f2b26; line-height: 1; }
+        .heat-cell .hc-day { font-size: 8px; text-transform: uppercase; letter-spacing: 0.4px; margin-top: 2px; }
+        .heat-cell.lvl-0 { background: #faf8f6; }
+        .heat-cell.lvl-1 { background: #fef3e0; border-color: #f4d9a0; }
+        .heat-cell.lvl-2 { background: #f5d9a8; border-color: #e8b88a; }
+        .heat-cell.lvl-3 { background: #e8b88a; border-color: #c8925e; }
+        .heat-cell.lvl-3 .hc-count, .heat-cell.lvl-3 .hc-day { color: white; }
+        .heat-cell.lvl-4 { background: #c8925e; border-color: #a87645; }
+        .heat-cell.lvl-4 .hc-count, .heat-cell.lvl-4 .hc-day { color: white; }
+        .heat-cell.today { box-shadow: 0 0 0 2px #c8925e inset; }
+        .heatmap-legend { display: flex; align-items: center; gap: 8px; font-size: 10px; color: #8a9a98; justify-content: flex-end; }
+        .heatmap-legend .lg-cell { width: 14px; height: 14px; border-radius: 4px; border: 1px solid #f0ebe6; }
+
+        /* ===== RECENT REVIEWS (compact) ===== */
+        .review-compact { display: flex; flex-direction: column; gap: 14px; }
+        .review-compact .rc-item { display: flex; gap: 12px; padding-bottom: 14px; border-bottom: 1px solid #f0ebe6; }
+        .review-compact .rc-item:last-child { padding-bottom: 0; border-bottom: none; }
+        .review-compact .rc-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #3a6ea5, #6ba3d1); color: white; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
+        .review-compact .rc-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .review-compact .rc-body { flex: 1; min-width: 0; }
+        .review-compact .rc-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 2px; }
+        .review-compact .rc-name { font-size: 12px; font-weight: 700; color: #0f2b26; }
+        .review-compact .rc-stars { font-size: 11px; color: #f5b342; letter-spacing: 1px; white-space: nowrap; }
+        .review-compact .rc-stars .empty { color: #d9dfdc; }
+        .review-compact .rc-exp { font-size: 11px; color: #c8925e; font-weight: 600; margin-bottom: 4px; }
+        .review-compact .rc-text { font-size: 12px; color: #687572; line-height: 1.5; font-style: italic; }
+        .review-compact .rc-time { font-size: 10px; color: #b8c5c2; margin-top: 4px; }
+
+        /* ===== EMPTY ===== */
+        .empty-mini { text-align: center; padding: 26px 12px; color: #8a9a98; }
+        .empty-mini i { font-size: 28px; color: #e0d8d0; display: block; margin-bottom: 8px; }
+        .empty-mini p { font-size: 12px; }
+        .empty-mini .hint { font-size: 11px; color: #b8c5c2; margin-top: 3px; }
+        .empty-mini a { color: #c8925e; font-weight: 600; font-size: 12px; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1100px) {
+            .dash-grid { grid-template-columns: 1fr; }
+            .health-card .hc-metrics { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { width: 72px; padding: 16px 10px; }
+            .sidebar-brand h1 { font-size: 16px; }
+            .sidebar-brand .subtitle { display: none; }
+            .sidebar-nav .nav-item span { display: none; }
+            .sidebar-nav .nav-item .badge { display: none; }
+            .sidebar-section-title { display: none; }
+            .sidebar-footer .user-card .user-info { display: none; }
+            .main-content { padding: 14px; max-width: 100%; }
+            .header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .header-right { width: 100%; justify-content: flex-start; }
+            .health-card .hc-metrics { grid-template-columns: 1fr; }
+            .heatmap-wrap { gap: 3px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h1>Explore <span>Kimberley</span></h1>
+            <div class="subtitle">Provider Dashboard</div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section-title">Main</div>
+            <a href="{% url 'provider:dashboard' %}" class="nav-item active">
+                <span class="icon"><i class="fas fa-home"></i></span>
+                <span>Dashboard</span>
+            </a>
+            <a href="{% url 'provider:profile' %}" class="nav-item">
+                <span class="icon"><i class="fas fa-building"></i></span>
+                <span>Profile</span>
+            </a>
+
+            <div class="sidebar-section-title">Management</div>
+            <a href="{% url 'provider:create_experience' %}" class="nav-item">
+                <span class="icon"><i class="fas fa-plus-circle"></i></span>
+                <span>Create Experience</span>
+            </a>
+            <a href="{% url 'provider:my_experiences' %}" class="nav-item">
+                <span class="icon"><i class="fas fa-box"></i></span>
+                <span>My Experiences</span>
+            </a>
+            <a href="{% url 'provider:reviews' %}" class="nav-item">
+                <span class="icon"><i class="fas fa-star"></i></span>
+                <span>Reviews</span>
+                {% if total_reviews > 0 %}<span class="badge">{{ total_reviews }}</span>{% endif %}
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar">{{ provider.business_name|slice:":1"|default:"P" }}</div>
+                <div class="user-info">
+                    <div class="name">{{ provider.business_name|default:"Provider" }}</div>
+                    <div class="role">Provider</div>
+                </div>
+                <a href="/accounts/logout/" class="logout-btn" title="Sign out">
+                    <i class="fas fa-sign-out-alt"></i> Sign out
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+
+        <header class="header">
+            <div class="header-left">
+                <div class="page-eyebrow"><i class="fas fa-store"></i> Business Dashboard</div>
+                <h2>{{ provider.business_name|default:"Your Business" }}</h2>
+                <p>Portfolio overview · {{ now|date:"l, F d, Y" }}</p>
+            </div>
+            <div class="header-right">
+                <a href="/notifications/" class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    {% if unread_count > 0 %}<span class="dot">{{ unread_count }}</span>{% endif %}
+                </a>
+                <span class="date-display">
+                    <i class="far fa-calendar-alt"></i>
+                    {{ now|date:"M d, Y" }}
+                </span>
+            </div>
+        </header>
+
+        <!-- ===== 2-COLUMN GRID ===== -->
+        <div class="dash-grid">
+
+            <!-- ===== LEFT COLUMN ===== -->
+            <div>
+
+                <!-- BUSINESS HEALTH CARD -->
+                <div class="health-card">
+                    <div class="hc-top">
+                        <div>
+                            <div class="hc-title"><i class="fas fa-heartbeat"></i> Business Health</div>
+                            <div class="hc-sub">{{ verification_status_display }} · Member since {{ provider.created_at|date:"M Y" }}</div>
+                        </div>
+                        <div class="hc-ring">
+                            <svg viewBox="0 0 60 60">
+                                <circle cx="30" cy="30" r="28" class="ring-bg"></circle>
+                                <circle cx="30" cy="30" r="28" class="ring-fg" style="stroke-dashoffset: calc(176 - (176 * {{ publish_rate }}) / 100);"></circle>
+                            </svg>
+                            <div class="ring-label">
+                                <div class="num">{{ publish_rate }}%</div>
+                                <div class="txt">Live</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hc-metrics">
+                        <div class="hc-metric">
+                            <div class="hm-value">{{ total_bookings }}</div>
+                            <div class="hm-label">Bookings</div>
+                            <div class="hm-hint">{{ confirmed_bookings }} confirmed</div>
+                        </div>
+                        <div class="hc-metric">
+                            <div class="hm-value gold">{{ completed_bookings }}</div>
+                            <div class="hm-label">Completed</div>
+                            <div class="hm-hint">Tours delivered</div>
+                        </div>
+                        <div class="hc-metric">
+                            <div class="hm-value">{{ avg_rating|floatformat:1 }}</div>
+                            <div class="hm-label">Rating</div>
+                            <div class="hm-hint">{{ total_reviews }} review{{ total_reviews|pluralize }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EXPERIENCES PERFORMANCE -->
+                <div class="card">
+                    <div class="card-title-row">
+                        <h3><i class="fas fa-suitcase"></i> Your Experiences</h3>
+                        <a href="{% url 'provider:my_experiences' %}" class="link">Manage <i class="fas fa-arrow-right"></i></a>
+                    </div>
+
+                    {% if recent_experiences %}
+                        <div class="exp-perf">
+                            {% for exp in recent_experiences %}
+                                <div class="ep-row">
+                                    <div class="ep-icon">
+                                        {% if exp.listing_type == 'food_dining' %}<i class="fas fa-utensils"></i>
+                                        {% elif exp.listing_type == 'places_to_stay' %}<i class="fas fa-bed"></i>
+                                        {% elif exp.listing_type == 'attractions' %}<i class="fas fa-camera"></i>
+                                        {% else %}<i class="fas fa-hiking"></i>{% endif %}
+                                    </div>
+                                    <div class="ep-body">
+                                        <div class="ep-title">{{ exp.name }}</div>
+                                        <div class="ep-meta">
+                                            <span><i class="fas fa-tag"></i> {{ exp.category.name|default:"Uncategorized" }}</span>
+                                            <span><i class="fas fa-star"></i> {{ exp.average_rating|floatformat:1 }}</span>
+                                            <span><i class="fas fa-comment"></i> {{ exp.total_reviews }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="ep-right">
+                                        <span class="ep-status-badge {{ exp.status }}">{{ exp.get_status_display }}</span>
+                                        <div class="ep-rating"><i class="fas fa-chart-line"></i> {{ exp.booking_count|default:0 }} booking{{ exp.booking_count|default:0|pluralize }}</div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-mini">
+                            <i class="fas fa-suitcase"></i>
+                            <p>No experiences yet.</p>
+                            <div class="hint"><a href="{% url 'provider:create_experience' %}">Create your first experience →</a></div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- 14-DAY BOOKING HEATMAP -->
+                <div class="card">
+                    <div class="card-title-row">
+                        <h3><i class="fas fa-fire"></i> Booking Activity · Last 14 Days</h3>
+                        <span style="font-size: 11px; color: #8a9a98;">{{ trend_total }} total</span>
+                    </div>
+
+                    <div class="heatmap-wrap">
+                        {% for day in trend_chart %}
+                            <div class="heat-cell lvl-{{ day.level }} {% if day.is_today %}today{% endif %}">
+                                <div class="hc-count">{{ day.count }}</div>
+                                <div class="hc-day">{{ day.short }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="heatmap-legend">
+                        <span>Less</span>
+                        <span class="lg-cell lvl-0" style="background: #faf8f6;"></span>
+                        <span class="lg-cell" style="background: #fef3e0;"></span>
+                        <span class="lg-cell" style="background: #f5d9a8;"></span>
+                        <span class="lg-cell" style="background: #e8b88a;"></span>
+                        <span class="lg-cell" style="background: #c8925e;"></span>
+                        <span>More</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ===== RIGHT RAIL ===== -->
+            <div>
+
+                <!-- ATTENTION NEEDED -->
+                <div class="attention-card {% if not pending_experiences and not has_unanswered %}clear{% endif %}">
+                    <div class="ac-title">
+                        {% if pending_experiences or has_unanswered %}
+                            <i class="fas fa-exclamation-triangle"></i> Attention Needed
+                        {% else %}
+                            <i class="fas fa-check-circle"></i> All Clear
+                        {% endif %}
+                    </div>
+
+                    {% if pending_experiences or has_unanswered %}
+                        <ul class="ac-list">
+                            {% if pending_experiences %}
+                                <li class="ac-item">
+                                    <i class="fas fa-hourglass-half"></i>
+                                    <div><strong>{{ pending_experiences }}</strong> experience{{ pending_experiences|pluralize }} awaiting admin review</div>
+                                </li>
+                            {% endif %}
+                            {% if has_unanswered %}
+                                <li class="ac-item">
+                                    <i class="fas fa-bell"></i>
+                                    <div><strong>{{ has_unanswered }}</strong> booking{{ has_unanswered|pluralize }} need your response</div>
+                                </li>
+                            {% endif %}
+                        </ul>
+                        <a href="{% url 'provider:my_experiences' %}" class="ac-cta">
+                            <i class="fas fa-arrow-right"></i> Review now
+                        </a>
+                    {% else %}
+                        <ul class="ac-list">
+                            <li class="ac-item">
+                                <i class="fas fa-check-circle"></i>
+                                <div>Nothing requires your attention right now.</div>
+                            </li>
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <!-- RECENT REVIEWS -->
+                <div class="card">
+                    <div class="card-title-row">
+                        <h3><i class="fas fa-star"></i> Recent Reviews</h3>
+                        <a href="{% url 'provider:reviews' %}" class="link">All <i class="fas fa-arrow-right"></i></a>
+                    </div>
+
+                    {% if recent_reviews %}
+                        <div class="review-compact">
+                            {% for review in recent_reviews %}
+                                <div class="rc-item">
+                                    <div class="rc-avatar">
+                                        {% if review.visitor.profile.profile_picture %}
+                                            <img src="{{ review.visitor.profile.profile_picture.url }}" alt="{{ review.visitor.user.first_name }}">
+                                        {% else %}
+                                            {{ review.visitor.user.first_name|slice:":1"|default:"T" }}
+                                        {% endif %}
+                                    </div>
+                                    <div class="rc-body">
+                                        <div class="rc-top">
+                                            <span class="rc-name">{{ review.visitor.user.first_name }}</span>
+                                            <span class="rc-stars">
+                                                {% for i in "12345" %}
+                                                    {% if forloop.counter <= review.rating %}<i class="fas fa-star"></i>{% else %}<i class="fas fa-star empty"></i>{% endif %}
+                                                {% endfor %}
+                                            </span>
+                                        </div>
+                                        <div class="rc-exp">{{ review.experience.name|truncatechars:38 }}</div>
+                                        <div class="rc-text">"{{ review.comment|truncatechars:70 }}"</div>
+                                        <div class="rc-time">{{ review.created_at|timesince }} ago</div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-mini">
+                            <i class="fas fa-star"></i>
+                            <p>No reviews yet.</p>
+                            <div class="hint">Reviews appear after tourists complete your experiences.</div>
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

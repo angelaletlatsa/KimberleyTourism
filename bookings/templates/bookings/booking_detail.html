@@ -1,0 +1,491 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking #{{ booking.id }} | Explore Kimberley</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { min-height: 100vh; display: flex; background: #f5f0eb; color: #1a1a1a; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        a { color: inherit; text-decoration: none; }
+
+        .sidebar { position: sticky; top: 0; z-index: 10; display: flex; flex: 0 0 250px; flex-direction: column; width: 250px; height: 100vh; min-height: 100vh; overflow-y: auto; padding: 24px 16px; background: #0f2b26; color: white; }
+        .sidebar-brand { margin-bottom: 18px; padding: 0 12px 24px; border-bottom: 1px solid rgba(255,255,255,.06); }
+        .sidebar-brand h1 { font-size: 20px; font-weight: 700; letter-spacing: -.5px; }
+        .sidebar-brand h1 span { color: #c8925e; }
+        .sidebar-brand .subtitle { margin-top: 2px; color: rgba(255,255,255,.4); font-size: 11px; }
+        .sidebar-nav { flex: 1; }
+        .sidebar-section-title { margin-top: 4px; padding: 16px 14px 8px; color: rgba(255,255,255,.34); font-size: 10px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; }
+        .nav-item { display: flex; align-items: center; gap: 14px; margin-bottom: 2px; padding: 10px 14px; border-radius: 10px; color: rgba(255,255,255,.62); font-size: 14px; font-weight: 500; transition: background .2s ease, color .2s ease; }
+        .nav-item:hover { background: rgba(255,255,255,.06); color: white; }
+        .nav-item.active { background: rgba(200,146,94,.15); color: #d5a575; }
+        .nav-item .icon { width: 22px; flex-shrink: 0; text-align: center; font-size: 16px; }
+        .nav-item .badge { margin-left: auto; padding: 2px 9px; border-radius: 12px; background: #c75b4a; color: white; font-size: 10px; font-weight: 700; }
+        .sidebar-footer { margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,.08); }
+        .user-card { display: flex; align-items: center; gap: 11px; padding: 8px; border-radius: 10px; }
+        .user-card .avatar { display: grid; width: 38px; height: 38px; flex: 0 0 38px; overflow: hidden; place-items: center; border-radius: 50%; background: linear-gradient(135deg,#c8925e,#e8b88a); color: white; font-size: 14px; font-weight: 700; }
+        .user-card .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .user-info { min-width: 0; }
+        .user-info .name { overflow: hidden; color: white; font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+        .user-info .role { margin-top: 2px; color: rgba(255,255,255,.42); font-size: 11px; }
+        .logout-btn { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; padding: 7px 9px; border-radius: 8px; color: rgba(255,255,255,.65); font-size: 12px; font-weight: 600; white-space: nowrap; }
+        .logout-btn:hover { background: rgba(199,91,74,.16); color: #eea094; }
+
+        .main-content { width: calc(100% - 250px); max-width: 1500px; min-width: 0; margin: 0 auto; padding: 30px clamp(20px,4vw,56px) 56px; }
+        .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+        .back-link { display: inline-flex; align-items: center; gap: 9px; padding: 10px 15px; border: 1px solid #eee7df; border-radius: 10px; background: white; color: #42514e; font-size: 13px; font-weight: 600; transition: .2s; }
+        .back-link:hover { transform: translateX(-2px); border-color: #d5b08b; color: #8f6035; }
+        .topbar-right { display: flex; align-items: center; gap: 12px; color: #788582; font-size: 13px; }
+        .notification-btn { position: relative; display: grid; width: 40px; height: 40px; place-items: center; border-radius: 50%; background: white; box-shadow: 0 2px 8px rgba(0,0,0,.04); color: #40514d; font-size: 17px; }
+        .notification-btn .dot { position: absolute; top: 3px; right: 2px; display: grid; min-width: 17px; height: 17px; padding: 0 4px; place-items: center; border: 2px solid #f5f0eb; border-radius: 12px; background: #c75b4a; color: white; font-size: 9px; font-weight: 700; }
+        .date-display { padding: 10px 14px; border-radius: 10px; background: white; }
+
+        .page-heading { margin-bottom: 22px; }
+        .eyebrow { margin-bottom: 7px; color: #a7774a; font-size: 11px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; }
+        .page-heading h2 { color: #12342e; font-size: clamp(25px,3vw,34px); font-weight: 750; letter-spacing: -.8px; }
+        .page-heading p { margin-top: 7px; color: #7e8986; font-size: 14px; line-height: 1.6; }
+        .alert-message { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 13px 16px; border: 1px solid transparent; border-radius: 10px; font-size: 13px; }
+        .alert-message.success { border-color: #b9dfce; background: #e6f4ee; color: #1a7a5a; }
+        .alert-message.error { border-color: #f0c8bf; background: #fce8e4; color: #a34235; }
+        .alert-message.warning { border-color: #f1ddad; background: #fef3e0; color: #8a6d0b; }
+        .alert-message.info { border-color: #c8dae8; background: #e8f0fe; color: #2a5a7a; }
+
+        .booking-hero { position: relative; overflow: hidden; display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 22px; padding: clamp(22px,4vw,34px); border-radius: 18px; background: linear-gradient(125deg,#123a32 0%,#1d5146 72%,#2c6656 100%); box-shadow: 0 12px 28px rgba(15,43,38,.12); color: white; }
+        .booking-hero::after { position: absolute; top: -90px; right: -35px; width: 260px; height: 260px; border: 1px solid rgba(255,255,255,.08); border-radius: 50%; box-shadow: 0 0 0 35px rgba(255,255,255,.025),0 0 0 70px rgba(255,255,255,.02); content: ""; pointer-events: none; }
+        .hero-main,.hero-status { position: relative; z-index: 1; }
+        .booking-ref { margin-bottom: 10px; color: #e4bd96; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+        .booking-hero h1 { margin-bottom: 9px; font-size: clamp(23px,3vw,31px); font-weight: 750; letter-spacing: -.7px; }
+        .hero-date { display: flex; flex-wrap: wrap; gap: 10px 18px; color: rgba(255,255,255,.76); font-size: 13px; }
+        .hero-date span { display: inline-flex; align-items: center; gap: 7px; }
+        .hero-date i { color: #e1b182; }
+        .hero-status { flex: 0 0 auto; padding: 9px 14px; border: 1px solid rgba(255,255,255,.16); border-radius: 30px; background: rgba(255,255,255,.1); font-size: 12px; font-weight: 700; }
+        .hero-status.pending { color: #ffe1a8; }
+        .hero-status.confirmed,.hero-status.completed { color: #a9edce; }
+        .hero-status.cancelled,.hero-status.rejected,.hero-status.no_show { color: #ffc4b7; }
+
+        .status-note { display: flex; gap: 13px; align-items: flex-start; margin-bottom: 22px; padding: 17px 19px; border: 1px solid #efdfbd; border-radius: 13px; background: #fff9ed; color: #705b30; }
+        .status-note > i { margin-top: 2px; color: #bd8a37; font-size: 18px; }
+        .status-note h3 { margin-bottom: 4px; color: #5e4c27; font-size: 13px; font-weight: 750; }
+        .status-note p { color: #766641; font-size: 12px; line-height: 1.6; }
+        .status-note.success { border-color: #cbe5d7; background: #eff8f3; }
+        .status-note.success > i,.status-note.success h3 { color: #247450; }
+        .status-note.success p { color: #4b7460; }
+        .status-note.danger { border-color: #efd0c9; background: #fff3f0; }
+        .status-note.danger > i,.status-note.danger h3 { color: #a34235; }
+        .status-note.danger p { color: #85534b; }
+        .status-note.neutral { border-color: #d8e0e7; background: #f2f6f9; }
+        .status-note.neutral > i,.status-note.neutral h3 { color: #456479; }
+        .status-note.neutral p { color: #617684; }
+
+        .content-grid { display: grid; grid-template-columns: minmax(0,1.65fr) minmax(270px,.85fr); gap: 22px; align-items: start; }
+        .column { min-width: 0; }
+        .card { margin-bottom: 20px; padding: 23px; border: 1px solid #eee8e1; border-radius: 15px; background: white; box-shadow: 0 4px 14px rgba(26,38,34,.035); }
+        .card-heading { display: flex; align-items: center; gap: 11px; margin-bottom: 18px; }
+        .card-icon { display: grid; width: 37px; height: 37px; flex: 0 0 37px; place-items: center; border-radius: 11px; background: #f7eee4; color: #aa7443; font-size: 15px; }
+        .card-heading h2 { color: #163a33; font-size: 15px; font-weight: 750; }
+        .card-heading p { margin-top: 3px; color: #929c99; font-size: 11px; }
+
+        .guide-card { display: flex; align-items: center; gap: 15px; padding: 15px; border: 1px solid #eee9e2; border-radius: 12px; background: #fcfbf9; }
+        .guide-avatar { display: grid; width: 58px; height: 58px; flex: 0 0 58px; overflow: hidden; place-items: center; border-radius: 50%; background: linear-gradient(135deg,#c8925e,#e8b88a); color: white; font-size: 21px; font-weight: 700; }
+        .guide-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .guide-details { min-width: 0; flex: 1; }
+        .guide-label { margin-bottom: 4px; color: #98a09e; font-size: 10px; font-weight: 750; letter-spacing: .7px; text-transform: uppercase; }
+        .guide-name { overflow-wrap: anywhere; color: #183b34; font-size: 15px; font-weight: 750; }
+        .guide-email { display: inline-block; margin-top: 5px; color: #98704d; font-size: 12px; overflow-wrap: anywhere; }
+        .guide-email:hover { text-decoration: underline; }
+        .guide-empty { padding: 17px; border: 1px dashed #ddd5ca; border-radius: 12px; background: #fcfbf9; color: #788582; font-size: 13px; line-height: 1.6; }
+
+        .detail-list { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0 22px; }
+        .detail-item { min-width: 0; padding: 13px 0; border-bottom: 1px solid #f0ece7; }
+        .detail-item:nth-last-child(-n+2) { border-bottom: 0; }
+        .detail-label { margin-bottom: 6px; color: #929c99; font-size: 10px; font-weight: 750; letter-spacing: .65px; text-transform: uppercase; }
+        .detail-value { color: #243c37; font-size: 13px; font-weight: 650; line-height: 1.5; overflow-wrap: anywhere; }
+        .detail-value a { color: #9b6c43; }
+        .detail-value a:hover { text-decoration: underline; }
+        .destination-list { display: grid; gap: 10px; }
+        .destination { display: flex; align-items: flex-start; gap: 12px; padding: 13px; border-radius: 11px; background: #faf8f5; }
+        .destination-number { display: grid; width: 27px; height: 27px; flex: 0 0 27px; place-items: center; border-radius: 50%; background: #e9d4bd; color: #795535; font-size: 11px; font-weight: 800; }
+        .destination-name { color: #283d38; font-size: 13px; font-weight: 700; line-height: 1.45; }
+        .destination-notes { margin-top: 4px; color: #818c89; font-size: 12px; line-height: 1.5; }
+        .empty-copy { color: #87918e; font-size: 13px; line-height: 1.6; }
+        .request-box { padding: 14px 16px; border-left: 3px solid #d3a16e; border-radius: 0 10px 10px 0; background: #fcf8f2; color: #56615e; font-size: 13px; line-height: 1.7; white-space: pre-line; }
+        .reason-box { padding: 14px 16px; border-left: 3px solid #c75b4a; border-radius: 0 10px 10px 0; background: #fff5f2; color: #704941; font-size: 13px; line-height: 1.65; white-space: pre-line; }
+
+        .action-card { position: sticky; top: 22px; }
+        .action-card .card-heading { margin-bottom: 10px; }
+        .action-intro { margin-bottom: 16px; color: #838e8a; font-size: 12px; line-height: 1.65; }
+        .action-stack { display: grid; gap: 10px; }
+        .action-button { display: flex; min-height: 44px; align-items: center; justify-content: center; gap: 9px; padding: 11px 14px; border: 1px solid transparent; border-radius: 10px; cursor: pointer; font-family: inherit; font-size: 12px; font-weight: 750; text-align: center; transition: transform .18s ease, box-shadow .18s ease, background .18s ease; }
+        .action-button:hover { transform: translateY(-1px); box-shadow: 0 5px 13px rgba(22,45,39,.1); }
+        .action-button:disabled { transform: none; box-shadow: none; cursor: not-allowed; opacity: .58; }
+        .action-primary { background: #17473d; color: white; }
+        .action-primary:hover { background: #0f392f; }
+        .action-gold { background: #c8925e; color: white; }
+        .action-gold:hover { background: #b57d4c; }
+        .action-danger { border-color: #eed4ce; background: #fff6f4; color: #a34235; }
+        .action-danger:hover { background: #fce8e4; }
+        .action-secondary { border-color: #e9e4de; background: white; color: #596662; }
+        .action-secondary:hover { background: #f8f5f1; }
+        .action-hint { margin-top: 14px; padding-top: 13px; border-top: 1px solid #f0ece7; color: #949c99; font-size: 11px; line-height: 1.6; }
+        .action-hint i { margin-right: 5px; color: #b88758; }
+
+        @media (max-width: 1050px) {
+            .content-grid { grid-template-columns: minmax(0,1fr) 290px; gap: 16px; }
+            .main-content { padding-right: 24px; padding-left: 24px; }
+        }
+        @media (max-width: 820px) {
+            body { display: block; }
+            .sidebar { position: relative; width: 100%; height: auto; min-height: 0; padding: 14px 16px; }
+            .sidebar-brand { margin-bottom: 8px; padding: 0 5px 12px; }
+            .sidebar-nav { display: flex; overflow-x: auto; gap: 5px; padding-bottom: 3px; }
+            .sidebar-section-title { display: none; }
+            .nav-item { flex: 0 0 auto; gap: 8px; padding: 9px 10px; font-size: 12px; white-space: nowrap; }
+            .nav-item .icon { width: auto; font-size: 13px; }
+            .sidebar-footer { display: none; }
+            .main-content { width: 100%; max-width: none; padding: 20px 18px 40px; }
+            .content-grid { grid-template-columns: 1fr; }
+            .action-card { position: static; }
+        }
+        @media (max-width: 560px) {
+            .main-content { padding-right: 13px; padding-left: 13px; }
+            .topbar { align-items: flex-start; }
+            .date-display { display: none; }
+            .booking-hero { flex-direction: column; gap: 17px; }
+            .hero-status { align-self: flex-start; }
+            .card { padding: 18px; }
+            .detail-list { grid-template-columns: 1fr 1fr; gap: 0 14px; }
+            .detail-item:nth-last-child(-n+2) { border-bottom: 1px solid #f0ece7; }
+            .detail-item:last-child { border-bottom: 0; }
+            .detail-label { font-size: 9px; }
+            .detail-value { font-size: 12px; }
+            .guide-card { align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h1>Explore <span>Kimberley</span></h1>
+            <div class="subtitle">Tourism Platform</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="sidebar-section-title">Main</div>
+            <a href="/tourist/dashboard/" class="nav-item {% if active_page == 'dashboard' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-home"></i></span><span>Dashboard</span>
+            </a>
+            <a href="/tourist/experiences-gallery/" class="nav-item {% if active_page == 'experiences' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-compass"></i></span><span>Discover</span>
+            </a>
+
+            <div class="sidebar-section-title">My Trip</div>
+            <a href="/tourist/saved/" class="nav-item {% if active_page == 'saved' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-heart"></i></span><span>Saved Experiences</span>
+            </a>
+            <a href="/tourist/plan-my-trip/" class="nav-item {% if active_page == 'plan_trip' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-map"></i></span><span>Plan My Trip</span>
+            </a>
+            <a href="/itineraries/" class="nav-item">
+                <span class="icon"><i class="fas fa-map-signs"></i></span><span>My Itinerary</span>
+                {% if itinerary_count > 0 %}<span class="badge">{{ itinerary_count }}</span>{% endif %}
+            </a>
+
+            <div class="sidebar-section-title">Bookings &amp; Reviews</div>
+            <a href="/tourist/guides/" class="nav-item {% if active_page == 'guides' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-users"></i></span><span>Tour Guides</span>
+            </a>
+            <a href="/bookings/my/" class="nav-item {% if active_page == 'bookings' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-calendar-alt"></i></span><span>My Bookings</span>
+                {% if upcoming_count > 0 %}<span class="badge">{{ upcoming_count }}</span>{% endif %}
+            </a>
+            <a href="/reviews/my/" class="nav-item {% if active_page == 'reviews' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-star"></i></span><span>My Reviews</span>
+                {% if review_count > 0 %}<span class="badge">{{ review_count }}</span>{% endif %}
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar">
+                    {% if profile.profile_picture %}
+                        <img src="{{ profile.profile_picture.url }}" alt="{{ user.first_name }}">
+                    {% else %}
+                        {{ user.first_name|slice:":1"|default:"T" }}
+                    {% endif %}
+                </div>
+                <div class="user-info">
+                    <div class="name">{{ user.first_name|default:"Tourist" }}</div>
+                    <div class="role">Tourist</div>
+                </div>
+                <a href="/accounts/logout/" class="logout-btn" title="Sign out">
+                    <i class="fas fa-sign-out-alt"></i><span>Sign out</span>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="topbar">
+            <a href="{% url 'bookings:my_bookings' %}" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to My Bookings
+            </a>
+            <div class="topbar-right">
+                <a href="/notifications/" class="notification-btn" aria-label="Notifications">
+                    <i class="fas fa-bell"></i>
+                    {% if unread_count > 0 %}<span class="dot">{{ unread_count }}</span>{% endif %}
+                </a>
+                <span class="date-display"><i class="far fa-calendar-alt"></i> {{ now|date:"M d, Y" }}</span>
+            </div>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert-message {% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                    <span>{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="page-heading">
+            <div class="eyebrow">Your trip</div>
+            <h2>Booking details</h2>
+            <p>Review your tour information, guide assignment and available next steps.</p>
+        </div>
+
+        <section class="booking-hero">
+            <div class="hero-main">
+                <div class="booking-ref">Booking reference #{{ booking.id }}</div>
+                <h1>{% if booking.experience %}{{ booking.experience.name }}{% else %}Tour with a local guide{% endif %}</h1>
+                <div class="hero-date">
+                    <span><i class="far fa-calendar-alt"></i>{{ booking.booking_date|date:"l, d F Y" }}</span>
+                    <span><i class="far fa-clock"></i>{{ booking.booking_time|time:"H:i" }}</span>
+                    <span><i class="fas fa-users"></i>{{ booking.number_of_participants }} {{ booking.number_of_participants|pluralize:"traveller,travellers" }}</span>
+                </div>
+            </div>
+            <div class="hero-status {{ booking.status }}">
+                <i class="fas fa-circle" style="font-size:7px; margin-right:5px;"></i>{{ booking.get_status_display }}
+            </div>
+        </section>
+
+        {% if booking.is_awaiting_admin %}
+            <div class="status-note">
+                <i class="fas fa-hourglass-half"></i>
+                <div><h3>Request received — awaiting review</h3><p>Your booking request is with the Explore Kimberley team. We’ll notify you when the guide assignment has been reviewed.</p></div>
+            </div>
+        {% elif booking.is_awaiting_guide %}
+            <div class="status-note success">
+                <i class="fas fa-user-check"></i>
+                <div><h3>Assignment reviewed — awaiting guide response</h3><p>The assignment has been reviewed{% if booking.admin_approved_at %} on {{ booking.admin_approved_at|date:"d M Y" }}{% endif %}. The guide still needs to accept the request before the tour is confirmed.</p></div>
+            </div>
+        {% elif booking.status == 'confirmed' %}
+            <div class="status-note success">
+                <i class="fas fa-check-circle"></i>
+                <div><h3>Your tour is confirmed</h3><p>Your guide has accepted the booking. Keep the date, time and destination details handy for your tour.</p></div>
+            </div>
+        {% elif booking.status == 'completed' %}
+            <div class="status-note success">
+                <i class="fas fa-flag-checkered"></i>
+                <div><h3>Tour completed</h3><p>Thanks for exploring Kimberley. You can leave a review for your guide and experience below if one is still outstanding.</p></div>
+            </div>
+        {% elif booking.status == 'cancelled' %}
+            <div class="status-note neutral">
+                <i class="fas fa-ban"></i>
+                <div><h3>Booking cancelled</h3><p>This booking is no longer active.</p></div>
+            </div>
+        {% elif booking.status == 'rejected' %}
+            <div class="status-note danger">
+                <i class="fas fa-times-circle"></i>
+                <div><h3>Booking request not approved</h3><p>The booking could not be confirmed. See the reason below if one was provided.</p></div>
+            </div>
+        {% elif booking.status == 'no_show' %}
+            <div class="status-note neutral">
+                <i class="fas fa-user-slash"></i>
+                <div><h3>Marked as no-show</h3><p>This booking has been closed as a no-show.</p></div>
+            </div>
+        {% endif %}
+
+        <div class="content-grid">
+            <div class="column">
+                <section class="card">
+                    <div class="card-heading">
+                        <span class="card-icon"><i class="fas fa-user-tie"></i></span>
+                        <div><h2>Your tour guide</h2><p>Guide assigned to this booking</p></div>
+                    </div>
+                    {% if booking.guide %}
+                        <div class="guide-card">
+                            <div class="guide-avatar">
+                                {% if booking.guide.profile.profile_picture %}
+                                    <img src="{{ booking.guide.profile.profile_picture.url }}" alt="{{ booking.guide.full_name }}">
+                                {% else %}
+                                    {{ booking.guide.full_name|slice:":1"|default:"G" }}
+                                {% endif %}
+                            </div>
+                            <div class="guide-details">
+                                <div class="guide-label">Your guide</div>
+                                <div class="guide-name">{{ booking.guide.full_name }}</div>
+                                {% if booking.guide.profile.user.email %}
+                                    <a class="guide-email" href="mailto:{{ booking.guide.profile.user.email }}"><i class="far fa-envelope"></i> {{ booking.guide.profile.user.email }}</a>
+                                {% endif %}
+                            </div>
+                            <a href="{% url 'tourist:guide_profile' booking.guide.id %}" class="action-button action-secondary">View profile</a>
+                        </div>
+                    {% else %}
+                        <div class="guide-empty"><i class="fas fa-info-circle"></i> A guide has not been assigned yet. Your booking details will update when one is assigned.</div>
+                    {% endif %}
+                </section>
+
+                <section class="card">
+                    <div class="card-heading">
+                        <span class="card-icon"><i class="fas fa-clipboard-list"></i></span>
+                        <div><h2>Booking information</h2><p>Important details for your request</p></div>
+                    </div>
+                    <div class="detail-list">
+                        <div class="detail-item">
+                            <div class="detail-label">Booking reference</div>
+                            <div class="detail-value">#{{ booking.id }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Status</div>
+                            <div class="detail-value">{{ booking.get_status_display }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Tour date</div>
+                            <div class="detail-value">{{ booking.booking_date|date:"d M Y" }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Start time</div>
+                            <div class="detail-value">{{ booking.booking_time|time:"H:i" }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Travellers</div>
+                            <div class="detail-value">{{ booking.number_of_participants }} {{ booking.number_of_participants|pluralize:"person,people" }}</div>
+                        </div>
+                        {% if booking.experience %}
+                            <div class="detail-item">
+                                <div class="detail-label">Experience</div>
+                                <div class="detail-value"><a href="{% url 'experiences:detail' booking.experience.id %}">{{ booking.experience.name }} <i class="fas fa-arrow-up-right-from-square" style="font-size:10px;"></i></a></div>
+                            </div>
+                        {% endif %}
+                        {% if booking.total_price %}
+                            <div class="detail-item">
+                                <div class="detail-label">Estimated total</div>
+                                <div class="detail-value">{{ booking.currency }} {{ booking.total_price|floatformat:2 }}</div>
+                            </div>
+                        {% endif %}
+                        <div class="detail-item">
+                            <div class="detail-label">Request submitted</div>
+                            <div class="detail-value">{{ booking.created_at|date:"d M Y, H:i" }}</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <div class="card-heading">
+                        <span class="card-icon"><i class="fas fa-map-marked-alt"></i></span>
+                        <div><h2>Tour stops</h2><p>Your requested destinations, in order</p></div>
+                    </div>
+                    {% with stops=booking.destinations.all %}
+                        {% if stops %}
+                            <div class="destination-list">
+                                {% for stop in stops %}
+                                    <div class="destination">
+                                        <span class="destination-number">{{ forloop.counter }}</span>
+                                        <div><div class="destination-name">{{ stop.name }}</div>{% if stop.notes %}<div class="destination-notes">{{ stop.notes }}</div>{% endif %}</div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="empty-copy">No tour stops were added to this booking.</p>
+                        {% endif %}
+                    {% endwith %}
+                </section>
+
+                {% if booking.special_requests %}
+                    <section class="card">
+                        <div class="card-heading">
+                            <span class="card-icon"><i class="fas fa-comment-dots"></i></span>
+                            <div><h2>Special requests</h2><p>Notes you included with your booking</p></div>
+                        </div>
+                        <div class="request-box">{{ booking.special_requests }}</div>
+                    </section>
+                {% endif %}
+
+                {% if booking.cancellation_reason or booking.rejection_reason %}
+                    <section class="card">
+                        <div class="card-heading">
+                            <span class="card-icon"><i class="fas fa-circle-exclamation"></i></span>
+                            <div><h2>Booking update</h2><p>Reason recorded for this booking</p></div>
+                        </div>
+                        {% if booking.cancellation_reason %}<div class="reason-box">{{ booking.cancellation_reason }}</div>{% endif %}
+                        {% if booking.rejection_reason %}<div class="reason-box" {% if booking.cancellation_reason %}style="margin-top:10px;"{% endif %}>{{ booking.rejection_reason }}</div>{% endif %}
+                    </section>
+                {% endif %}
+            </div>
+
+            <aside class="column">
+                <section class="card action-card">
+                    <div class="card-heading">
+                        <span class="card-icon"><i class="fas fa-bolt"></i></span>
+                        <div><h2>Next steps</h2><p>Actions available for this booking</p></div>
+                    </div>
+                    <p class="action-intro">
+                        {% if booking.status == 'confirmed' %}
+                            {% if booking.can_complete %}
+                                Your tour date has arrived. Mark the tour complete after it has taken place.
+                            {% else %}
+                                Your tour is confirmed. You can mark it complete on the tour date.
+                            {% endif %}
+                        {% elif booking.is_awaiting_admin %}
+                            Your request is being reviewed. We’ll notify you when there is an update.
+                        {% elif booking.is_awaiting_guide %}
+                            The guide is reviewing the request. You’ll be notified when they respond.
+                        {% elif booking.can_review %}
+                            Your tour is complete. Leave any outstanding reviews.
+                        {% else %}
+                            There are no further actions available for this booking.
+                        {% endif %}
+                    </p>
+                    <div class="action-stack">
+                        {% if booking.status == 'confirmed' %}
+                            {% if booking.can_complete %}
+                                <form method="post" action="{% url 'bookings:mark_complete' booking.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="action-button action-primary" style="width:100%;">
+                                        <i class="fas fa-check-circle"></i> Mark tour as complete
+                                    </button>
+                                </form>
+                            {% else %}
+                                <button type="button" class="action-button action-primary" style="width:100%;" disabled>
+                                    <i class="fas fa-clock"></i> Mark tour as complete
+                                </button>
+                                <div class="action-hint" style="margin-top:0; padding-top:0; border-top:0;">This action will be available on the tour date. The booking will then appear under Past.</div>
+                            {% endif %}
+                        {% endif %}
+                        {% if booking.can_review %}
+                            {% if booking.has_all_reviews %}
+                                <a href="{% url 'reviews:my_reviews' %}" class="action-button action-gold">
+                                    <i class="fas fa-star"></i> View my reviews
+                                </a>
+                            {% else %}
+                                <a href="{% url 'reviews:create' booking.id %}" class="action-button action-gold">
+                                    <i class="fas fa-pen"></i> Leave a review
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                        {% if booking.can_cancel %}
+                            <a href="{% url 'bookings:cancel' booking.id %}" class="action-button action-danger">
+                                <i class="fas fa-xmark"></i> Cancel booking
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="action-hint"><i class="fas fa-shield-halved"></i> Once marked complete, this booking will move to Past under My Bookings.</div>
+                </section>
+            </aside>
+        </div>
+    </main>
+</body>
+</html>

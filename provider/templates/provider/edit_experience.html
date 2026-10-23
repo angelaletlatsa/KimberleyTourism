@@ -1,0 +1,676 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Experience | Explore Kimberley</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f0eb; color: #1a1a1a; display: flex; min-height: 100vh; }
+        a { text-decoration: none; color: inherit; }
+
+        .sidebar { width: 250px; background: #0f2b26; color: white; min-height: 100vh; padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-brand { padding: 0 12px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); margin-bottom: 24px; }
+        .sidebar-brand h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        .sidebar-brand h1 span { color: #c8925e; }
+        .sidebar-brand .subtitle { font-size: 11px; color: rgba(255, 255, 255, 0.35); margin-top: 2px; }
+        .sidebar-nav { flex: 1; }
+        .sidebar-nav .nav-item { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 10px; color: rgba(255, 255, 255, 0.6); font-size: 14px; font-weight: 500; transition: all 0.25s ease; margin-bottom: 2px; }
+        .sidebar-nav .nav-item:hover { background: rgba(255, 255, 255, 0.06); color: white; }
+        .sidebar-nav .nav-item.active { background: rgba(200, 146, 94, 0.15); color: #c8925e; }
+        .sidebar-nav .nav-item .icon { width: 22px; text-align: center; font-size: 16px; flex-shrink: 0; }
+        .sidebar-section-title { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: rgba(255, 255, 255, 0.25); padding: 16px 14px 8px; margin-top: 4px; }
+        .sidebar-footer { border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 16px; margin-top: auto; }
+        .sidebar-footer .user-card { display: flex; align-items: center; gap: 12px; padding: 10px 12px; }
+        .sidebar-footer .user-card .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #c8925e, #e8b88a); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; flex-shrink: 0; }
+        .sidebar-footer .user-card .user-info .name { font-size: 13px; font-weight: 600; color: white; }
+        .sidebar-footer .user-card .user-info .role { font-size: 11px; color: rgba(255, 255, 255, 0.4); }
+        .sidebar-footer .user-card .logout { color: rgba(255, 255, 255, 0.3); margin-left: auto; }
+
+        .main-content { flex: 1; padding: 28px 40px 40px; min-height: 100vh; max-width: calc(100% - 250px); }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+        .header-left h2 { font-size: 22px; font-weight: 700; color: #0f2b26; }
+        .header-left p { font-size: 13px; color: #8a9a98; margin-top: 2px; }
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .header-right .notification-btn { position: relative; width: 40px; height: 40px; border-radius: 50%; border: none; background: white; color: #4a5a58; font-size: 18px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); display: flex; align-items: center; justify-content: center; }
+        .header-right .notification-btn .dot { position: absolute; top: 6px; right: 6px; min-width: 18px; height: 18px; background: #c75b4a; color: white; font-size: 10px; font-weight: 700; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+        .header-right .date-display { font-size: 13px; color: #8a9a98; background: white; padding: 8px 18px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); }
+
+        .back-button { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; background: white; color: #4a5a58; border-radius: 10px; font-size: 13px; font-weight: 500; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); border: 1px solid transparent; transition: 0.2s; }
+        .back-button:hover { border-color: #c8925e; color: #c8925e; }
+
+        .alert-message { border-radius: 10px; padding: 12px 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; font-size: 13px; }
+        .alert-message i { font-size: 18px; }
+        .alert-message.success { background: #e6f4ee; border: 1px solid #2d8f6f; color: #1a7a5a; }
+        .alert-message.error { background: #fce8e4; border: 1px solid #c75b4a; color: #b84a3a; }
+        .alert-message.warning { background: #fef3e0; border: 1px solid #b8860b; color: #8a6d0b; }
+        .alert-message.info { background: #e3edf7; border: 1px solid #3a6ea5; color: #2a5a7a; }
+
+        .status-banner { background: #faf8f6; border-radius: 10px; padding: 14px 20px; margin-bottom: 20px; border-left: 4px solid #c8925e; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+        .status-banner .status-label { font-size: 13px; color: #4a5a58; }
+        .status-banner .status-label strong { color: #0f2b26; }
+        .status-badge { display: inline-block; padding: 3px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-badge.submitted { background: #e3edf7; color: #2a5a7a; }
+        .status-badge.under_review { background: #fef3e0; color: #b8860b; }
+        .status-badge.approved { background: #e6f4ee; color: #1a7a5a; }
+        .status-badge.published { background: #e6f4ee; color: #1a7a5a; }
+        .status-badge.rejected { background: #fce8e4; color: #b84a3a; }
+        .status-badge.suspended { background: #fce8e4; color: #b84a3a; }
+        .status-badge.archived { background: #f0ebe6; color: #6b7a78; }
+
+        .info-box { background: #faf8f6; border-radius: 10px; padding: 16px 20px; margin-bottom: 20px; border-left: 4px solid #c8925e; }
+        .info-box p { font-size: 13px; color: #4a5a58; line-height: 1.6; }
+        .info-box i { color: #c8925e; margin-right: 8px; }
+
+        .form-card { background: white; border-radius: 14px; padding: 28px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); border: 1px solid rgba(0, 0, 0, 0.02); max-width: 800px; }
+        .form-card .form-title { font-size: 18px; font-weight: 600; color: #0f2b26; margin-bottom: 6px; }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #4a5a58; margin-bottom: 6px; }
+        .form-group label .required { color: #c75b4a; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 14px; border: 1px solid #e5e0da; border-radius: 8px; font-size: 14px; font-family: inherit; background: #faf8f6; transition: 0.2s ease; }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: #c8925e; box-shadow: 0 0 0 3px rgba(200, 146, 94, 0.15); background: white; }
+        .form-group textarea { resize: vertical; min-height: 120px; }
+        .form-group .help-text { font-size: 12px; color: #8a9a98; margin-top: 4px; line-height: 1.5; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+        .form-actions { display: flex; gap: 12px; margin-top: 24px; padding-top: 20px; border-top: 1px solid #f0ebe6; flex-wrap: wrap; }
+
+        .btn-secondary { padding: 11px 28px; background: white; color: #4a5a58; border: 1px solid #e5e0da; border-radius: 9px; font-size: 14px; font-weight: 500; cursor: pointer; transition: 0.2s ease; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; text-decoration: none; }
+        .btn-secondary:hover { border-color: #c8925e; color: #c8925e; }
+        .btn-success { padding: 11px 28px; background: #2d8f6f; color: white; border: none; border-radius: 9px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s ease; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; }
+        .btn-success:hover { background: #237a5e; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(45, 143, 111, 0.3); }
+
+        .conditional-section { display: none; margin-top: 24px; padding-top: 20px; border-top: 2px dashed #e5e0da; }
+        .conditional-section.active { display: block; }
+        .conditional-section .section-label { font-size: 14px; font-weight: 600; color: #0f2b26; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+        .conditional-section .section-label i { color: #c8925e; }
+        .conditional-section .section-hint { font-size: 12px; color: #8a9a98; margin-bottom: 16px; line-height: 1.5; }
+
+        .price-block { background: linear-gradient(135deg, #faf8f6 0%, #f5f0eb 100%); border-left: 4px solid #c8925e; border-radius: 10px; padding: 20px 22px; margin-bottom: 20px; }
+        .price-block .pb-title { font-size: 14px; font-weight: 700; color: #0f2b26; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+        .price-block .pb-title i { color: #c8925e; }
+        .price-block .pb-hint { font-size: 12px; color: #4a5a58; line-height: 1.6; margin-bottom: 16px; font-style: italic; }
+        .price-block .price-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        .price-block .price-field label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #8a9a98; margin-bottom: 5px; }
+        .price-block .price-field .input-wrap { position: relative; }
+        .price-block .price-field .input-wrap .currency { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 13px; font-weight: 600; color: #8a9a98; pointer-events: none; }
+        .price-block .price-field input { padding-left: 32px; background: white; }
+        .price-block .price-field select { background: white; }
+
+        .days-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .day-row { display: flex; align-items: center; gap: 8px; }
+        .day-row .day-label { font-size: 12px; color: #4a5a58; font-weight: 500; min-width: 75px; }
+        .day-row input { padding: 6px 10px; font-size: 12px; }
+
+        .checkboxes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .checkboxes-grid label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #4a5a58; cursor: pointer; padding: 6px 10px; border-radius: 6px; background: #faf8f6; transition: 0.2s ease; font-weight: 400; margin-bottom: 0; }
+        .checkboxes-grid label:hover { background: #f5f0eb; }
+        .checkboxes-grid input[type="checkbox"] { width: auto; margin: 0; }
+
+        .custom-input { display: none; margin-top: 8px; }
+        .custom-input.active { display: block; }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 72px; padding: 16px 10px; }
+            .sidebar-brand h1 { font-size: 16px; }
+            .sidebar-brand .subtitle, .sidebar-section-title, .sidebar-nav .nav-item span, .sidebar-footer .user-card .user-info { display: none; }
+            .main-content { padding: 16px; max-width: 100%; }
+            .header { flex-direction: column; align-items: flex-start; }
+            .form-row, .form-row-3 { grid-template-columns: 1fr; }
+            .price-block .price-inputs { grid-template-columns: 1fr; }
+            .form-actions { flex-direction: column; }
+            .form-actions .btn-success, .form-actions .btn-secondary { width: 100%; justify-content: center; }
+            .days-grid, .checkboxes-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <h1>Explore <span>Kimberley</span></h1>
+        <div class="subtitle">Tourism Platform</div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="sidebar-section-title">Main</div>
+        <a href="{% url 'provider:dashboard' %}" class="nav-item">
+            <span class="icon"><i class="fas fa-home"></i></span><span>Dashboard</span>
+        </a>
+        <a href="{% url 'provider:profile' %}" class="nav-item">
+            <span class="icon"><i class="fas fa-building"></i></span><span>Profile</span>
+        </a>
+        <div class="sidebar-section-title">Management</div>
+        <a href="{% url 'provider:create_experience' %}" class="nav-item">
+            <span class="icon"><i class="fas fa-plus-circle"></i></span><span>Create Experience</span>
+        </a>
+        <a href="{% url 'provider:my_experiences' %}" class="nav-item active">
+            <span class="icon"><i class="fas fa-box"></i></span><span>My Experiences</span>
+        </a>
+        <a href="{% url 'provider:reviews' %}" class="nav-item">
+            <span class="icon"><i class="fas fa-star"></i></span><span>Reviews</span>
+        </a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="user-card">
+            <div class="avatar">{{ provider.business_name|slice:":1"|default:"P" }}</div>
+            <div class="user-info">
+                <div class="name">{{ provider.business_name|default:"Provider" }}</div>
+                <div class="role">Provider</div>
+            </div>
+            <a href="/accounts/logout/" class="logout-btn" title="Sign out" style="display:inline-flex;align-items:center;gap:6px;margin-left:auto;padding:6px 10px;border:1px solid rgba(255,255,255,0.14);border-radius:8px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.75);font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;"><i class="fas fa-sign-out-alt"></i> Sign out</a>
+        </div>
+    </div>
+</aside>
+
+<main class="main-content">
+
+    <a href="{% url 'provider:my_experiences' %}" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back to My Experiences
+    </a>
+
+    <header class="header">
+        <div class="header-left">
+            <h2>Edit Experience</h2>
+            <p>Update the details tourists will see</p>
+        </div>
+        <div class="header-right">
+            <a href="/notifications/" class="notification-btn">
+                <i class="fas fa-bell"></i>
+                {% if unread_count > 0 %}<span class="dot">{{ unread_count }}</span>{% endif %}
+            </a>
+            <span class="date-display">
+                <i class="far fa-calendar-alt"></i>
+                {{ now|date:"M d, Y" }}
+            </span>
+        </div>
+    </header>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert-message {% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
+                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="status-banner">
+        <div class="status-label">
+            <strong>Current Status:</strong>
+            <span class="status-badge {{ experience.status }}">{{ experience.get_status_display }}</span>
+            {% if experience.status == 'under_review' %}
+                <span style="font-size:13px; color:#b8860b; margin-left:8px;"><i class="fas fa-clock"></i> Waiting for admin approval</span>
+            {% elif experience.status == 'published' %}
+                <span style="font-size:13px; color:#b8860b; margin-left:8px;"><i class="fas fa-info-circle"></i> Live on Discover — saving will send it back for review</span>
+            {% elif experience.status == 'rejected' %}
+                <span style="font-size:13px; color:#b84a3a; margin-left:8px;"><i class="fas fa-times-circle"></i> Please update and resubmit</span>
+            {% elif experience.status == 'suspended' %}
+                <span style="font-size:13px; color:#b84a3a; margin-left:8px;"><i class="fas fa-ban"></i> Suspended — contact admin</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="info-box">
+        <p>
+            <i class="fas fa-info-circle"></i>
+            <strong>You decide your own price range.</strong>
+            Update the low and high amounts to reflect what tourists should budget.
+        </p>
+    </div>
+
+    <div class="form-card">
+        <div class="form-title"><i class="fas fa-edit" style="color:#c8925e;"></i> Edit: {{ experience.name }}</div>
+
+        <form method="post" enctype="multipart/form-data" id="experienceForm">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="category">Category <span class="required">*</span></label>
+                <select id="category" name="category" required onchange="toggleFields()">
+                    <option value="">Choose a category...</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" data-name="{{ category.name|lower }}" {% if category.id == experience.category.id %}selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="name">Experience Name <span class="required">*</span></label>
+                <input type="text" id="name" name="name" value="{{ experience.name }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description <span class="required">*</span></label>
+                <textarea id="description" name="description" rows="5" required>{{ experience.description }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location <span class="required">*</span></label>
+                <input type="text" id="location" name="location" value="{{ experience.location }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="image">Main Image</label>
+                <input type="file" id="image" name="image" accept="image/*">
+                <div class="help-text">Current: {% if experience.main_image %}{{ experience.main_image.name }}{% else %}No image uploaded{% endif %}</div>
+            </div>
+
+            <!-- FOOD & DINING -->
+            <div class="conditional-section" id="foodDiningFields">
+                <div class="section-label">
+                    <i class="fas fa-utensils"></i> Restaurant Details
+                </div>
+                <div class="section-hint">
+                    For restaurants, cafés, and eateries in Kimberley.
+                </div>
+
+                <div class="price-block">
+                    <div class="pb-title"><i class="fas fa-tag"></i> Your price range</div>
+                    <div class="pb-hint">
+                        Roughly, what does a person typically spend at your restaurant?
+                    </div>
+                    <div class="price-inputs">
+                        <div class="price-field">
+                            <label>Minimum</label>
+                            <div class="input-wrap">
+                                <span class="currency">R</span>
+                                <input type="number" name="price_range_min" min="0" step="1" placeholder="150" value="{{ experience.price_range_min|default_if_none:'' }}">
+                            </div>
+                        </div>
+                        <div class="price-field">
+                            <label>Maximum</label>
+                            <div class="input-wrap">
+                                <span class="currency">R</span>
+                                <input type="number" name="price_range_max" min="0" step="1" placeholder="400" value="{{ experience.price_range_max|default_if_none:'' }}">
+                            </div>
+                        </div>
+                        <div class="price-field">
+                            <label>Per</label>
+                            <select name="price_unit">
+                                <option value="" {% if not experience.price_unit %}selected{% endif %}>(no unit)</option>
+                                <option value="per_person" {% if experience.price_unit == 'per_person' %}selected{% endif %}>per person</option>
+                                <option value="per_night" {% if experience.price_unit == 'per_night' %}selected{% endif %}>per night</option>
+                                <option value="per_meal" {% if experience.price_unit == 'per_meal' %}selected{% endif %}>per meal</option>
+                                <option value="per_group" {% if experience.price_unit == 'per_group' %}selected{% endif %}>per group</option>
+                                <option value="per_hour" {% if experience.price_unit == 'per_hour' %}selected{% endif %}>per hour</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cuisine_type">Cuisine Type</label>
+                        <input type="text" id="cuisine_type" name="cuisine_type" value="{{ experience.cuisine_type|default:'' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="meal_types">Meal Types</label>
+                        <input type="text" id="meal_types" name="meal_types" value="{{ experience.meal_types|default:'' }}">
+                        <div class="help-text">Separate with commas.</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="features">Features</label>
+                    <input type="text" id="features" name="features" value="{{ experience.features|default:'' }}">
+                    <div class="help-text">Separate with commas.</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="contact_number">Contact Number</label>
+                        <input type="tel" id="contact_number" name="contact_number" value="{{ experience.contact_number|default:'' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="contact_email">Contact Email</label>
+                        <input type="email" id="contact_email" name="contact_email" value="{{ experience.contact_email|default:'' }}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Opening Hours</label>
+                    <div class="days-grid">
+                        <div class="day-row"><span class="day-label">Monday</span><input type="text" name="opening_monday" value="{{ experience.opening_hours.monday|default:'' }}"></div>
+                        <div class="day-row"><span class="day-label">Tuesday</span><input type="text" name="opening_tuesday" value="{{ experience.opening_hours.tuesday|default:'' }}"></div>
+                        <div class="day-row"><span class="day-label">Wednesday</span><input type="text" name="opening_wednesday" value="{{ experience.opening_hours.wednesday|default:'' }}"></div>
+                        <div class="day-row"><span class="day-label">Thursday</span><input type="text" name="opening_thursday" value="{{ experience.opening_hours.thursday|default:'' }}"></div>
+                        <div class="day-row"><span class="day-label">Friday</span><input type="text" name="opening_friday" value="{{ experience.opening_hours.friday|default:'' }}"></div>
+                        <div class="day-row"><span class="day-label">Saturday</span><input type="text" name="opening_saturday" value="{{ experience.opening_hours.saturday|default:'' }}"></div>
+                        <div class="day-row"><span class="day-label">Sunday</span><input type="text" name="opening_sunday" value="{{ experience.opening_hours.sunday|default:'' }}"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PLACES TO STAY -->
+            <div class="conditional-section" id="placesToStayFields">
+                <div class="section-label">
+                    <i class="fas fa-hotel"></i> Accommodation Details
+                </div>
+                <div class="section-hint">
+                    Guesthouses, B&Bs, lodges, and hotels.
+                </div>
+
+                <div class="price-block">
+                    <div class="pb-title"><i class="fas fa-tag"></i> Your nightly range</div>
+                    <div class="pb-hint">
+                        Roughly, what does a room cost per night?
+                    </div>
+                    <div class="price-inputs">
+                        <div class="price-field">
+                            <label>Minimum</label>
+                            <div class="input-wrap">
+                                <span class="currency">R</span>
+                                <input type="number" name="price_range_min" min="0" step="1" placeholder="850" value="{{ experience.price_range_min|default_if_none:'' }}">
+                            </div>
+                        </div>
+                        <div class="price-field">
+                            <label>Maximum</label>
+                            <div class="input-wrap">
+                                <span class="currency">R</span>
+                                <input type="number" name="price_range_max" min="0" step="1" placeholder="1400" value="{{ experience.price_range_max|default_if_none:'' }}">
+                            </div>
+                        </div>
+                        <div class="price-field">
+                            <label>Per</label>
+                            <select name="price_unit">
+                                <option value="" {% if not experience.price_unit %}selected{% endif %}>(no unit)</option>
+                                <option value="per_night" {% if experience.price_unit == 'per_night' %}selected{% endif %}>per night</option>
+                                <option value="per_person" {% if experience.price_unit == 'per_person' %}selected{% endif %}>per person</option>
+                                <option value="per_meal" {% if experience.price_unit == 'per_meal' %}selected{% endif %}>per meal</option>
+                                <option value="per_group" {% if experience.price_unit == 'per_group' %}selected{% endif %}>per group</option>
+                                <option value="per_hour" {% if experience.price_unit == 'per_hour' %}selected{% endif %}>per hour</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="check_in_time">Check-in Time</label>
+                        <input type="time" id="check_in_time" name="check_in_time" value="{{ experience.check_in_time|time:'H:i'|default:'14:00' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="check_out_time">Check-out Time</label>
+                        <input type="time" id="check_out_time" name="check_out_time" value="{{ experience.check_out_time|time:'H:i'|default:'10:00' }}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Amenities</label>
+                    <div class="checkboxes-grid">
+                        <label><input type="checkbox" name="amenities" value="WiFi" {% if 'WiFi' in experience.amenities %}checked{% endif %}> WiFi</label>
+                        <label><input type="checkbox" name="amenities" value="Pool" {% if 'Pool' in experience.amenities %}checked{% endif %}> Pool</label>
+                        <label><input type="checkbox" name="amenities" value="Parking" {% if 'Parking' in experience.amenities %}checked{% endif %}> Parking</label>
+                        <label><input type="checkbox" name="amenities" value="Restaurant" {% if 'Restaurant' in experience.amenities %}checked{% endif %}> Restaurant</label>
+                        <label><input type="checkbox" name="amenities" value="Air Conditioning" {% if 'Air Conditioning' in experience.amenities %}checked{% endif %}> Air Conditioning</label>
+                        <label><input type="checkbox" name="amenities" value="Breakfast" {% if 'Breakfast' in experience.amenities %}checked{% endif %}> Breakfast</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cancellation_policy">Cancellation Policy</label>
+                    <select id="cancellation_policy_stay" name="cancellation_policy">
+                        <option value="free_24h" {% if experience.cancellation_policy == 'free_24h' %}selected{% endif %}>Free cancellation up to 24 hours before</option>
+                        <option value="free_48h" {% if experience.cancellation_policy == 'free_48h' %}selected{% endif %}>Free cancellation up to 48 hours before</option>
+                        <option value="refund_50" {% if experience.cancellation_policy == 'refund_50' %}selected{% endif %}>50% refund up to 24 hours before</option>
+                        <option value="no_refund" {% if experience.cancellation_policy == 'no_refund' %}selected{% endif %}>No refund after booking</option>
+                        <option value="custom" {% if experience.cancellation_policy == 'custom' %}selected{% endif %}>Custom policy</option>
+                    </select>
+                    <div class="custom-input {% if experience.cancellation_policy == 'custom' %}active{% endif %}" id="customCancellationStay">
+                        <textarea name="cancellation_policy_custom" rows="2">{{ experience.cancellation_policy_custom|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ATTRACTIONS -->
+            <div class="conditional-section" id="attractionsFields">
+                <div class="section-label">
+                    <i class="fas fa-landmark"></i> Attraction Details
+                </div>
+                <div class="section-hint">
+                    Historic sites, museums, and landmarks.
+                </div>
+
+                <div class="price-block">
+                    <div class="pb-title"><i class="fas fa-tag"></i> Your entry range</div>
+                    <div class="pb-hint">
+                        Roughly, what does entry cost per person?
+                    </div>
+                    <div class="price-inputs">
+                        <div class="price-field">
+                            <label>Minimum</label>
+                            <div class="input-wrap">
+                                <span class="currency">R</span>
+                                <input type="number" name="price_range_min" min="0" step="1" placeholder="60" value="{{ experience.price_range_min|default_if_none:'' }}">
+                            </div>
+                        </div>
+                        <div class="price-field">
+                            <label>Maximum</label>
+                            <div class="input-wrap">
+                                <span class="currency">R</span>
+                                <input type="number" name="price_range_max" min="0" step="1" placeholder="120" value="{{ experience.price_range_max|default_if_none:'' }}">
+                            </div>
+                        </div>
+                        <div class="price-field">
+                            <label>Per</label>
+                            <select name="price_unit">
+                                <option value="" {% if not experience.price_unit %}selected{% endif %}>(no unit)</option>
+                                <option value="per_person" {% if experience.price_unit == 'per_person' %}selected{% endif %}>per person</option>
+                                <option value="per_night" {% if experience.price_unit == 'per_night' %}selected{% endif %}>per night</option>
+                                <option value="per_meal" {% if experience.price_unit == 'per_meal' %}selected{% endif %}>per meal</option>
+                                <option value="per_group" {% if experience.price_unit == 'per_group' %}selected{% endif %}>per group</option>
+                                <option value="per_hour" {% if experience.price_unit == 'per_hour' %}selected{% endif %}>per hour</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Opening Hours</label>
+                    <div class="days-grid">
+                        <div class="day-row"><span class="day-label">Monday</span><input type="text" name="opening_monday" value="{{ experience.opening_hours.monday|default:'' }}"></div>
+                        <div class="day-row"><span class="day-label">Tuesday</span><input type="text" name="opening_tuesday" value="{{ experience.opening_hours.tuesday|default:'' }}"></div>
+                        <div class="day-row"><span class="day-label">Wednesday</span><input type="text" name="opening_wednesday" value="{{ experience.opening_hours.wednesday|default:'' }}"></div>
+                        <div class="day-row"><span class="day-label">Thursday</span><input type="text" name="opening_thursday" value="{{ experience.opening_hours.thursday|default:'' }}"></div>
+                        <div class="day-row"><span class="day-label">Friday</span><input type="text" name="opening_friday" value="{{ experience.opening_hours.friday|default:'' }}"></div>
+                        <div class="day-row"><span class="day-label">Saturday</span><input type="text" name="opening_saturday" value="{{ experience.opening_hours.saturday|default:'' }}"></div>
+                        <div class="day-row"><span class="day-label">Sunday</span><input type="text" name="opening_sunday" value="{{ experience.opening_hours.sunday|default:'' }}"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="duration_minutes_attraction">Typical Visit Duration (minutes)</label>
+                    <input type="number" id="duration_minutes_attraction" name="duration_minutes" value="{{ experience.duration_minutes|default:'' }}">
+                </div>
+            </div>
+
+            <!-- ACTIVITIES -->
+            <div class="conditional-section" id="activitiesFields">
+                <div class="section-label">
+                    <i class="fas fa-hiking"></i> Activity Details
+                </div>
+                <div class="section-hint">
+                    Guided tours, game drives, walking trails.
+                </div>
+
+                <div class="price-block">
+                    <div class="pb-title"><i class="fas fa-tag"></i> Your activity range</div>
+                    <div class="pb-hint">
+                        Roughly, what does the activity cost per person?
+                    </div>
+                    <div class="price-inputs">
+                        <div class="price-field">
+                            <label>Minimum</label>
+                            <div class="input-wrap">
+                                <span class="currency">R</span>
+                                <input type="number" name="price_range_min" min="0" step="1" placeholder="250" value="{{ experience.price_range_min|default_if_none:'' }}">
+                            </div>
+                        </div>
+                        <div class="price-field">
+                            <label>Maximum</label>
+                            <div class="input-wrap">
+                                <span class="currency">R</span>
+                                <input type="number" name="price_range_max" min="0" step="1" placeholder="550" value="{{ experience.price_range_max|default_if_none:'' }}">
+                            </div>
+                        </div>
+                        <div class="price-field">
+                            <label>Per</label>
+                            <select name="price_unit">
+                                <option value="" {% if not experience.price_unit %}selected{% endif %}>(no unit)</option>
+                                <option value="per_person" {% if experience.price_unit == 'per_person' %}selected{% endif %}>per person</option>
+                                <option value="per_night" {% if experience.price_unit == 'per_night' %}selected{% endif %}>per night</option>
+                                <option value="per_meal" {% if experience.price_unit == 'per_meal' %}selected{% endif %}>per meal</option>
+                                <option value="per_group" {% if experience.price_unit == 'per_group' %}selected{% endif %}>per group</option>
+                                <option value="per_hour" {% if experience.price_unit == 'per_hour' %}selected{% endif %}>per hour</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="duration_minutes">Duration (minutes)</label>
+                    <input type="number" id="duration_minutes" name="duration_minutes" value="{{ experience.duration_minutes|default:'' }}">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="meeting_point">Meeting Point</label>
+                        <input type="text" id="meeting_point" name="meeting_point" value="{{ experience.meeting_point|default:'' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="age_requirement">Age Requirement</label>
+                        <select id="age_requirement" name="age_requirement">
+                            <option value="All ages welcome" {% if experience.age_requirement == 'All ages welcome' %}selected{% endif %}>All ages welcome</option>
+                            <option value="6+" {% if experience.age_requirement == '6+' %}selected{% endif %}>6+</option>
+                            <option value="12+" {% if experience.age_requirement == '12+' %}selected{% endif %}>12+</option>
+                            <option value="18+" {% if experience.age_requirement == '18+' %}selected{% endif %}>18+</option>
+                            <option value="21+" {% if experience.age_requirement == '21+' %}selected{% endif %}>21+</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="difficulty_level">Difficulty Level</label>
+                        <select id="difficulty_level" name="difficulty_level">
+                            <option value="">Select...</option>
+                            <option value="easy" {% if experience.difficulty_level == 'easy' %}selected{% endif %}>Easy</option>
+                            <option value="moderate" {% if experience.difficulty_level == 'moderate' %}selected{% endif %}>Moderate</option>
+                            <option value="challenging" {% if experience.difficulty_level == 'challenging' %}selected{% endif %}>Challenging</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="languages">Languages</label>
+                        <input type="text" id="languages" name="languages" value="{{ experience.languages|join:', ' }}" placeholder="e.g. English, Afrikaans">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="what_to_bring">What to Bring</label>
+                    <input type="text" id="what_to_bring" name="what_to_bring" value="{{ experience.what_to_bring|default:'' }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="accessibility_info">Accessibility Information</label>
+                    <input type="text" id="accessibility_info" name="accessibility_info" value="{{ experience.accessibility_info|default:'' }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="cancellation_policy">Cancellation Policy</label>
+                    <select id="cancellation_policy_activities" name="cancellation_policy">
+                        <option value="free_24h" {% if experience.cancellation_policy == 'free_24h' %}selected{% endif %}>Free cancellation up to 24 hours before</option>
+                        <option value="free_48h" {% if experience.cancellation_policy == 'free_48h' %}selected{% endif %}>Free cancellation up to 48 hours before</option>
+                        <option value="refund_50" {% if experience.cancellation_policy == 'refund_50' %}selected{% endif %}>50% refund up to 24 hours before</option>
+                        <option value="no_refund" {% if experience.cancellation_policy == 'no_refund' %}selected{% endif %}>No refund after booking</option>
+                        <option value="custom" {% if experience.cancellation_policy == 'custom' %}selected{% endif %}>Custom policy</option>
+                    </select>
+                    <div class="custom-input {% if experience.cancellation_policy == 'custom' %}active{% endif %}" id="customCancellationActivities">
+                        <textarea name="cancellation_policy_custom" rows="2">{{ experience.cancellation_policy_custom|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" name="action" value="save_changes" class="btn-secondary">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+                {% if experience.status == 'rejected' %}
+                    <button type="submit" name="action" value="submit_for_approval" class="btn-success">
+                        <i class="fas fa-paper-plane"></i> Resubmit for Approval
+                    </button>
+                {% elif experience.status == 'published' %}
+                    <span style="font-size:13px; color:#b8860b; padding:10px 0;">
+                        <i class="fas fa-info-circle"></i> Saving will send this back for admin approval
+                    </span>
+                {% elif experience.status == 'under_review' %}
+                    <span style="font-size:13px; color:#8a9a98; padding:10px 0;">
+                        <i class="fas fa-clock"></i> Under review — you can save changes
+                    </span>
+                {% endif %}
+                <a href="{% url 'provider:my_experiences' %}" class="btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+</main>
+
+<script>
+    function toggleFields() {
+        const categorySelect = document.getElementById('category');
+        const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+        const categoryName = selectedOption.getAttribute('data-name') || '';
+        const sections = document.querySelectorAll('.conditional-section');
+        let activeSection = null;
+
+        if (categoryName.includes('food') || categoryName.includes('dining')) {
+            activeSection = document.getElementById('foodDiningFields');
+        } else if (categoryName.includes('stay') || categoryName.includes('place') || categoryName.includes('hotel')) {
+            activeSection = document.getElementById('placesToStayFields');
+        } else if (categoryName.includes('attraction')) {
+            activeSection = document.getElementById('attractionsFields');
+        } else if (categoryName.includes('activit')) {
+            activeSection = document.getElementById('activitiesFields');
+        }
+
+        sections.forEach(section => {
+            const isActive = section === activeSection;
+            section.classList.toggle('active', isActive);
+            section.querySelectorAll('input, select, textarea').forEach(control => {
+                control.disabled = !isActive;
+            });
+        });
+    }
+
+    document.querySelectorAll('select[name="cancellation_policy"]').forEach(select => {
+        select.addEventListener('change', function () {
+            const container = this.closest('.form-group');
+            const customInput = container ? container.querySelector('.custom-input') : null;
+            if (customInput) {
+                if (this.value === 'custom') customInput.classList.add('active');
+                else customInput.classList.remove('active');
+            }
+        });
+    });
+
+    // Auto-show correct section on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        toggleFields();
+    });
+</script>
+
+</body>
+</html>

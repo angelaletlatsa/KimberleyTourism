@@ -1,0 +1,700 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ experience.name }} | Explore Kimberley</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f5f0eb; color: #1a1a1a; }
+        a { text-decoration: none; color: inherit; }
+
+        /* NAVBAR */
+        .navbar { background: #0f2b26; color: white; padding: 16px 6%; display: flex; justify-content: space-between; align-items: center; }
+        .navbar .brand { font-size: 20px; font-weight: 700; }
+        .navbar .brand span { color: #c8925e; }
+        .navbar .nav-right { display: flex; align-items: center; gap: 16px; }
+        .navbar .nav-right a { color: rgba(255,255,255,0.8); font-size: 13px; }
+        .navbar .nav-right a:hover { color: #c8925e; }
+        .navbar .nav-right .btn-login { padding: 8px 20px; background: #c8925e; color: white; border-radius: 8px; font-weight: 600; }
+
+        /* MAIN */
+        .container { max-width: 1100px; margin: 0 auto; padding: 30px 6%; }
+
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: #4a5a58; font-size: 13px; margin-bottom: 20px; font-weight: 500; }
+        .back-link:hover { color: #c8925e; }
+
+        /* HERO */
+        .hero { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.04); margin-bottom: 24px; }
+        .hero-image { height: 340px; background: linear-gradient(135deg, #e8e0d8, #d5cdc5); display: flex; align-items: center; justify-content: center; color: #a89a8a; font-size: 60px; overflow: hidden; }
+        .hero-image img { width: 100%; height: 100%; object-fit: cover; }
+        .hero-body { padding: 28px 32px; }
+        .hero-title { font-size: 30px; font-weight: 700; color: #0f2b26; margin-bottom: 12px; }
+        .hero-meta { display: flex; gap: 20px; flex-wrap: wrap; font-size: 14px; color: #6b7a78; }
+        .hero-meta span i { color: #c8925e; margin-right: 6px; }
+        .hero-meta .rating-stars { color: #f5b342; }
+
+        /* MAIN GRID */
+        .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+
+        /* CARD */
+        .card { background: white; border-radius: 16px; padding: 24px 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); margin-bottom: 24px; }
+        .card:last-child { margin-bottom: 0; }
+        .card-title { font-size: 16px; font-weight: 700; color: #0f2b26; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+        .card-title i { color: #c8925e; }
+
+        .description { font-size: 14px; color: #4a5a58; line-height: 1.7; }
+
+        /* INFO ROWS */
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0ebe6; font-size: 14px; gap: 12px; }
+        .info-row:last-child { border-bottom: none; }
+        .info-row .label { color: #8a9a98; flex-shrink: 0; }
+        .info-row .value { font-weight: 600; color: #0f2b26; text-align: right; word-break: break-word; }
+
+        /* OPENING HOURS */
+        .hours-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
+        .hours-row .day { color: #8a9a98; }
+        .hours-row .time { font-weight: 500; color: #0f2b26; }
+
+        /* PROVIDER BOX */
+        .provider-box { background: #faf8f6; padding: 16px 20px; border-radius: 10px; display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .provider-box .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #c8925e, #e8b88a); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 16px; flex-shrink: 0; }
+        .provider-box .info .name { font-weight: 600; font-size: 14px; color: #0f2b26; }
+        .provider-box .info .role { font-size: 12px; color: #8a9a98; }
+
+        /* CTA PANEL */
+        .cta-panel { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); position: static; }
+        .cta-panel .panel-title { font-size: 16px; font-weight: 700; color: #0f2b26; margin-bottom: 6px; }
+        .cta-panel .panel-subtitle { font-size: 13px; color: #8a9a98; margin-bottom: 20px; line-height: 1.5; }
+
+        .contact-block { margin-bottom: 16px; }
+        .contact-block .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #8a9a98; margin-bottom: 6px; }
+        .contact-block .value { font-size: 14px; font-weight: 600; color: #0f2b26; display: flex; align-items: center; gap: 8px; }
+        .contact-block .value i { color: #c8925e; width: 16px; }
+        .contact-block .value a { color: #0f2b26; }
+        .contact-block .value a:hover { color: #c8925e; }
+
+        .btn-cta {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: #c8925e;
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+        .btn-cta:hover { background: #b8824f; transform: translateY(-2px); }
+
+        .btn-cta-secondary {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: #f0ebe6;
+            color: #0f2b26;
+            text-align: center;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+        .btn-cta-secondary:hover { background: #e0d8d0; }
+
+        /* REVIEWS */
+        .review-item { padding: 14px 0; border-bottom: 1px solid #f0ebe6; }
+        .review-item:last-child { border-bottom: none; }
+        .review-item .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .review-item .review-header .stars { color: #f5b342; font-size: 13px; }
+        .review-item .review-header .reviewer { font-size: 13px; font-weight: 600; color: #0f2b26; }
+        .review-item .review-text { font-size: 13px; color: #4a5a58; line-height: 1.6; font-style: italic; }
+        .review-item .review-meta { font-size: 11px; color: #8a9a98; margin-top: 4px; }
+
+        .empty-mini { text-align: center; padding: 20px; color: #8a9a98; font-size: 13px; }
+
+        /* RATING SUMMARY */
+        .rating-summary-block {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            padding: 8px 0;
+            flex-wrap: wrap;
+        }
+
+        .rating-summary-block .rs-left {
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .rating-summary-block .rs-left .rs-big-number {
+            font-size: 48px;
+            font-weight: 800;
+            color: #0f2b26;
+            line-height: 1;
+        }
+
+        .rating-summary-block .rs-left .rs-stars {
+            font-size: 18px;
+            color: #f5b342;
+            margin: 6px 0 4px;
+            letter-spacing: 2px;
+        }
+
+        .rating-summary-block .rs-left .rs-stars .fa-star.empty,
+        .rating-summary-block .rs-left .rs-stars .far.fa-star {
+            color: #d9dfdc;
+        }
+
+        .rating-summary-block .rs-left .rs-total {
+            font-size: 12px;
+            color: #8a9a98;
+            font-weight: 500;
+        }
+
+        .rating-summary-block .rs-right {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .rating-summary-block .rs-right .rs-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .rating-summary-block .rs-right .rs-bar-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .rating-summary-block .rs-right .rs-bar-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #8a9a98;
+            min-width: 26px;
+        }
+
+        .rating-summary-block .rs-right .rs-bar-track {
+            flex: 1;
+            height: 8px;
+            background: #f0ebe6;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .rating-summary-block .rs-right .rs-bar-track .rs-bar-fill {
+            height: 100%;
+            background: #f5b342;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .rating-summary-block .rs-right .rs-bar-count {
+            font-size: 12px;
+            color: #8a9a98;
+            min-width: 24px;
+            text-align: right;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 992px) {
+            .grid { grid-template-columns: 1fr; }
+            .cta-panel { position: static; }
+        }
+        @media (max-width: 768px) {
+            .hero-image { height: 220px; }
+            .hero-body { padding: 20px; }
+            .hero-title { font-size: 22px; }
+            .card { padding: 18px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="/" class="brand">Explore <span>Kimberley</span></a>
+    <div class="nav-right">
+        {% if user.is_authenticated %}
+            <span style="color: rgba(255,255,255,0.6); font-size: 13px;">{{ user.first_name }}</span>
+            <a href="/accounts/logout/">Logout</a>
+        {% else %}
+            <a href="/accounts/login/">Login</a>
+            <a href="/accounts/register/" class="btn-login">Register</a>
+        {% endif %}
+    </div>
+</nav>
+
+<div class="container">
+
+    <a href="/experiences/" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Experiences
+    </a>
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero-image">
+            {% if experience.main_image %}
+                <img src="{{ experience.main_image.url }}" alt="{{ experience.name }}">
+            {% else %}
+                <i class="fas fa-mountain-sun"></i>
+            {% endif %}
+        </div>
+        <div class="hero-body">
+            <h1 class="hero-title">{{ experience.name }}</h1>
+            <div class="hero-meta">
+                <span><i class="fas fa-tag"></i> {{ experience.category.name|default:"Uncategorized" }}</span>
+                <span><i class="fas fa-map-marker-alt"></i> {{ experience.location }}</span>
+                <span>
+                    <span class="rating-stars">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= experience.average_rating|floatformat:"0"|add:"0" %}★{% else %}☆{% endif %}
+                        {% endfor %}
+                    </span>
+                    {% if experience.total_reviews > 0 %}
+                        {{ experience.average_rating|floatformat:1 }} ({{ experience.total_reviews }} review{{ experience.total_reviews|pluralize }})
+                    {% else %}
+                        <span style="color: #8a9a98;">No reviews yet</span>
+                    {% endif %}
+                </span>
+                <span><i class="fas fa-clock"></i> {{ experience.get_listing_type_display }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="grid">
+
+        <!-- LEFT COLUMN -->
+        <div>
+
+            <!-- DESCRIPTION -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-info-circle"></i> About This Experience</div>
+                <div class="description">{{ experience.description|default:"No description provided." }}</div>
+            </div>
+
+            <!-- PROVIDER -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-store"></i> Provided By</div>
+                <div class="provider-box">
+                    <div class="avatar">{{ experience.provider.business_name|slice:":1"|default:"P" }}</div>
+                    <div class="info">
+                        <div class="name">{{ experience.provider.business_name|default:"Provider" }}</div>
+                        <div class="role">{{ experience.get_listing_type_display }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== FOOD & DINING ===== -->
+            {% if experience.listing_type == 'food_dining' %}
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-utensils"></i> Restaurant Details</div>
+
+                    {% if experience.has_price_info %}
+                    <div class="info-row">
+                        <span class="label">Price Range</span>
+                        <span class="value">{{ experience.price_display }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if experience.cuisine_type %}
+                    <div class="info-row">
+                        <span class="label">Cuisine Type</span>
+                        <span class="value">{{ experience.cuisine_type }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if experience.meal_types %}
+                    <div class="info-row">
+                        <span class="label">Meal Types</span>
+                        <span class="value">{{ experience.meal_types }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if experience.features %}
+                    <div class="info-row">
+                        <span class="label">Features</span>
+                        <span class="value">{{ experience.features }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if experience.opening_hours %}
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-clock"></i> Opening Hours</div>
+                    {% for day, hours in experience.opening_hours.items %}
+                        {% if hours %}
+                        <div class="hours-row">
+                            <span class="day">{{ day|title }}</span>
+                            <span class="time">{{ hours }}</span>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+            <!-- ===== PLACES TO STAY ===== -->
+            {% elif experience.listing_type == 'places_to_stay' %}
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-hotel"></i> Accommodation Details</div>
+
+                    {% if experience.check_in_time %}
+                    <div class="info-row">
+                        <span class="label">Check-in Time</span>
+                        <span class="value">{{ experience.check_in_time|time:"H:i" }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if experience.check_out_time %}
+                    <div class="info-row">
+                        <span class="label">Check-out Time</span>
+                        <span class="value">{{ experience.check_out_time|time:"H:i" }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if experience.amenities %}
+                    <div class="info-row">
+                        <span class="label">Amenities</span>
+                        <span class="value">{{ experience.amenities|join:", " }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+            <!-- ===== ATTRACTIONS ===== -->
+            {% elif experience.listing_type == 'attractions' %}
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-landmark"></i> Attraction Details</div>
+
+                    {% if experience.has_price_info %}
+                    <div class="info-row">
+                        <span class="label">Price Range</span>
+                        <span class="value">{{ experience.price_display }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if experience.duration_minutes %}
+                    <div class="info-row">
+                        <span class="label">Typical Visit Duration</span>
+                        <span class="value">{{ experience.duration_minutes }} minutes</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if experience.opening_hours %}
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-clock"></i> Opening Hours</div>
+                    {% for day, hours in experience.opening_hours.items %}
+                        {% if hours %}
+                        <div class="hours-row">
+                            <span class="day">{{ day|title }}</span>
+                            <span class="time">{{ hours }}</span>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+            <!-- ===== ACTIVITIES ===== -->
+            {% elif experience.listing_type == 'activities' %}
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-hiking"></i> Activity Details</div>
+
+                    {% if experience.duration_minutes %}
+                    <div class="info-row">
+                        <span class="label">Duration</span>
+                        <span class="value">{{ experience.duration_minutes }} minutes</span>
+                    </div>
+                    {% endif %}
+
+                    {% if experience.max_capacity %}
+                    <div class="info-row">
+                        <span class="label">Max Capacity</span>
+                        <span class="value">{{ experience.max_capacity }} people</span>
+                    </div>
+                    {% endif %}
+
+                    {% if experience.min_participants %}
+                    <div class="info-row">
+                        <span class="label">Min Participants</span>
+                        <span class="value">{{ experience.min_participants }} {{ experience.min_participants|pluralize:"person,people" }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if experience.meeting_point %}
+                    <div class="info-row">
+                        <span class="label">Meeting Point</span>
+                        <span class="value">{{ experience.meeting_point }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if experience.age_requirement %}
+                    <div class="info-row">
+                        <span class="label">Age Requirement</span>
+                        <span class="value">{{ experience.age_requirement }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if experience.difficulty_level %}
+                    <div class="info-row">
+                        <span class="label">Difficulty Level</span>
+                        <span class="value">{{ experience.get_difficulty_level_display }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if experience.languages %}
+                    <div class="info-row">
+                        <span class="label">Languages</span>
+                        <span class="value">{{ experience.languages|join:", " }}</span>
+                    </div>
+                    {% endif %}
+
+                    {% if experience.what_to_bring %}
+                    <div class="info-row">
+                        <span class="label">What to Bring</span>
+                        <span class="value">{{ experience.what_to_bring }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if experience.cancellation_policy %}
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-file-contract"></i> Cancellation Policy</div>
+                    <div class="description">{{ experience.get_cancellation_display }}</div>
+                </div>
+                {% endif %}
+            {% endif %}
+
+            <!-- REVIEWS SUMMARY -->
+            {% if review_count > 0 %}
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-star"></i> Rating Summary</div>
+
+                    <div class="rating-summary-block">
+                        <div class="rs-left">
+                            <div class="rs-big-number">{{ avg_rating|floatformat:1 }}</div>
+                            <div class="rs-stars">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= avg_rating|floatformat:"0"|add:"0" %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="rs-total">{{ review_count }} review{{ review_count|pluralize }}</div>
+                        </div>
+
+                        <div class="rs-right">
+                            {% for bar in rating_breakdown %}
+                                <div class="rs-bar-row">
+                                    <span class="rs-bar-label">{{ bar.star }}★</span>
+                                    <div class="rs-bar-track">
+                                        <div class="rs-bar-fill" style="width: {{ bar.percentage|floatformat:0 }}%;"></div>
+                                    </div>
+                                    <span class="rs-bar-count">{{ bar.count }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- RECENT REVIEWS -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-comments"></i> Recent Reviews</div>
+                {% if reviews %}
+                    {% for review in reviews %}
+                        <div class="review-item">
+                            <div class="review-header">
+                                <span class="reviewer">{{ review.reviewer_name }}</span>
+                                <span class="stars">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                                    {% endfor %}
+                                </span>
+                            </div>
+                            {% if review.title %}
+                                <div style="font-size: 13px; font-weight: 600; color: #0f2b26; margin-bottom: 4px;">{{ review.title }}</div>
+                            {% endif %}
+                            <div class="review-text">{{ review.comment|default:"No comment"|truncatechars:200 }}</div>
+                            <div class="review-meta">
+                                {{ review.created_at|timesince }} ago
+                                {% if review.booking %}
+                                    · Tour on {{ review.booking.booking_date|date:"d M Y" }}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-mini">
+                        <i class="fas fa-star" style="font-size: 24px; color: #e0d8d0; display: block; margin-bottom: 8px;"></i>
+                        No reviews yet. Be the first to review after your visit.
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: CTA PANEL -->
+        <div>
+            <div class="cta-panel">
+
+                {% if experience.has_price_info %}
+                <div style="background: linear-gradient(135deg, #faf8f6 0%, #f5f0eb 100%); border-left: 4px solid #c8925e; border-radius: 10px; padding: 16px 20px; margin-bottom: 20px;">
+                    <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #8a9a98; margin-bottom: 6px;">
+                        <i class="fas fa-tag" style="color: #c8925e;"></i> Budget Range
+                    </div>
+                    <div style="font-size: 22px; font-weight: 800; color: #0f2b26; line-height: 1.2;">
+                        {{ experience.price_display }}
+                    </div>
+                    <div style="font-size: 11px; color: #8a9a98; margin-top: 6px; line-height: 1.5;">
+                        A budget guide only. Final prices are set by the provider — contact them or book via their preferred channel.
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if listing_type == 'activities' %}
+                    <!-- ACTIVITIES: Request a Guide -->
+                    <div class="panel-title">Ready to Experience This?</div>
+                    <div class="panel-subtitle">Find a verified tour guide to lead this activity and make it unforgettable.</div>
+
+                    <a href="{{ cta_url }}" class="btn-cta">
+                        <i class="fas fa-{{ cta_icon }}"></i> {{ cta_label }}
+                    </a>
+
+                {% elif listing_type == 'food_dining' %}
+                    <!-- FOOD & DINING: Contact -->
+                    <div class="panel-title">Visit This Restaurant</div>
+                    <div class="panel-subtitle">Contact them directly to reserve your table or ask about their menu.</div>
+
+                    {% if experience.contact_number %}
+                    <div class="contact-block">
+                        <div class="label">Phone</div>
+                        <div class="value">
+                            <i class="fas fa-phone"></i>
+                            <a href="tel:{{ experience.contact_number }}">{{ experience.contact_number }}</a>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if experience.contact_email %}
+                    <div class="contact-block">
+                        <div class="label">Email</div>
+                        <div class="value">
+                            <i class="fas fa-envelope"></i>
+                            <a href="mailto:{{ experience.contact_email }}">{{ experience.contact_email }}</a>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="contact-block">
+                        <div class="label">Location</div>
+                        <div class="value">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ experience.location }}
+                        </div>
+                    </div>
+
+                    {% if experience.contact_number or experience.contact_email %}
+                    <a href="https://maps.google.com/?q={{ experience.location }}" target="_blank" class="btn-cta">
+                        <i class="fas fa-directions"></i> Get Directions
+                    </a>
+                    {% endif %}
+
+                {% elif listing_type == 'places_to_stay' %}
+                    <!-- PLACES TO STAY: Contact -->
+                    <div class="panel-title">Book Your Stay</div>
+                    <div class="panel-subtitle">Contact the accommodation directly for availability and rates.</div>
+
+                    {% if experience.contact_number %}
+                    <div class="contact-block">
+                        <div class="label">Phone</div>
+                        <div class="value">
+                            <i class="fas fa-phone"></i>
+                            <a href="tel:{{ experience.contact_number }}">{{ experience.contact_number }}</a>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if experience.contact_email %}
+                    <div class="contact-block">
+                        <div class="label">Email</div>
+                        <div class="value">
+                            <i class="fas fa-envelope"></i>
+                            <a href="mailto:{{ experience.contact_email }}">{{ experience.contact_email }}</a>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="contact-block">
+                        <div class="label">Location</div>
+                        <div class="value">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ experience.location }}
+                        </div>
+                    </div>
+
+                {% elif listing_type == 'attractions' %}
+                    <!-- ATTRACTIONS: Get Directions -->
+                    <div class="panel-title">Plan Your Visit</div>
+                    <div class="panel-subtitle">Get directions and plan your trip to this attraction.</div>
+
+                    {% if experience.opening_hours %}
+                        {% with exp.opening_hours as hours %}
+                        {% endwith %}
+                    {% endif %}
+
+                    <div class="contact-block">
+                        <div class="label">Location</div>
+                        <div class="value">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{ experience.location }}
+                        </div>
+                    </div>
+
+                    <a href="https://maps.google.com/?q={{ experience.location }}" target="_blank" class="btn-cta">
+                        <i class="fas fa-directions"></i> Get Directions
+                    </a>
+                {% endif %}
+
+                <!-- Quick Info (for all) -->
+                {% if experience.listing_type == 'activities' %}
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #f0ebe6; font-size: 12px; color: #8a9a98;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                        <i class="fas fa-users" style="color: #c8925e; width: 16px;"></i>
+                        Min {{ experience.min_participants }} · Max {{ experience.max_capacity }} people
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-clock" style="color: #c8925e; width: 16px;"></i>
+                        {{ experience.duration_minutes }} minutes
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+
+            {% if listing_type != 'activities' %}
+            <div class="cta-panel guide-cta-panel" style="margin-top: 24px;">
+                <div class="panel-title">Ready to Experience This?</div>
+                <div class="panel-subtitle">Find a verified tour guide to lead this activity and make it unforgettable.</div>
+
+                <a href="/tourist/guides/?activity={{ experience.id }}" class="btn-cta">
+                    <i class="fas fa-user-tie"></i> Find a Tour Guide
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

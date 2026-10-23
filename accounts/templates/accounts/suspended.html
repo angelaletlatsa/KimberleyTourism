@@ -1,0 +1,251 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Suspended | Explore Kimberley</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0f2b26 0%, #1a4a40 100%);
+            color: #1a1a1a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .suspended-container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 520px;
+            width: 100%;
+            padding: 48px 40px;
+            text-align: center;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .suspended-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fce8e4, #f8d4cc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 28px;
+            font-size: 48px;
+            color: #c75b4a;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .suspended-container h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #0f2b26;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .suspended-container .subtitle {
+            font-size: 15px;
+            color: #8a9a98;
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+
+        .reason-box {
+            background: #faf8f6;
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            text-align: left;
+            border-left: 4px solid #c75b4a;
+        }
+
+        .reason-box .reason-label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #8a9a98;
+            margin-bottom: 8px;
+        }
+
+        .reason-box .reason-text {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0f2b26;
+            line-height: 1.5;
+        }
+
+        .reason-box .reason-date {
+            font-size: 12px;
+            color: #8a9a98;
+            margin-top: 10px;
+        }
+
+        .info-text {
+            font-size: 14px;
+            color: #4a5a58;
+            line-height: 1.6;
+            margin-bottom: 28px;
+            padding: 16px 20px;
+            background: #f5f0eb;
+            border-radius: 12px;
+        }
+
+        .info-text i {
+            color: #c8925e;
+            margin-right: 8px;
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: #0f2b26;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1a4a40;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(15, 43, 38, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #4a5a58;
+            border: 1px solid #e5e0da;
+        }
+
+        .btn-outline:hover {
+            background: #f5f0eb;
+            border-color: #c8925e;
+            color: #c8925e;
+        }
+
+        .footer-brand {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #f0ebe6;
+            font-size: 12px;
+            color: #8a9a98;
+        }
+
+        .footer-brand strong {
+            color: #c8925e;
+        }
+
+        @media (max-width: 480px) {
+            .suspended-container {
+                padding: 36px 24px;
+            }
+            .suspended-container h1 {
+                font-size: 22px;
+            }
+            .suspended-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="suspended-container">
+        
+        <div class="suspended-icon">
+            <i class="fas fa-ban"></i>
+        </div>
+
+        <h1>Account Suspended</h1>
+        <p class="subtitle">
+            Your account has been suspended by an administrator.
+            You can no longer access the platform.
+        </p>
+
+        {% if reason %}
+            <div class="reason-box">
+                <div class="reason-label">Reason for Suspension</div>
+                <div class="reason-text">{{ reason }}</div>
+                {% if suspended_at %}
+                    <div class="reason-date">
+                        <i class="far fa-clock"></i>
+                        Suspended {{ suspended_at|timesince }} ago
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <div class="info-text">
+            <i class="fas fa-info-circle"></i>
+            If you believe this was a mistake, please contact our support team at
+            <strong>explore.kimberleytours@gmail.com</strong> to appeal the decision.
+        </div>
+
+        <div class="actions">
+            <a href="mailto:explore.kimberleytours@gmail.com?subject=Appeal%20Suspension" class="btn btn-primary">
+                <i class="fas fa-envelope"></i> Contact Support
+            </a>
+            <a href="/accounts/login/" class="btn btn-outline">
+                <i class="fas fa-arrow-left"></i> Back to Login
+            </a>
+        </div>
+
+        <div class="footer-brand">
+            <strong>Explore Kimberley</strong> · Tourism Platform
+        </div>
+
+    </div>
+
+</body>
+</html>

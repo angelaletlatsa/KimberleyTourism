@@ -1,0 +1,969 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create Account | Explore Kimberley</title>
+
+    <!-- Professional icon library -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+</head>
+
+
+<body style="
+    margin:0;
+    font-family:'Inter', Arial, sans-serif;
+    background:#f7f4ef;
+    color:#1f3d3a;
+">
+
+
+<!-- NAVBAR -->
+
+<nav style="
+    height:68px;
+    background:#1f3d3a;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 6%;
+    box-sizing:border-box;
+">
+
+    <a href="/" style="
+        color:white;
+        text-decoration:none;
+        font-size:21px;
+        font-weight:700;
+        letter-spacing:-0.5px;
+    ">
+
+        Explore
+        <span style="color:#d69b5b;">
+            Kimberley
+        </span>
+
+    </a>
+
+
+    <div style="
+        font-size:13px;
+        color:#cbd5d3;
+    ">
+
+        Already have an account?
+
+        <a href="/accounts/login/" style="
+            color:#e0ad78;
+            text-decoration:none;
+            font-weight:600;
+            margin-left:5px;
+        ">
+            Login
+        </a>
+
+    </div>
+
+</nav>
+
+
+
+<!-- MAIN -->
+
+<main style="
+    min-height:calc(100vh - 68px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:28px 6%;
+    box-sizing:border-box;
+">
+
+
+    <div style="
+        width:100%;
+        max-width:980px;
+        display:grid;
+        grid-template-columns:0.85fr 1.15fr;
+        background:white;
+        border-radius:18px;
+        overflow:hidden;
+        box-shadow:0 15px 45px rgba(31,61,58,0.12);
+    ">
+
+
+        <!-- LEFT SIDE -->
+
+        <section style="
+            min-height:600px;
+            background-image:
+                linear-gradient(
+                    rgba(20,48,45,0.38),
+                    rgba(20,48,45,0.78)
+                ),
+                url('{% static "images/kimberley.jpg" %}');
+            background-size:cover;
+            background-position:center;
+            padding:42px;
+            box-sizing:border-box;
+            display:flex;
+            flex-direction:column;
+            justify-content:flex-end;
+            color:white;
+        ">
+
+
+            <div style="
+                color:#e2ae78;
+                font-size:10px;
+                font-weight:700;
+                letter-spacing:2px;
+                margin-bottom:13px;
+            ">
+                DISCOVER • EXPERIENCE • CONNECT
+            </div>
+
+
+            <h1 style="
+                margin:0 0 14px;
+                font-size:38px;
+                line-height:1.08;
+                letter-spacing:-1.2px;
+            ">
+
+                Your Kimberley
+                <br>
+                experience
+                <br>
+                starts here.
+
+            </h1>
+
+
+            <p style="
+                margin:0;
+                max-width:340px;
+                color:#edf2f0;
+                font-size:13px;
+                line-height:1.7;
+            ">
+
+                Create your account to discover local
+                attractions, activities, places to stay,
+                food and local guides.
+
+            </p>
+
+        </section>
+
+
+
+        <!-- RIGHT SIDE -->
+
+        <section style="
+            padding:36px 44px;
+            box-sizing:border-box;
+        ">
+
+
+            <!-- TITLE -->
+
+            <div style="
+                margin-bottom:20px;
+            ">
+
+                <div style="
+                    color:#c7854c;
+                    font-size:10px;
+                    font-weight:700;
+                    letter-spacing:1.7px;
+                    margin-bottom:7px;
+                ">
+                    GET STARTED
+                </div>
+
+
+                <h2 style="
+                    margin:0 0 7px;
+                    font-size:28px;
+                    line-height:1.2;
+                    letter-spacing:-0.8px;
+                ">
+                    Create your account
+                </h2>
+
+
+                <p style="
+                    margin:0;
+                    color:#7b8583;
+                    font-size:12px;
+                ">
+                    Join Explore Kimberley and start planning your visit.
+                </p>
+
+            </div>
+
+
+
+            <!-- APP ERROR -->
+
+            {% if error %}
+
+            <div style="
+                background:#fff5f1;
+                color:#874c3b;
+                border:1px solid #edcfc3;
+                border-left:4px solid #c96d4c;
+                border-radius:7px;
+                padding:10px 13px;
+                margin-bottom:15px;
+                font-size:11px;
+                line-height:1.5;
+            ">
+
+                <i class="fa-solid fa-circle-exclamation"
+                   style="margin-right:6px;">
+                </i>
+
+                {{ error }}
+
+            </div>
+
+            {% endif %}
+
+
+
+            <!-- FORM -->
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+
+
+                <!-- ACCOUNT TYPE -->
+
+                <label style="
+                    display:block;
+                    margin-bottom:7px;
+                    font-size:12px;
+                    font-weight:600;
+                ">
+                    Account type
+                </label>
+
+
+                <div style="
+                    display:grid;
+                    grid-template-columns:1fr 1fr 1fr;
+                    gap:9px;
+                    margin-bottom:15px;
+                ">
+
+
+                    <!-- TOURIST -->
+
+                    <label style="
+                        border:1px solid #d9dfdc;
+                        border-radius:8px;
+                        padding:10px;
+                        cursor:pointer;
+                        font-size:11px;
+                        background:#fafaf8;
+                        box-sizing:border-box;
+                    ">
+
+                        <input
+                            type="radio"
+                            name="account_type"
+                            value="tourist"
+                            checked
+                        >
+
+                        <i class="fa-solid fa-suitcase-rolling"
+                           style="
+                               color:#c7854c;
+                               margin-left:3px;
+                           ">
+                        </i>
+
+                        <strong style="margin-left:4px;">
+                            Tourist
+                        </strong>
+
+                        <div style="
+                            margin:5px 0 0 21px;
+                            color:#888;
+                            font-size:9px;
+                        ">
+                            Plan and enjoy your trip
+                        </div>
+
+                    </label>
+
+
+
+                    <!-- GUIDE -->
+
+                    <label style="
+                        border:1px solid #d9dfdc;
+                        border-radius:8px;
+                        padding:10px;
+                        cursor:pointer;
+                        font-size:11px;
+                        background:#fafaf8;
+                        box-sizing:border-box;
+                    ">
+
+                        <input
+                            type="radio"
+                            name="account_type"
+                            value="guide"
+                        >
+
+                        <i class="fa-solid fa-person-hiking"
+                           style="
+                               color:#c7854c;
+                               margin-left:3px;
+                           ">
+                        </i>
+
+                        <strong style="margin-left:4px;">
+                            Tour Guide
+                        </strong>
+
+                        <div style="
+                            margin:5px 0 0 21px;
+                            color:#888;
+                            font-size:9px;
+                        ">
+                            Share your local expertise
+                        </div>
+
+                    </label>
+
+
+
+                    <!-- PROVIDER -->
+
+                    <label style="
+                        border:1px solid #d9dfdc;
+                        border-radius:8px;
+                        padding:10px;
+                        cursor:pointer;
+                        font-size:11px;
+                        background:#fafaf8;
+                        box-sizing:border-box;
+                    ">
+
+                        <input
+                            type="radio"
+                            name="account_type"
+                            value="provider"
+                        >
+
+                        <i class="fa-solid fa-store"
+                           style="
+                               color:#c7854c;
+                               margin-left:3px;
+                           ">
+                        </i>
+
+                        <strong style="margin-left:4px;">
+                            Provider
+                        </strong>
+
+                        <div style="
+                            margin:5px 0 0 21px;
+                            color:#888;
+                            font-size:9px;
+                        ">
+                            Offer tourism experiences
+                        </div>
+
+                    </label>
+
+
+
+                </div>
+
+
+
+                <!-- FULL NAME -->
+
+                <label style="
+                    display:block;
+                    margin-bottom:6px;
+                    font-size:12px;
+                    font-weight:600;
+                ">
+                    Full name
+                </label>
+
+
+                <div style="
+                    position:relative;
+                    margin-bottom:14px;
+                ">
+
+                    <i class="fa-regular fa-user"
+                       style="
+                           position:absolute;
+                           left:13px;
+                           top:50%;
+                           transform:translateY(-50%);
+                           color:#89918f;
+                           font-size:12px;
+                       ">
+                    </i>
+
+
+                    <input
+                        type="text"
+                        name="full_name"
+                        placeholder="Enter your full name"
+                        required
+                        autocomplete="name"
+                        style="
+                            width:100%;
+                            height:42px;
+                            padding:0 13px 0 37px;
+                            box-sizing:border-box;
+                            border:1px solid #d9dfdc;
+                            border-radius:7px;
+                            outline:none;
+                            font-family:inherit;
+                            font-size:11px;
+                        "
+                    >
+
+                </div>
+
+
+
+                <!-- EMAIL -->
+
+                <label style="
+                    display:block;
+                    margin-bottom:6px;
+                    font-size:12px;
+                    font-weight:600;
+                ">
+                    Email address
+                </label>
+
+
+                <div style="
+                    position:relative;
+                    margin-bottom:14px;
+                ">
+
+                    <i class="fa-regular fa-envelope"
+                       style="
+                           position:absolute;
+                           left:13px;
+                           top:50%;
+                           transform:translateY(-50%);
+                           color:#89918f;
+                           font-size:12px;
+                       ">
+                    </i>
+
+
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="you@example.com"
+                        required
+                        autocomplete="email"
+                        style="
+                            width:100%;
+                            height:42px;
+                            padding:0 13px 0 37px;
+                            box-sizing:border-box;
+                            border:1px solid #d9dfdc;
+                            border-radius:7px;
+                            outline:none;
+                            font-family:inherit;
+                            font-size:11px;
+                        "
+                    >
+
+                </div>
+
+
+
+                <!-- PASSWORD -->
+
+                <label style="
+                    display:block;
+                    margin-bottom:6px;
+                    font-size:12px;
+                    font-weight:600;
+                ">
+                    Password
+                </label>
+
+
+                <div style="
+                    position:relative;
+                ">
+
+                    <i class="fa-solid fa-lock"
+                       style="
+                           position:absolute;
+                           left:13px;
+                           top:50%;
+                           transform:translateY(-50%);
+                           color:#89918f;
+                           font-size:11px;
+                           z-index:2;
+                       ">
+                    </i>
+
+
+                    <input
+                        id="password"
+                        type="password"
+                        name="password"
+                        placeholder="Create a password"
+                        required
+                        autocomplete="new-password"
+                        oninput="checkPassword()"
+                        style="
+                            width:100%;
+                            height:42px;
+                            padding:0 43px 0 37px;
+                            box-sizing:border-box;
+                            border:1px solid #d9dfdc;
+                            border-radius:7px;
+                            outline:none;
+                            font-family:inherit;
+                            font-size:11px;
+                        "
+                    >
+
+
+                    <!-- EYE -->
+
+                    <button
+                        type="button"
+                        onclick="togglePassword('password', 'passwordEye')"
+                        aria-label="Show password"
+                        style="
+                            position:absolute;
+                            right:10px;
+                            top:50%;
+                            transform:translateY(-50%);
+                            border:none;
+                            background:none;
+                            cursor:pointer;
+                            color:#7b8583;
+                            padding:5px;
+                        "
+                    >
+
+                        <i
+                            id="passwordEye"
+                            class="fa-regular fa-eye"
+                            style="font-size:13px;"
+                        >
+                        </i>
+
+                    </button>
+
+                </div>
+
+
+
+                <!-- PASSWORD REQUIREMENTS -->
+
+                <div style="
+                    margin-top:7px;
+                    margin-bottom:13px;
+                    padding:8px 10px;
+                    background:#fafaf8;
+                    border-radius:6px;
+                    border:1px solid #eeeeea;
+                ">
+
+                    <div style="
+                        font-size:10px;
+                        color:#687572;
+                        margin-bottom:5px;
+                        font-weight:500;
+                    ">
+                        Your password should contain:
+                    </div>
+
+
+                    <div id="lengthRequirement"
+                         style="
+                             font-size:9px;
+                             color:#8a9491;
+                             margin-bottom:3px;
+                         ">
+
+                        <i class="fa-solid fa-circle"
+                           style="font-size:5px; margin-right:6px;">
+                        </i>
+
+                        At least 8 characters
+
+                    </div>
+
+
+                    <div id="numberRequirement"
+                         style="
+                             font-size:9px;
+                             color:#8a9491;
+                         ">
+
+                        <i class="fa-solid fa-circle"
+                           style="font-size:5px; margin-right:6px;">
+                        </i>
+
+                        At least one number
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- CONFIRM PASSWORD -->
+
+                <label style="
+                    display:block;
+                    margin-bottom:6px;
+                    font-size:12px;
+                    font-weight:600;
+                ">
+                    Confirm password
+                </label>
+
+
+                <div style="
+                    position:relative;
+                    margin-bottom:6px;
+                ">
+
+                    <i class="fa-solid fa-lock"
+                       style="
+                           position:absolute;
+                           left:13px;
+                           top:50%;
+                           transform:translateY(-50%);
+                           color:#89918f;
+                           font-size:11px;
+                           z-index:2;
+                       ">
+                    </i>
+
+
+                    <input
+                        id="confirmPassword"
+                        type="password"
+                        name="confirm_password"
+                        placeholder="Repeat your password"
+                        required
+                        autocomplete="new-password"
+                        oninput="checkPasswordMatch()"
+                        style="
+                            width:100%;
+                            height:42px;
+                            padding:0 43px 0 37px;
+                            box-sizing:border-box;
+                            border:1px solid #d9dfdc;
+                            border-radius:7px;
+                            outline:none;
+                            font-family:inherit;
+                            font-size:11px;
+                        "
+                    >
+
+
+                    <!-- EYE -->
+
+                    <button
+                        type="button"
+                        onclick="togglePassword('confirmPassword', 'confirmPasswordEye')"
+                        aria-label="Show password"
+                        style="
+                            position:absolute;
+                            right:10px;
+                            top:50%;
+                            transform:translateY(-50%);
+                            border:none;
+                            background:none;
+                            cursor:pointer;
+                            color:#7b8583;
+                            padding:5px;
+                        "
+                    >
+
+                        <i
+                            id="confirmPasswordEye"
+                            class="fa-regular fa-eye"
+                            style="font-size:13px;"
+                        >
+                        </i>
+
+                    </button>
+
+                </div>
+
+
+
+                <!-- MATCH STATUS -->
+
+                <div id="matchRequirement"
+                     style="
+                         font-size:9px;
+                         color:#8a9491;
+                         margin-bottom:13px;
+                     ">
+
+                    <i class="fa-solid fa-circle"
+                       style="font-size:5px; margin-right:6px;">
+                    </i>
+
+                    Passwords must match
+
+                </div>
+
+
+
+                <!-- TERMS -->
+
+                <label style="
+                    display:flex;
+                    align-items:flex-start;
+                    gap:7px;
+                    cursor:pointer;
+                    margin-bottom:16px;
+                    color:#777;
+                    font-size:9px;
+                    line-height:1.5;
+                ">
+
+                    <input
+                        type="checkbox"
+                        name="terms"
+                        required
+                        style="
+                            margin-top:2px;
+                            flex-shrink:0;
+                        "
+                    >
+
+                    <span>
+
+                        I agree to the terms of use and understand
+                        how my information will be used by Explore Kimberley.
+
+                    </span>
+
+                </label>
+
+
+
+                <!-- CREATE ACCOUNT -->
+
+                <button
+                    type="submit"
+                    style="
+                        width:100%;
+                        height:43px;
+                        border:none;
+                        border-radius:7px;
+                        background:#c7854c;
+                        color:white;
+                        font-family:inherit;
+                        font-size:11px;
+                        font-weight:600;
+                        cursor:pointer;
+                        box-shadow:0 6px 18px rgba(199,133,76,0.25);
+                    "
+                >
+
+                    Create Account
+
+                </button>
+
+
+
+                <!-- LOGIN -->
+
+                <div style="
+                    text-align:center;
+                    margin-top:15px;
+                    color:#89918f;
+                    font-size:10px;
+                ">
+
+                    Already have an account?
+
+                    <a href="/accounts/login/" style="
+                        color:#1f3d3a;
+                        text-decoration:none;
+                        font-weight:600;
+                        margin-left:3px;
+                    ">
+                        Login
+                    </a>
+
+                </div>
+
+
+            </form>
+
+        </section>
+
+    </div>
+
+</main>
+
+
+
+<!-- JAVASCRIPT -->
+
+<script>
+
+
+function togglePassword(inputId, eyeId) {
+
+    const input = document.getElementById(inputId);
+    const eye = document.getElementById(eyeId);
+
+    if (input.type === "password") {
+
+        input.type = "text";
+
+        eye.classList.remove("fa-eye");
+        eye.classList.add("fa-eye-slash");
+
+    } else {
+
+        input.type = "password";
+
+        eye.classList.remove("fa-eye-slash");
+        eye.classList.add("fa-eye");
+
+    }
+
+}
+
+
+
+function checkPassword() {
+
+    const password =
+        document.getElementById("password").value;
+
+    const lengthRequirement =
+        document.getElementById("lengthRequirement");
+
+    const numberRequirement =
+        document.getElementById("numberRequirement");
+
+
+    if (password.length >= 8) {
+
+        lengthRequirement.style.color = "#3f7d65";
+
+        lengthRequirement.innerHTML =
+            '<i class="fa-solid fa-circle-check" style="margin-right:6px;"></i> At least 8 characters';
+
+    } else {
+
+        lengthRequirement.style.color = "#8a9491";
+
+        lengthRequirement.innerHTML =
+            '<i class="fa-solid fa-circle" style="font-size:5px; margin-right:6px;"></i> At least 8 characters';
+
+    }
+
+
+    if (/[0-9]/.test(password)) {
+
+        numberRequirement.style.color = "#3f7d65";
+
+        numberRequirement.innerHTML =
+            '<i class="fa-solid fa-circle-check" style="margin-right:6px;"></i> At least one number';
+
+    } else {
+
+        numberRequirement.style.color = "#8a9491";
+
+        numberRequirement.innerHTML =
+            '<i class="fa-solid fa-circle" style="font-size:5px; margin-right:6px;"></i> At least one number';
+
+    }
+
+
+    checkPasswordMatch();
+
+}
+
+
+
+function checkPasswordMatch() {
+
+    const password =
+        document.getElementById("password").value;
+
+    const confirmPassword =
+        document.getElementById("confirmPassword").value;
+
+    const matchRequirement =
+        document.getElementById("matchRequirement");
+
+
+    if (
+        confirmPassword.length > 0 &&
+        password === confirmPassword
+    ) {
+
+        matchRequirement.style.color = "#3f7d65";
+
+        matchRequirement.innerHTML =
+            '<i class="fa-solid fa-circle-check" style="margin-right:6px;"></i> Passwords match';
+
+    } else {
+
+        matchRequirement.style.color = "#8a9491";
+
+        matchRequirement.innerHTML =
+            '<i class="fa-solid fa-circle" style="font-size:5px; margin-right:6px;"></i> Passwords must match';
+
+    }
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>

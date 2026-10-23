@@ -1,0 +1,1149 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Explore Kimberley</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #f5f0eb;
+            color: #1a1a1a;
+            display: flex;
+            min-height: 100vh;
+        }
+        a { text-decoration: none; color: inherit; }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 250px; background: #0f2b26; color: white;
+            min-height: 100vh; padding: 24px 16px;
+            position: sticky; top: 0; height: 100vh; overflow-y: auto;
+            flex-shrink: 0; display: flex; flex-direction: column; z-index: 100;
+        }
+        .sidebar-brand { padding: 0 12px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); margin-bottom: 24px; }
+        .sidebar-brand h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        .sidebar-brand h1 span { color: #c8925e; }
+        .sidebar-brand .subtitle { font-size: 11px; color: rgba(255, 255, 255, 0.35); margin-top: 2px; }
+        .sidebar-nav { flex: 1; }
+        .sidebar-section { margin-bottom: 16px; }
+        .sidebar-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255, 255, 255, 0.3); padding: 8px 14px; margin-bottom: 4px; }
+        .sidebar-nav .nav-item {
+            display: flex; align-items: center; gap: 14px;
+            padding: 10px 14px; border-radius: 10px;
+            color: rgba(255, 255, 255, 0.6); font-size: 14px; font-weight: 500;
+            transition: all 0.25s ease; margin-bottom: 2px;
+        }
+        .sidebar-nav .nav-item:hover { background: rgba(255, 255, 255, 0.06); color: white; }
+        .sidebar-nav .nav-item.active { background: rgba(200, 146, 94, 0.15); color: #c8925e; }
+        .sidebar-nav .nav-item .icon { width: 22px; text-align: center; font-size: 16px; flex-shrink: 0; }
+        .sidebar-nav .nav-item .badge {
+            margin-left: auto; background: #c75b4a; color: white;
+            font-size: 10px; font-weight: 700; padding: 1px 10px; border-radius: 12px;
+        }
+        .sidebar-footer { border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 16px; margin-top: auto; }
+        .sidebar-footer .user-card { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; }
+        .sidebar-footer .user-card .avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: linear-gradient(135deg, #c8925e, #e8b88a);
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 600; font-size: 14px; flex-shrink: 0;
+        }
+        .sidebar-footer .user-card .user-info .name { font-size: 13px; font-weight: 600; color: white; }
+        .sidebar-footer .user-card .user-info .role { font-size: 11px; color: rgba(255, 255, 255, 0.4); }
+        .sidebar-footer .user-card .logout { color: rgba(255, 255, 255, 0.3); transition: 0.25s ease; }
+        .sidebar-footer .user-card .logout:hover { color: #c75b4a; }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content { flex: 1; padding: 28px 40px 40px; min-height: 100vh; max-width: calc(100% - 250px); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+        .header-left h2 { font-size: 26px; font-weight: 700; color: #0f2b26; }
+        .header-left p { font-size: 14px; color: #8a9a98; margin-top: 4px; }
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .header-right .notification-btn {
+            position: relative; width: 42px; height: 42px; border-radius: 50%;
+            border: none; background: white; color: #4a5a58; font-size: 18px;
+            cursor: pointer; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .header-right .notification-btn .dot {
+            position: absolute; top: 6px; right: 6px;
+            min-width: 18px; height: 18px; background: #c75b4a;
+            color: white; font-size: 10px; font-weight: 700;
+            border-radius: 50%; border: 2px solid white;
+            display: flex; align-items: center; justify-content: center; padding: 0 4px;
+        }
+        .header-right .date-display {
+            font-size: 13px; color: #8a9a98; background: white;
+            padding: 10px 20px; border-radius: 10px; font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        /* ===== ROW 1: GRADIENT KPI CARDS WITH SPARKLINES ===== */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .kpi-card-gradient {
+            border-radius: 16px;
+            padding: 20px 22px 8px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .kpi-card-gradient:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+        }
+        .kpi-card-gradient::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -15%;
+            width: 180px;
+            height: 180px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 50%;
+        }
+        .kpi-card-gradient::after {
+            content: '';
+            position: absolute;
+            bottom: -40%;
+            left: -10%;
+            width: 140px;
+            height: 140px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 50%;
+        }
+        .kpi-card-gradient.purple { background: linear-gradient(135deg, #7a5a9a, #b57ad9); }
+        .kpi-card-gradient.blue { background: linear-gradient(135deg, #2a5a8a, #5a9ad9); }
+        .kpi-card-gradient.green { background: linear-gradient(135deg, #1a6b4a, #4ac99a); }
+        .kpi-card-gradient.orange { background: linear-gradient(135deg, #c8925e, #f5b342); }
+
+        .kpi-card-gradient .kpi-header-gradient {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 1;
+        }
+        .kpi-card-gradient .kpi-label-gradient {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.85;
+            margin-bottom: 6px;
+        }
+        .kpi-card-gradient .kpi-value-gradient {
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 6px;
+        }
+        .kpi-card-gradient .kpi-sub-gradient {
+            font-size: 12px;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+        .kpi-card-gradient .kpi-icon-gradient {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        .kpi-card-gradient .kpi-sparkline-gradient {
+            height: 44px;
+            position: relative;
+            z-index: 1;
+            margin-top: 6px;
+            margin-left: -22px;
+            margin-right: -22px;
+        }
+
+        /* ===== ROW 2: TWO BIG CHARTS ===== */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .chart-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+        .chart-card .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0ebe6;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .chart-card .chart-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f2b26;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chart-card .chart-header h3 i { color: #c8925e; }
+        .chart-toggle {
+            display: flex;
+            background: #f5f0eb;
+            border-radius: 10px;
+            padding: 3px;
+            gap: 2px;
+        }
+        .chart-toggle button {
+            padding: 6px 16px;
+            border: none;
+            background: transparent;
+            color: #8a9a98;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+        .chart-toggle button:hover { color: #c8925e; }
+        .chart-toggle button.active {
+            background: white;
+            color: #0f2b26;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+        .chart-container-big { position: relative; height: 280px; }
+        .chart-container-small { position: relative; height: 240px; }
+
+        /* Doughnut legend */
+        .doughnut-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #f0ebe6;
+        }
+        .doughnut-legend .legend-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+        .doughnut-legend .legend-item .legend-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #4a5a58;
+        }
+        .doughnut-legend .legend-item .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .doughnut-legend .legend-item .legend-value {
+            font-weight: 700;
+            color: #0f2b26;
+        }
+
+        /* ===== ROW 3: SMALL KPI TILES ===== */
+        .pulse-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .pulse-card {
+            background: white;
+            border-radius: 14px;
+            padding: 18px 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .pulse-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+        .pulse-card .pulse-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .pulse-card .pulse-icon.purple { background: #f3e8f8; color: #7a5a9a; }
+        .pulse-card .pulse-icon.blue { background: #e8f0fe; color: #3a6ea5; }
+        .pulse-card .pulse-icon.green { background: #e6f4ee; color: #2d8f6f; }
+        .pulse-card .pulse-icon.orange { background: #fef3e0; color: #b8860b; }
+        .pulse-card .pulse-info .pulse-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0f2b26;
+            line-height: 1.1;
+        }
+        .pulse-card .pulse-info .pulse-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #8a9a98;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 3px;
+        }
+
+        /* ===== ROW 4: ACTIVITY + EXPERIENCES ===== */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px 26px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+        }
+        .section-card .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #f0ebe6;
+        }
+        .section-card .section-header h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f2b26;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-card .section-header h3 i { color: #c8925e; }
+        .section-card .section-header a {
+            font-size: 12px;
+            font-weight: 600;
+            color: #c8925e;
+        }
+        .section-card .section-header a:hover { color: #d4a373; }
+
+        /* Activity Feed */
+        .activity-feed {
+            display: flex;
+            flex-direction: column;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #faf8f6;
+        }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-item .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .activity-item .activity-icon.user { background: #f3e8f8; color: #7a5a9a; }
+        .activity-item .activity-icon.experience { background: #e8f0fe; color: #3a6ea5; }
+        .activity-item .activity-icon.booking { background: #e6f4ee; color: #2d8f6f; }
+        .activity-item .activity-icon.review { background: #fef3e0; color: #b8860b; }
+        .activity-item .activity-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .activity-item .activity-content .title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        .activity-item .activity-content .desc {
+            font-size: 12px;
+            color: #8a9a98;
+            margin-top: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .activity-item .activity-time {
+            font-size: 11px;
+            color: #b8c5c2;
+            flex-shrink: 0;
+        }
+
+        /* Experiences Table */
+        .exp-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .exp-table thead th {
+            text-align: left;
+            font-size: 10px;
+            font-weight: 700;
+            color: #8a9a98;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 8px 10px;
+            border-bottom: 1px solid #f0ebe6;
+        }
+        .exp-table tbody td {
+            padding: 12px 10px;
+            font-size: 13px;
+            border-bottom: 1px solid #faf8f6;
+            vertical-align: middle;
+        }
+        .exp-table tbody tr:last-child td { border-bottom: none; }
+        .exp-table tbody tr:hover { background: #faf8f6; }
+        .exp-table .exp-name {
+            font-weight: 600;
+            color: #1a1a1a;
+            max-width: 140px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .exp-table .exp-provider {
+            font-size: 12px;
+            color: #8a9a98;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .status-badge.draft { background: #f0ebe6; color: #6b7a78; }
+        .status-badge.submitted { background: #e8f0fe; color: #2a5a7a; }
+        .status-badge.under_review { background: #fef3e0; color: #b8860b; }
+        .status-badge.published { background: #e6f4ee; color: #1a7a5a; }
+        .status-badge.rejected { background: #fce8e4; color: #b84a3a; }
+        .status-badge.suspended { background: #f0ebe6; color: #8a7a78; }
+
+        /* ===== ROW 5: BOOKINGS CHART + TOP PERFORMERS ===== */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 20px;
+        }
+        .bookings-bar-container { position: relative; height: 240px; }
+
+        /* Top Performers */
+        .performer-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid #faf8f6;
+        }
+        .performer-item:last-child { border-bottom: none; }
+        .performer-item .performer-rank {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        .performer-item .performer-rank.gold { background: #fef3e0; color: #c8925e; }
+        .performer-item .performer-rank.silver { background: #f0ebe6; color: #8a9a98; }
+        .performer-item .performer-rank.bronze { background: #fce8e4; color: #b8860b; }
+        .performer-item .performer-info { flex: 1; min-width: 0; }
+        .performer-item .performer-info .performer-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #8a9a98;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .performer-item .performer-info .performer-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-top: 2px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .performer-item .performer-info .performer-meta {
+            font-size: 11px;
+            color: #8a9a98;
+            margin-top: 2px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 16px;
+            color: #8a9a98;
+        }
+        .empty-state i {
+            font-size: 44px;
+            color: #e0d8d0;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .empty-state p {
+            font-size: 13px;
+            margin: 0;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .pulse-grid { grid-template-columns: repeat(2, 1fr); }
+            .chart-grid { grid-template-columns: 1fr; }
+            .two-col { grid-template-columns: 1fr; }
+            .bottom-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .sidebar { width: 72px; padding: 16px 10px; }
+            .sidebar-brand h1 { font-size: 16px; }
+            .sidebar-brand .subtitle, .sidebar-section-title, .sidebar-nav .nav-item span, .sidebar-nav .nav-item .badge, .sidebar-footer .user-card .user-info { display: none; }
+            .main-content { padding: 16px; max-width: 100%; }
+            .header { flex-direction: column; align-items: flex-start; }
+            .kpi-grid { grid-template-columns: 1fr; gap: 12px; }
+            .pulse-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h1>Explore <span>Kimberley</span></h1>
+            <div class="subtitle">Tourism Platform</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Main</div>
+                <a href="{% url 'admin_dashboard:dashboard' %}" class="nav-item active">
+                    <span class="icon"><i class="fas fa-home"></i></span>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+            {% include "admin_dashboard/_owner_sidebar.html" %}
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">User Management</div>
+                <a href="{% url 'admin_dashboard:all_users' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-users"></i></span>
+                    <span>All Users</span>
+                    {% if total_users > 0 %}<span class="badge">{{ total_users }}</span>{% endif %}
+                </a>
+                <a href="{% url 'admin_dashboard:providers' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-building"></i></span>
+                    <span>Providers</span>
+                    {% if pending_providers_count > 0 %}<span class="badge">{{ pending_providers_count }}</span>{% endif %}
+                </a>
+                <a href="{% url 'admin_dashboard:guides' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-user-tie"></i></span>
+                    <span>Guides</span>
+                    {% if pending_guides_count > 0 %}<span class="badge">{{ pending_guides_count }}</span>{% endif %}
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Content</div>
+                <a href="{% url 'admin_dashboard:experiences' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-suitcase"></i></span>
+                    <span>Experiences</span>
+                    {% if pending_experiences_count > 0 %}<span class="badge">{{ pending_experiences_count }}</span>{% endif %}
+                </a>
+                <a href="{% url 'admin_dashboard:reviews' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-star"></i></span>
+                    <span>Reviews</span>
+                    {% if pending_reviews_count > 0 %}<span class="badge">{{ pending_reviews_count }}</span>{% endif %}
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Operations</div>
+                <a href="{% url 'admin_dashboard:bookings' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+                    <span>Bookings</span>
+                    {% if total_bookings > 0 %}<span class="badge">{{ total_bookings }}</span>{% endif %}
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Insights</div>
+                <a href="{% url 'admin_dashboard:analytics' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-chart-bar"></i></span>
+                    <span>Analytics</span>
+                </a>
+                <a href="{% url 'admin_dashboard:audit_logs' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-history"></i></span>
+                    <span>Audit Logs</span>
+                </a>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar">{{ user.first_name|slice:":1"|default:"A" }}</div>
+                <div class="user-info">
+                    <div class="name">{{ user.first_name|default:"Admin" }}</div>
+                    <div class="role">Administrator</div>
+                </div>
+                <a href="/accounts/logout/" class="logout-btn" title="Sign out" style="display:inline-flex;align-items:center;gap:6px;margin-left:auto;padding:6px 10px;border:1px solid rgba(255,255,255,0.14);border-radius:8px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.75);font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;"><i class="fas fa-sign-out-alt"></i> Sign out</a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="header">
+            <div class="header-left">
+                <h2>Admin Dashboard</h2>
+                <p>Platform analytics and insights</p>
+            </div>
+            <div class="header-right">
+                <a href="/notifications/" class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    {% if unread_count > 0 %}<span class="dot">{{ unread_count }}</span>{% endif %}
+                </a>
+                <span class="date-display"><i class="far fa-calendar-alt"></i> {{ now|date:"M d, Y" }}</span>
+            </div>
+        </header>
+
+        <!-- ===== ROW 1: GRADIENT KPI CARDS WITH SPARKLINES ===== -->
+        <div class="kpi-grid">
+            <div class="kpi-card-gradient purple">
+                <div class="kpi-header-gradient">
+                    <div>
+                        <div class="kpi-label-gradient">Total Users</div>
+                        <div class="kpi-value-gradient">{{ total_users }}</div>
+                        <div class="kpi-sub-gradient">{{ total_tourists }} tourists · {{ total_providers }} providers</div>
+                    </div>
+                    <div class="kpi-icon-gradient"><i class="fas fa-users"></i></div>
+                </div>
+                <div class="kpi-sparkline-gradient"><canvas id="sparkUsers"></canvas></div>
+            </div>
+
+            <div class="kpi-card-gradient blue">
+                <div class="kpi-header-gradient">
+                    <div>
+                        <div class="kpi-label-gradient">Total Bookings</div>
+                        <div class="kpi-value-gradient">{{ total_bookings }}</div>
+                        <div class="kpi-sub-gradient">{{ completed_bookings }} completed · {{ cancelled_bookings }} cancelled</div>
+                    </div>
+                    <div class="kpi-icon-gradient"><i class="fas fa-calendar-check"></i></div>
+                </div>
+                <div class="kpi-sparkline-gradient"><canvas id="sparkBookings"></canvas></div>
+            </div>
+
+            <div class="kpi-card-gradient green">
+                <div class="kpi-header-gradient">
+                    <div>
+                        <div class="kpi-label-gradient">Average Rating</div>
+                        <div class="kpi-value-gradient">{{ avg_rating|floatformat:1 }}</div>
+                        <div class="kpi-sub-gradient">From {{ approved_reviews_count }} approved</div>
+                    </div>
+                    <div class="kpi-icon-gradient"><i class="fas fa-star"></i></div>
+                </div>
+                <div class="kpi-sparkline-gradient"><canvas id="sparkReviews"></canvas></div>
+            </div>
+
+            <div class="kpi-card-gradient orange">
+                <div class="kpi-header-gradient">
+                    <div>
+                        <div class="kpi-label-gradient">Pending Actions</div>
+                        <div class="kpi-value-gradient">{{ pending_actions }}</div>
+                        <div class="kpi-sub-gradient">{{ pending_providers_count }} prov · {{ pending_guides_count }} guides · {{ pending_reviews_count }} rev</div>
+                    </div>
+                    <div class="kpi-icon-gradient"><i class="fas fa-clock"></i></div>
+                </div>
+                <div class="kpi-sparkline-gradient"><canvas id="sparkPending"></canvas></div>
+            </div>
+        </div>
+
+        <!-- ===== ROW 2: TWO BIG CHARTS ===== -->
+        <div class="chart-grid">
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3><i class="fas fa-chart-line"></i> Platform Activity</h3>
+                    <div class="chart-toggle">
+                        <button class="active" data-period="daily">Daily</button>
+                        <button data-period="weekly">Weekly</button>
+                        <button data-period="monthly">Monthly</button>
+                    </div>
+                </div>
+                <div class="chart-container-big">
+                    <canvas id="activityChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3><i class="fas fa-chart-pie"></i> User Breakdown</h3>
+                </div>
+                <div class="chart-container-small">
+                    <canvas id="userChart"></canvas>
+                </div>
+                <div class="doughnut-legend">
+                    <div class="legend-item">
+                        <div class="legend-label"><span class="legend-dot" style="background:#7a5a9a;"></span> Tourists</div>
+                        <div class="legend-value">{{ total_tourists }}</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-label"><span class="legend-dot" style="background:#3a6ea5;"></span> Providers</div>
+                        <div class="legend-value">{{ total_providers }}</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-label"><span class="legend-dot" style="background:#2d8f6f;"></span> Guides</div>
+                        <div class="legend-value">{{ total_guides }}</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ===== ROW 3: SMALL KPI TILES ===== -->
+        <div class="pulse-grid">
+            <div class="pulse-card">
+                <div class="pulse-icon purple"><i class="fas fa-user-plus"></i></div>
+                <div class="pulse-info">
+                    <div class="pulse-value">{{ new_users_today }}</div>
+                    <div class="pulse-label">New Today</div>
+                </div>
+            </div>
+            <div class="pulse-card">
+                <div class="pulse-icon blue"><i class="fas fa-calendar-plus"></i></div>
+                <div class="pulse-info">
+                    <div class="pulse-value">{{ new_bookings_today }}</div>
+                    <div class="pulse-label">Bookings Today</div>
+                </div>
+            </div>
+            <div class="pulse-card">
+                <div class="pulse-icon orange"><i class="fas fa-star-half-alt"></i></div>
+                <div class="pulse-info">
+                    <div class="pulse-value">{{ new_reviews_today }}</div>
+                    <div class="pulse-label">Reviews Today</div>
+                </div>
+            </div>
+            <div class="pulse-card">
+                <div class="pulse-icon green"><i class="fas fa-suitcase"></i></div>
+                <div class="pulse-info">
+                    <div class="pulse-value">{{ active_experiences }}</div>
+                    <div class="pulse-label">Active Experiences</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== ROW 4: ACTIVITY + EXPERIENCES ===== -->
+        <div class="two-col">
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h3><i class="fas fa-bolt"></i> Recent Activities</h3>
+                    <a href="/notifications/">View all →</a>
+                </div>
+                {% if recent_activities %}
+                    <div class="activity-feed">
+                        {% for activity in recent_activities %}
+                            <div class="activity-item">
+                                <div class="activity-icon {{ activity.icon_class }}">
+                                    <i class="fas {{ activity.icon }}"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="title">{{ activity.title }}</div>
+                                    <div class="desc">{{ activity.description }}</div>
+                                </div>
+                                <div class="activity-time">{{ activity.created_at|timesince }} ago</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-bell-slash"></i>
+                        <p>No recent activity</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h3><i class="fas fa-suitcase"></i> Recent Experiences</h3>
+                    <a href="{% url 'admin_dashboard:experiences' %}">View all →</a>
+                </div>
+                {% if recent_experiences_table %}
+                    <table class="exp-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for exp in recent_experiences_table %}
+                                <tr>
+                                    <td>
+                                        <div class="exp-name">{{ exp.name|truncatechars:28 }}</div>
+                                        <div class="exp-provider">{{ exp.provider.business_name|truncatechars:25 }}</div>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge {{ exp.status }}">{{ exp.get_status_display }}</span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-suitcase"></i>
+                        <p>No experiences yet</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <!-- ===== ROW 5: BOOKINGS CHART + TOP PERFORMERS ===== -->
+        <div class="bottom-grid">
+
+            <div class="section-card">
+                <div class="section-header">
+                    <h3><i class="fas fa-chart-bar"></i> Bookings by Status</h3>
+                </div>
+                <div class="bookings-bar-container">
+                    <canvas id="bookingsChart"></canvas>
+                </div>
+            </div>
+
+            {% if has_top_performers %}
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3><i class="fas fa-trophy"></i> Top Performers</h3>
+                    </div>
+
+                    {% if top_provider and top_provider.booking_count > 0 %}
+                        <div class="performer-item">
+                            <div class="performer-rank gold"><i class="fas fa-crown"></i></div>
+                            <div class="performer-info">
+                                <div class="performer-label">Top Provider</div>
+                                <div class="performer-name">{{ top_provider.business_name }}</div>
+                                <div class="performer-meta">{{ top_provider.booking_count }} bookings · {{ top_provider.average_rating|floatformat:1 }} ★</div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if top_guide and top_guide.booking_count > 0 %}
+                        <div class="performer-item">
+                            <div class="performer-rank silver"><i class="fas fa-medal"></i></div>
+                            <div class="performer-info">
+                                <div class="performer-label">Top Guide</div>
+                                <div class="performer-name">{{ top_guide.full_name }}</div>
+                                <div class="performer-meta">{{ top_guide.booking_count }} bookings · {{ top_guide.average_rating|floatformat:1 }} ★</div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if top_experience and top_experience.booking_count > 0 %}
+                        <div class="performer-item">
+                            <div class="performer-rank bronze"><i class="fas fa-star"></i></div>
+                            <div class="performer-info">
+                                <div class="performer-label">Top Experience</div>
+                                <div class="performer-name">{{ top_experience.name }}</div>
+                                <div class="performer-meta">{{ top_experience.booking_count }} bookings · {{ top_experience.average_rating|floatformat:1 }} ★</div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+        </div>
+
+    </main>
+
+    <script>
+        // ===== CHART DEFAULTS =====
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.font.size = 12;
+        Chart.defaults.color = '#8a9a98';
+
+        const chartColors = {
+            purple: '#7a5a9a',
+            blue: '#3a6ea5',
+            green: '#2d8f6f',
+            orange: '#c8925e',
+            red: '#c75b4a',
+            yellow: '#f5b342',
+            grey: '#d9dfdc'
+        };
+
+        // ===== SPARKLINES (KPI cards - white on gradient) =====
+        function createSparkline(canvasId, data, color) {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return;
+            if (!data || data.length === 0) {
+                data = [0, 0, 0, 0, 0, 0, 0];
+            }
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map((_, i) => i),
+                    datasets: [{
+                        data: data,
+                        borderColor: color,
+                        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        pointHoverRadius: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+                    scales: { x: { display: false }, y: { display: false } },
+                    layout: { padding: 0 },
+                    elements: { line: { borderCapStyle: 'round' } }
+                }
+            });
+        }
+
+        createSparkline('sparkUsers', {{ sparkline_users|safe|default:"[]" }}, '#ffffff');
+        createSparkline('sparkBookings', {{ sparkline_bookings|safe|default:"[]" }}, '#ffffff');
+        createSparkline('sparkReviews', {{ sparkline_reviews|safe|default:"[]" }}, '#ffffff');
+        createSparkline('sparkPending', [], '#ffffff');
+
+        // ===== ACTIVITY CHART =====
+        const activityData = {
+            daily: {
+                labels: {{ daily_labels|safe }},
+                users: {{ daily_users|safe }},
+                bookings: {{ daily_bookings|safe }},
+                reviews: {{ daily_reviews|safe }},
+            },
+            weekly: {
+                labels: {{ weekly_labels|safe }},
+                users: {{ weekly_users|safe }},
+                bookings: {{ weekly_bookings|safe }},
+                reviews: {{ weekly_reviews|safe }},
+            },
+            monthly: {
+                labels: {{ monthly_labels|safe }},
+                users: {{ monthly_users|safe }},
+                bookings: {{ monthly_bookings|safe }},
+                reviews: {{ monthly_reviews|safe }},
+            }
+        };
+
+        let activityChart;
+        const activityCtx = document.getElementById('activityChart');
+
+        function buildActivityChart(period) {
+            const d = activityData[period];
+            if (activityChart) activityChart.destroy();
+            activityChart = new Chart(activityCtx, {
+                type: 'line',
+                data: {
+                    labels: d.labels,
+                    datasets: [
+                        {
+                            label: 'New Users',
+                            data: d.users,
+                            borderColor: chartColors.purple,
+                            backgroundColor: chartColors.purple + '15',
+                            borderWidth: 2.5,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 5,
+                            fill: true,
+                        },
+                        {
+                            label: 'Bookings',
+                            data: d.bookings,
+                            borderColor: chartColors.green,
+                            backgroundColor: chartColors.green + '15',
+                            borderWidth: 2.5,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 5,
+                            fill: true,
+                        },
+                        {
+                            label: 'Reviews',
+                            data: d.reviews,
+                            borderColor: chartColors.orange,
+                            backgroundColor: chartColors.orange + '15',
+                            borderWidth: 2.5,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 5,
+                            fill: true,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 16,
+                                font: { size: 12, weight: '500' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#0f2b26',
+                            padding: 12,
+                            cornerRadius: 8,
+                            titleFont: { size: 13, weight: '600' },
+                            bodyFont: { size: 12 },
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { maxRotation: 0, autoSkip: true, maxTicksLimit: 8 }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f0ebe6', drawBorder: false },
+                            ticks: { padding: 8, precision: 0 }
+                        }
+                    }
+                }
+            });
+        }
+
+        buildActivityChart('daily');
+
+        document.querySelectorAll('.chart-toggle button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.chart-toggle button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                buildActivityChart(this.dataset.period);
+            });
+        });
+
+        // ===== USER BREAKDOWN DOUGHNUT =====
+        new Chart(document.getElementById('userChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Tourists', 'Providers', 'Guides'],
+                datasets: [{
+                    data: [{{ total_tourists }}, {{ total_providers }}, {{ total_guides }}],
+                    backgroundColor: [chartColors.purple, chartColors.blue, chartColors.green],
+                    borderWidth: 0,
+                    hoverOffset: 8,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '68%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f2b26',
+                        padding: 12,
+                        cornerRadius: 8,
+                    }
+                }
+            }
+        });
+
+        // ===== BOOKINGS BY STATUS BAR =====
+        new Chart(document.getElementById('bookingsChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Pending', 'Confirmed', 'Completed', 'Cancelled', 'Rejected'],
+                datasets: [{
+                    data: [
+                        {{ bookings_by_status.pending }},
+                        {{ bookings_by_status.confirmed }},
+                        {{ bookings_by_status.completed }},
+                        {{ bookings_by_status.cancelled }},
+                        {{ bookings_by_status.rejected }}
+                    ],
+                    backgroundColor: [
+                        chartColors.yellow,
+                        chartColors.green,
+                        chartColors.blue,
+                        chartColors.red,
+                        chartColors.red
+                    ],
+                    borderRadius: 8,
+                    barThickness: 40,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f2b26',
+                        padding: 12,
+                        cornerRadius: 8,
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 12, weight: '500' } }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#f0ebe6', drawBorder: false },
+                        ticks: { precision: 0, padding: 8 }
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,660 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ guide.full_name|default:"Guide" }} | Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f0eb; color: #1a1a1a; display: flex; min-height: 100vh; }
+        a { text-decoration: none; color: inherit; }
+
+        /* Sidebar */
+        .sidebar { width: 250px; background: #0f2b26; color: white; min-height: 100vh; padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-brand { padding: 0 12px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); margin-bottom: 24px; }
+        .sidebar-brand h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        .sidebar-brand h1 span { color: #c8925e; }
+        .sidebar-brand .subtitle { font-size: 11px; color: rgba(255, 255, 255, 0.35); margin-top: 2px; }
+        .sidebar-nav { flex: 1; }
+        .sidebar-section { margin-bottom: 16px; }
+        .sidebar-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255, 255, 255, 0.3); padding: 8px 14px; margin-bottom: 4px; }
+        .sidebar-nav .nav-item { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 10px; color: rgba(255, 255, 255, 0.6); font-size: 14px; font-weight: 500; transition: all 0.25s ease; margin-bottom: 2px; }
+        .sidebar-nav .nav-item:hover { background: rgba(255, 255, 255, 0.06); color: white; }
+        .sidebar-nav .nav-item.active { background: rgba(200, 146, 94, 0.15); color: #c8925e; }
+        .sidebar-nav .nav-item .icon { width: 22px; text-align: center; font-size: 16px; flex-shrink: 0; }
+        .sidebar-nav .nav-item .badge { margin-left: auto; background: #c75b4a; color: white; font-size: 10px; font-weight: 700; padding: 1px 10px; border-radius: 12px; }
+        .sidebar-footer { border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 16px; margin-top: auto; }
+        .sidebar-footer .user-card { display: flex; align-items: center; gap: 12px; padding: 10px 12px; }
+        .sidebar-footer .user-card .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #c8925e, #e8b88a); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; flex-shrink: 0; }
+        .sidebar-footer .user-card .user-info .name { font-size: 13px; font-weight: 600; color: white; }
+        .sidebar-footer .user-card .user-info .role { font-size: 11px; color: rgba(255, 255, 255, 0.4); }
+        .sidebar-footer .user-card .logout { color: rgba(255, 255, 255, 0.3); }
+
+        /* Main */
+        .main-content { flex: 1; padding: 28px 40px 40px; min-height: 100vh; max-width: calc(100% - 250px); }
+
+        .back-button { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; background: white; color: #4a5a58; border-radius: 10px; font-size: 13px; font-weight: 500; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: 0.2s; }
+        .back-button:hover { background: #c8925e; color: white; }
+
+        .messages { list-style: none; margin-bottom: 20px; }
+        .messages li { padding: 12px 18px; border-radius: 10px; font-size: 14px; margin-bottom: 8px; font-weight: 500; }
+        .messages .success { background: #e6f4ee; color: #1a7a5a; border-left: 4px solid #2d8f6f; }
+        .messages .error { background: #fce8e4; color: #a04234; border-left: 4px solid #c75b4a; }
+        .messages .info { background: #e8f0fe; color: #2a5a7a; border-left: 4px solid #3a6ea5; }
+
+        /* Profile card */
+        .profile-card { background: white; border-radius: 16px; padding: 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); margin-bottom: 24px; display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
+        .profile-card .profile-avatar { width: 96px; height: 96px; border-radius: 50%; background: linear-gradient(135deg, #2d8f6f, #4ac99a); display: flex; align-items: center; justify-content: center; color: white; font-size: 38px; font-weight: 700; flex-shrink: 0; }
+        .profile-card .profile-info { flex: 1; min-width: 200px; }
+        .profile-card .profile-info h1 { font-size: 26px; font-weight: 700; color: #0f2b26; margin-bottom: 4px; }
+        .profile-card .profile-info .profile-email { font-size: 14px; color: #8a9a98; margin-bottom: 12px; }
+        .profile-card .profile-info .profile-badges { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+        .profile-card .profile-info .profile-meta { display: flex; gap: 20px; flex-wrap: wrap; font-size: 13px; color: #4a5a58; }
+        .profile-card .profile-info .profile-meta span i { color: #c8925e; margin-right: 6px; }
+
+        /* Quick stats row */
+        .quick-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .quick-stat { background: white; border-radius: 14px; padding: 18px 22px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); text-align: center; }
+        .quick-stat .qs-value { font-size: 26px; font-weight: 700; color: #0f2b26; line-height: 1.1; }
+        .quick-stat .qs-value .star { color: #f5b342; font-size: 20px; }
+        .quick-stat .qs-label { font-size: 11px; color: #8a9a98; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-top: 6px; }
+
+        .status-badge { display: inline-block; padding: 5px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-badge.pending { background: #fef3e0; color: #b8860b; }
+        .status-badge.approved { background: #e6f4ee; color: #1a7a5a; }
+        .status-badge.rejected { background: #fce8e4; color: #b84a3a; }
+        .status-badge.suspended { background: #fce8e4; color: #b84a3a; }
+
+        .suspension-warning { background: #fce8e4; border-radius: 12px; padding: 20px; border-left: 4px solid #c75b4a; margin-bottom: 20px; }
+        .suspension-warning h4 { font-size: 14px; font-weight: 700; color: #a04234; margin-bottom: 6px; }
+        .suspension-warning p { font-size: 13px; color: #8a4040; }
+        .suspension-warning .meta { font-size: 12px; color: #b06060; margin-top: 8px; }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+
+        .card { background: white; border-radius: 16px; padding: 24px 28px; box-shadow: 0 2px 12px rgba(0,0,0,0.04); margin-bottom: 24px; }
+        .card:last-child { margin-bottom: 0; }
+        .card .card-title { font-size: 15px; font-weight: 700; color: #0f2b26; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+        .card .card-title i { color: #c8925e; }
+
+        .info-list { display: flex; flex-direction: column; gap: 12px; }
+        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0ebe6; font-size: 14px; gap: 12px; }
+        .info-row:last-child { border-bottom: none; }
+        .info-row .info-label { color: #8a9a98; flex-shrink: 0; }
+        .info-row .info-value { font-weight: 600; color: #0f2b26; text-align: right; word-break: break-word; }
+
+        .bio-text { font-size: 13px; color: #4a5a58; line-height: 1.6; padding: 12px 0; }
+
+        .tags-list { display: flex; flex-wrap: wrap; gap: 6px; }
+        .tag-item { background: #f0ebe6; padding: 4px 12px; border-radius: 12px; font-size: 12px; color: #687572; font-weight: 500; }
+
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; font-family: inherit; }
+        .btn-danger { background: #c75b4a; color: white; }
+        .btn-danger:hover { background: #a84535; transform: translateY(-2px); }
+        .btn-success { background: #2d8f6f; color: white; }
+        .btn-success:hover { background: #1a7a5a; transform: translateY(-2px); }
+
+        /* Booking list */
+        .booking-list { display: flex; flex-direction: column; gap: 10px; }
+        .booking-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #faf8f6; border-radius: 10px; border-left: 4px solid #c8925e; gap: 12px; flex-wrap: wrap; }
+        .booking-item .booking-info .tourist-name { font-weight: 600; font-size: 14px; color: #0f2b26; }
+        .booking-item .booking-info .booking-meta { font-size: 12px; color: #8a9a98; margin-top: 2px; }
+        .booking-item .booking-status { font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 600; }
+        .booking-item .booking-status.pending { background: #fef3e0; color: #b8860b; }
+        .booking-item .booking-status.confirmed { background: #e6f4ee; color: #1a7a5a; }
+        .booking-item .booking-status.completed { background: #e3edf7; color: #2a5a7a; }
+        .booking-item .booking-status.cancelled { background: #fce8e4; color: #b84a3a; }
+        .booking-item .booking-status.rejected { background: #fce8e4; color: #b84a3a; }
+
+        /* Review list */
+        .review-list { display: flex; flex-direction: column; gap: 12px; }
+        .review-item { padding: 14px 16px; background: #faf8f6; border-radius: 10px; border-left: 4px solid #f5b342; }
+        .review-item .review-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 6px; }
+        .review-item .review-header .exp-name { font-weight: 600; font-size: 13px; color: #0f2b26; }
+        .review-item .review-header .review-stars { color: #f5b342; font-size: 12px; }
+        .review-item .review-comment { font-size: 13px; color: #4a5a58; font-style: italic; line-height: 1.5; }
+        .review-item .review-meta { font-size: 11px; color: #8a9a98; margin-top: 6px; }
+
+        /* Action list */
+        .action-list { display: flex; flex-direction: column; gap: 10px; }
+        .action-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid #faf8f6; }
+        .action-item:last-child { border-bottom: none; }
+        .action-item .action-icon { width: 32px; height: 32px; border-radius: 50%; background: #f0ebe6; color: #c8925e; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+        .action-item .action-content { flex: 1; }
+        .action-item .action-content .action-title { font-size: 13px; font-weight: 600; color: #1a1a1a; }
+        .action-item .action-content .action-desc { font-size: 12px; color: #8a9a98; margin-top: 2px; }
+        .action-item .action-time { font-size: 11px; color: #b8c5c2; }
+
+        .empty-mini { text-align: center; padding: 24px; color: #8a9a98; font-size: 13px; }
+        .empty-mini i { font-size: 32px; color: #e0d8d0; display: block; margin-bottom: 8px; }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 43, 38, 0.5); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 16px; padding: 32px 36px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: modalIn 0.3s ease; }
+        @keyframes modalIn { from { opacity: 0; transform: translateY(-20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .modal .modal-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 18px; }
+        .modal .modal-icon.approve { background: #e6f4ee; color: #2d8f6f; }
+        .modal .modal-icon.reject { background: #fce8e4; color: #c75b4a; }
+        .modal .modal-icon.suspend { background: #fef3e0; color: #b8860b; }
+        .modal h3 { font-size: 20px; font-weight: 700; color: #0f2b26; text-align: center; margin-bottom: 8px; }
+        .modal .modal-subtitle { font-size: 14px; color: #8a9a98; text-align: center; margin-bottom: 24px; }
+        .modal .form-group { margin-bottom: 20px; }
+        .modal .form-group label { display: block; font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
+        .modal .form-group textarea { width: 100%; padding: 12px 16px; border: 1px solid #d9dfdc; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 14px; min-height: 100px; resize: vertical; }
+        .modal .form-group textarea:focus { outline: none; border-color: #c8925e; }
+        .modal .modal-actions { display: flex; gap: 12px; justify-content: center; }
+        .modal .modal-actions button { padding: 10px 28px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+        .modal .modal-actions .btn-cancel { background: #f0ebe6; color: #1a1a1a; }
+        .modal .modal-actions .btn-confirm-approve { background: #2d8f6f; color: white; }
+        .modal .modal-actions .btn-confirm-reject { background: #c75b4a; color: white; }
+        .modal .modal-actions .btn-confirm-suspend { background: #c8925e; color: white; }
+
+        /* Toast */
+        .toast-container { position: fixed; top: 24px; right: 24px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; max-width: 380px; width: 100%; }
+        .toast { background: #0f2b26; color: white; padding: 14px 20px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.25); display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; border-left: 4px solid #2d8f6f; }
+        .toast.error { border-left-color: #c75b4a; }
+        .toast .toast-icon { font-size: 18px; color: #4ac99a; }
+        .toast.error .toast-icon { color: #e88a7a; }
+
+        @media (max-width: 1200px) {
+            .quick-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 992px) { .grid-2 { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) {
+            .sidebar { width: 72px; padding: 16px 10px; }
+            .sidebar-brand h1 { font-size: 16px; }
+            .sidebar-brand .subtitle, .sidebar-section-title, .sidebar-nav .nav-item span, .sidebar-nav .nav-item .badge, .sidebar-footer .user-card .user-info { display: none; }
+            .main-content { padding: 16px; max-width: 100%; }
+            .profile-card { flex-direction: column; text-align: center; }
+            .quick-stats { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h1>Explore <span>Kimberley</span></h1>
+            <div class="subtitle">Tourism Platform</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Main</div>
+                <a href="{% url 'admin_dashboard:dashboard' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-home"></i></span><span>Dashboard</span>
+                </a>
+            </div>
+            {% include "admin_dashboard/_owner_sidebar.html" %}
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">User Management</div>
+                <a href="{% url 'admin_dashboard:all_users' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-users"></i></span><span>All Users</span>
+                </a>
+                <a href="{% url 'admin_dashboard:providers' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-building"></i></span><span>Providers</span>
+                    {% if pending_providers_count > 0 %}<span class="badge">{{ pending_providers_count }}</span>{% endif %}
+                </a>
+                <a href="{% url 'admin_dashboard:guides' %}" class="nav-item active">
+                    <span class="icon"><i class="fas fa-user-tie"></i></span><span>Guides</span>
+                    {% if pending_guides_count > 0 %}<span class="badge">{{ pending_guides_count }}</span>{% endif %}
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Content</div>
+                <a href="{% url 'admin_dashboard:experiences' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-suitcase"></i></span><span>Experiences</span>
+                    {% if pending_experiences_count > 0 %}<span class="badge">{{ pending_experiences_count }}</span>{% endif %}
+                </a>
+                <a href="{% url 'admin_dashboard:reviews' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-star"></i></span><span>Reviews</span>
+                    {% if pending_reviews_count > 0 %}<span class="badge">{{ pending_reviews_count }}</span>{% endif %}
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Operations</div>
+                <a href="{% url 'admin_dashboard:bookings' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-calendar-alt"></i></span><span>Bookings</span>
+                    {% if total_bookings > 0 %}<span class="badge">{{ total_bookings }}</span>{% endif %}
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Insights</div>
+                <a href="{% url 'admin_dashboard:analytics' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-chart-bar"></i></span><span>Analytics</span>
+                </a>
+                <a href="{% url 'admin_dashboard:audit_logs' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-history"></i></span><span>Audit Logs</span>
+                </a>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar">{{ user.first_name|slice:":1"|default:"A" }}</div>
+                <div class="user-info">
+                    <div class="name">{{ user.first_name|default:"Admin" }}</div>
+                    <div class="role">Administrator</div>
+                </div>
+                <a href="/accounts/logout/" class="logout-btn" title="Sign out" style="display:inline-flex;align-items:center;gap:6px;margin-left:auto;padding:6px 10px;border:1px solid rgba(255,255,255,0.14);border-radius:8px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.75);font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;"><i class="fas fa-sign-out-alt"></i> Sign out</a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+
+        <a href="{% url 'admin_dashboard:guides' %}" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back to Guides
+        </a>
+
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <!-- Profile Card -->
+        <div class="profile-card">
+            <div class="profile-avatar">{{ guide.profile.user.first_name|slice:":1"|default:"G" }}</div>
+            <div class="profile-info">
+                <h1>{{ guide.full_name|default:guide.profile.user.username }}</h1>
+                <div class="profile-email">
+                    <i class="fas fa-envelope"></i> {{ guide.profile.user.email }}
+                </div>
+                <div class="profile-badges">
+                    <span class="status-badge {{ guide.verification_status }}">
+                        {{ guide.get_verification_status_display }}
+                    </span>
+                </div>
+                <div class="profile-meta">
+                    <span><i class="fas fa-calendar-alt"></i> Joined {{ guide.created_at|date:"d M Y" }}</span>
+                    <span><i class="fas fa-briefcase"></i> {{ guide.years_experience }} year{{ guide.years_experience|pluralize }} experience</span>
+                    {% if guide.verified_at %}
+                        <span><i class="fas fa-check-circle"></i> Verified {{ guide.verified_at|date:"d M Y" }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% if guide.verification_status == 'suspended' %}
+            <div class="suspension-warning">
+                <h4><i class="fas fa-exclamation-triangle"></i> This guide is suspended</h4>
+                <p><strong>Reason:</strong> {{ guide.suspension_reason|default:"No reason provided" }}</p>
+                <div class="meta">
+                    {% if guide.suspended_at %}
+                        Suspended {{ guide.suspended_at|timesince }} ago
+                    {% endif %}
+                    {% if guide.suspended_by %}
+                        by {{ guide.suspended_by.get_full_name|default:guide.suspended_by.username }}
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="quick-stat">
+                <div class="qs-value">{{ total_bookings }}</div>
+                <div class="qs-label">Total Bookings</div>
+            </div>
+            <div class="quick-stat">
+                <div class="qs-value">{{ completed_tours }}</div>
+                <div class="qs-label">Completed Tours</div>
+            </div>
+            <div class="quick-stat">
+                <div class="qs-value">{{ total_reviews }}</div>
+                <div class="qs-label">Reviews</div>
+            </div>
+            <div class="quick-stat">
+                <div class="qs-value">
+                    {{ guide.average_rating|floatformat:1 }}
+                    <span class="star">★</span>
+                </div>
+                <div class="qs-label">Avg Rating</div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+
+            <!-- Guide Profile Info -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-user-tie"></i> Guide Information</div>
+                <div class="info-list">
+                    <div class="info-row">
+                        <span class="info-label">Full Name</span>
+                        <span class="info-value">{{ guide.full_name|default:"Not set" }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Email</span>
+                        <span class="info-value">{{ guide.profile.user.email }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Years Experience</span>
+                        <span class="info-value">{{ guide.years_experience }} year{{ guide.years_experience|pluralize }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Tours Given</span>
+                        <span class="info-value">{{ guide.total_tours_given }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Available</span>
+                        <span class="info-value">{% if guide.is_available %}Yes{% else %}No{% endif %}</span>
+                    </div>
+                </div>
+
+                {% if guide.biography %}
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #f0ebe6;">
+                        <div style="font-size: 11px; color: #8a9a98; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px;">Biography</div>
+                        <div class="bio-text">{{ guide.biography }}</div>
+                    </div>
+                {% endif %}
+
+                {% if guide.languages %}
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #f0ebe6;">
+                        <div style="font-size: 11px; color: #8a9a98; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px;">Languages</div>
+                        <div class="tags-list">
+                            {% for lang in guide.languages %}
+                                <span class="tag-item">{{ lang }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if guide.specializations %}
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #f0ebe6;">
+                        <div style="font-size: 11px; color: #8a9a98; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px;">Specializations</div>
+                        <div class="tags-list">
+                            {% for spec in guide.specializations %}
+                                <span class="tag-item">{{ spec }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if guide.areas_of_expertise %}
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #f0ebe6;">
+                        <div style="font-size: 11px; color: #8a9a98; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px;">Areas of Expertise</div>
+                        <div class="tags-list">
+                            {% for area in guide.areas_of_expertise %}
+                                <span class="tag-item">{{ area }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if guide.qualifications %}
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #f0ebe6;">
+                        <div style="font-size: 11px; color: #8a9a98; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 8px;">Qualifications</div>
+                        <div class="tags-list">
+                            {% for qual in guide.qualifications %}
+                                <span class="tag-item">{{ qual }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Admin Actions -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-shield-halved"></i> Admin Actions</div>
+
+                {% if guide.verification_status == 'pending' %}
+                    <p style="font-size: 13px; color: #4a5a58; margin-bottom: 16px; line-height: 1.6;">
+                        This guide is waiting for verification. Review their profile and approve or reject.
+                    </p>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button type="button" class="btn btn-success" onclick="openApproveModal({{ guide.id }}, '{{ guide.full_name|escapejs }}')">
+                            <i class="fas fa-check"></i> Approve
+                        </button>
+                        <button type="button" class="btn btn-danger" onclick="openRejectModal({{ guide.id }}, '{{ guide.full_name|escapejs }}')">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                    </div>
+
+                {% elif guide.verification_status == 'approved' %}
+                    <p style="font-size: 13px; color: #4a5a58; margin-bottom: 16px; line-height: 1.6;">
+                        This guide is verified and appears on the Tour Guides page for tourists.
+                    </p>
+                    <button type="button" class="btn btn-danger" onclick="openSuspendModal({{ guide.id }}, '{{ guide.full_name|escapejs }}')">
+                        <i class="fas fa-ban"></i> Suspend Guide
+                    </button>
+
+                {% elif guide.verification_status == 'rejected' %}
+                    <p style="font-size: 13px; color: #4a5a58; margin-bottom: 16px; line-height: 1.6;">
+                        This guide's application was rejected. They can update and resubmit.
+                    </p>
+                    <button type="button" class="btn btn-success" onclick="openRestoreModal({{ guide.id }}, '{{ guide.full_name|escapejs }}')">
+                        <i class="fas fa-redo"></i> Restore to Pending
+                    </button>
+
+                {% elif guide.verification_status == 'suspended' %}
+                    <p style="font-size: 13px; color: #4a5a58; margin-bottom: 16px; line-height: 1.6;">
+                        This guide is suspended and hidden from the platform.
+                    </p>
+                    <button type="button" class="btn btn-success" onclick="openRestoreModal({{ guide.id }}, '{{ guide.full_name|escapejs }}')">
+                        <i class="fas fa-redo"></i> Restore to Pending
+                    </button>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        <!-- Recent Bookings / Tours -->
+        <div class="card">
+            <div class="card-title"><i class="fas fa-calendar-check"></i> Recent Tours ({{ total_bookings }} total)</div>
+            {% if bookings %}
+                <div class="booking-list">
+                    {% for booking in bookings %}
+                        <div class="booking-item">
+                            <div class="booking-info">
+                                <div class="tourist-name">{{ booking.visitor.profile.user.get_full_name|default:booking.visitor.profile.user.username }}</div>
+                                <div class="booking-meta">
+                                    {% if booking.experience %}{{ booking.experience.name }} · {% endif %}
+                                    {{ booking.booking_date|date:"d M Y" }} at {{ booking.booking_time|time:"H:i" }}
+                                    · {{ booking.number_of_participants }} participant{{ booking.number_of_participants|pluralize }}
+                                </div>
+                            </div>
+                            <span class="booking-status {{ booking.status }}">{{ booking.get_status_display }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-mini">
+                    <i class="fas fa-calendar-check"></i>
+                    This guide has no bookings yet.
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Recent Reviews -->
+        <div class="card">
+            <div class="card-title"><i class="fas fa-star"></i> Recent Reviews ({{ total_reviews }} total)</div>
+            {% if reviews %}
+                <div class="review-list">
+                    {% for review in reviews %}
+                        <div class="review-item">
+                            <div class="review-header">
+                                <div class="exp-name">{{ review.experience.name|default:"Experience" }}</div>
+                                <div class="review-stars">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="review-comment">{{ review.comment|default:"No comment"|truncatechars:180 }}</div>
+                            <div class="review-meta">
+                                {{ review.visitor.profile.user.get_full_name|default:review.visitor.profile.user.username }}
+                                · {{ review.created_at|timesince }} ago
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-mini">
+                    <i class="fas fa-star"></i>
+                    No reviews yet.
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Admin History -->
+        {% if recent_actions %}
+            <div class="card">
+                <div class="card-title"><i class="fas fa-clock-rotate-left"></i> Admin History</div>
+                <div class="action-list">
+                    {% for action in recent_actions %}
+                        <div class="action-item">
+                            <div class="action-icon"><i class="fas fa-shield-alt"></i></div>
+                            <div class="action-content">
+                                <div class="action-title">{{ action.get_action_type_display }}</div>
+                                <div class="action-desc">{{ action.description|default:action.entity_name }}</div>
+                            </div>
+                            <div class="action-time">{{ action.created_at|timesince }} ago</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+    </main>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="actionModal">
+        <div class="modal">
+            <div class="modal-icon" id="modalIcon"></div>
+            <h3 id="modalTitle">Confirm Action</h3>
+            <p class="modal-subtitle" id="modalSubtitle"></p>
+            <form id="modalForm" method="POST">
+                {% csrf_token %}
+                <div class="form-group" id="reasonGroup" style="display:none;">
+                    <label>Reason <span style="color: #c75b4a;">*</span></label>
+                    <textarea name="reason" id="reasonField" placeholder="Explain the reason..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="closeModal()" class="btn-cancel">Cancel</button>
+                    <button type="submit" id="modalConfirmBtn">Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        let currentAction = { guideId: null, action: null };
+        const modal = document.getElementById('actionModal');
+        const modalForm = document.getElementById('modalForm');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalSubtitle = document.getElementById('modalSubtitle');
+        const reasonGroup = document.getElementById('reasonGroup');
+        const reasonField = document.getElementById('reasonField');
+        const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+
+        function openApproveModal(id, name) {
+            currentAction = { guideId: id, action: 'approve' };
+            modalIcon.className = 'modal-icon approve';
+            modalIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+            modalTitle.textContent = 'Approve Guide?';
+            modalSubtitle.textContent = name;
+            reasonGroup.style.display = 'none';
+            reasonField.required = false;
+            modalConfirmBtn.className = 'btn-confirm-approve';
+            modalConfirmBtn.textContent = 'Approve';
+            modal.classList.add('active');
+        }
+
+        function openRejectModal(id, name) {
+            currentAction = { guideId: id, action: 'reject' };
+            modalIcon.className = 'modal-icon reject';
+            modalIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
+            modalTitle.textContent = 'Reject Guide?';
+            modalSubtitle.textContent = name;
+            reasonGroup.style.display = 'block';
+            reasonField.required = true;
+            reasonField.value = '';
+            modalConfirmBtn.className = 'btn-confirm-reject';
+            modalConfirmBtn.textContent = 'Reject';
+            modal.classList.add('active');
+        }
+
+        function openSuspendModal(id, name) {
+            currentAction = { guideId: id, action: 'suspend' };
+            modalIcon.className = 'modal-icon suspend';
+            modalIcon.innerHTML = '<i class="fas fa-ban"></i>';
+            modalTitle.textContent = 'Suspend Guide?';
+            modalSubtitle.textContent = name;
+            reasonGroup.style.display = 'block';
+            reasonField.required = true;
+            reasonField.value = '';
+            modalConfirmBtn.className = 'btn-confirm-suspend';
+            modalConfirmBtn.textContent = 'Suspend';
+            modal.classList.add('active');
+        }
+
+        function openRestoreModal(id, name) {
+            currentAction = { guideId: id, action: 'restore' };
+            modalIcon.className = 'modal-icon approve';
+            modalIcon.innerHTML = '<i class="fas fa-redo"></i>';
+            modalTitle.textContent = 'Restore Guide?';
+            modalSubtitle.textContent = name;
+            reasonGroup.style.display = 'none';
+            reasonField.required = false;
+            modalConfirmBtn.className = 'btn-confirm-approve';
+            modalConfirmBtn.textContent = 'Restore';
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            currentAction = { guideId: null, action: null };
+        }
+
+        modalForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const csrfToken = modalForm.querySelector('[name=csrfmiddlewaretoken]').value;
+            const reason = reasonField.value;
+            const url = `/admin_dashboard/action/guide/${currentAction.guideId}/${currentAction.action}/`;
+            const formData = new FormData();
+            formData.append('csrfmiddlewaretoken', csrfToken);
+            if (currentAction.action === 'reject' || currentAction.action === 'suspend') {
+                formData.append('reason', reason);
+            }
+            fetch(url, { method: 'POST', body: formData, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    closeModal();
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast(data.error || 'Something went wrong', 'error');
+                }
+            })
+            .catch(err => showToast('Error: ' + err.message, 'error'));
+        });
+
+        modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            toast.innerHTML = `<span class="toast-icon"><i class="fas ${icon}"></i></span><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.add('hide'); setTimeout(() => toast.remove(), 300); }, 4000);
+        }
+    </script>
+
+</body>
+</html>

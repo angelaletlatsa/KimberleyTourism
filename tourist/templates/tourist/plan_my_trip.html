@@ -1,0 +1,1713 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan My Trip | Explore Kimberley</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #f5f0eb;
+            color: #1a1a1a;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 250px;
+            background: #0f2b26;
+            color: white;
+            min-height: 100vh;
+            padding: 24px 16px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            padding: 0 12px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 24px;
+        }
+
+        .sidebar-brand h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        .sidebar-brand h1 span { color: #c8925e; }
+        .sidebar-brand .subtitle { font-size: 11px; color: rgba(255, 255, 255, 0.35); margin-top: 2px; }
+
+        .sidebar-nav { flex: 1; }
+
+        .sidebar-section-title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: rgba(255, 255, 255, 0.3);
+            padding: 16px 14px 8px;
+            margin-top: 4px;
+        }
+
+        .sidebar-nav .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.25s ease;
+            margin-bottom: 2px;
+        }
+
+        .sidebar-nav .nav-item:hover { background: rgba(255, 255, 255, 0.06); color: white; }
+        .sidebar-nav .nav-item.active { background: rgba(200, 146, 94, 0.15); color: #c8925e; }
+        .sidebar-nav .nav-item .icon { width: 22px; text-align: center; font-size: 16px; flex-shrink: 0; }
+        .sidebar-nav .nav-item .badge {
+            margin-left: auto;
+            background: #c8925e;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 1px 10px;
+            border-radius: 12px;
+        }
+
+        .sidebar-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 16px;
+            margin-top: auto;
+        }
+
+        .sidebar-footer .user-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            transition: 0.25s ease;
+        }
+
+        .sidebar-footer .user-card:hover { background: rgba(255, 255, 255, 0.06); }
+
+        .sidebar-footer .user-card .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c8925e, #e8b88a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-footer .user-card .user-info .name { font-size: 13px; font-weight: 600; color: white; }
+        .sidebar-footer .user-card .user-info .role { font-size: 11px; color: rgba(255, 255, 255, 0.4); }
+        .sidebar-footer .user-card .logout { color: rgba(255, 255, 255, 0.3); transition: 0.25s ease; margin-left: auto; }
+        .sidebar-footer .user-card .logout:hover { color: #c75b4a; }
+
+        /* ===== MAIN ===== */
+        .main-content {
+            flex: 1;
+            padding: 28px 40px 40px;
+            min-height: 100vh;
+            max-width: calc(100% - 250px);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .header-left h2 { font-size: 22px; font-weight: 700; color: #0f2b26; }
+        .header-left p { font-size: 13px; color: #8a9a98; margin-top: 2px; }
+
+        .header-right { display: flex; align-items: center; gap: 16px; }
+
+        .header-right .notification-btn {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            color: #4a5a58;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-right .notification-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08); }
+        .header-right .notification-btn .dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            min-width: 18px;
+            height: 18px;
+            background: #c75b4a;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 50%;
+            border: 2px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+        }
+
+        .header-right .date-display {
+            font-size: 13px;
+            color: #8a9a98;
+            background: white;
+            padding: 8px 18px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #1a1a1a;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: 0.2s ease;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+        }
+
+        .back-button:hover { border-color: #c8925e; transform: translateX(-2px); }
+
+        /* ===== ALERTS ===== */
+        .alert-message {
+            border-radius: 10px;
+            padding: 12px 18px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+        }
+
+        .alert-message i { font-size: 18px; }
+        .alert-message.success { background: #e6f4ee; border: 1px solid #2d8f6f; color: #1a7a5a; }
+        .alert-message.error { background: #fce8e4; border: 1px solid #c75b4a; color: #b84a3a; }
+        .alert-message.warning { background: #fef3e0; border: 1px solid #b8860b; color: #8a6d0b; }
+        .alert-message.info { background: #e3edf7; border: 1px solid #3a6ea5; color: #2a5a7a; }
+
+        /* ===== HERO ===== */
+        .hero {
+            background: linear-gradient(135deg, #0f2b26 0%, #1a4a42 60%, #2a6b60 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 28px 36px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(15, 43, 38, 0.2);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(200, 146, 94, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .hero-content { position: relative; z-index: 1; }
+
+        .hero h1 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .hero p {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.75);
+            margin-bottom: 20px;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .hero-pills {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .hero-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 500;
+        }
+
+        .hero-pill i { color: #c8925e; }
+
+        /* ===== STEP INDICATOR ===== */
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 18px 26px;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #8a9a98;
+        }
+
+        .step .step-num {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #f0ebe6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            color: #8a9a98;
+            transition: 0.25s ease;
+        }
+
+        .step.active .step-num { background: #c8925e; color: white; }
+        .step.active .step-text { color: #0f2b26; font-weight: 600; }
+        .step.completed .step-num { background: #2d8f6f; color: white; }
+        .step.completed .step-text { color: #2d8f6f; }
+        .step .step-text { font-size: 13px; }
+
+        .step-divider {
+            flex: 1;
+            height: 2px;
+            background: #e8ddd3;
+            margin: 0 12px;
+        }
+
+        .step-divider.completed { background: #2d8f6f; }
+
+        /* ===== STEP CONTENT ===== */
+        .step-content { display: none; }
+        .step-content.active { display: block; }
+
+        /* ===== PLAN CARD ===== */
+        .plan-card {
+            background: white;
+            border-radius: 14px;
+            padding: 28px 30px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #0f2b26;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid #f0ebe6;
+        }
+
+        .card-title i { color: #c8925e; }
+
+        .card-title .title-right {
+            margin-left: auto;
+            font-size: 12px;
+            font-weight: 500;
+            color: #8a9a98;
+        }
+
+        /* ===== FORM ===== */
+        .form-group { margin-bottom: 18px; }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+
+        .form-group label .required { color: #c75b4a; }
+        .form-group label .hint { font-weight: 400; color: #8a9a98; font-size: 12px; }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid #d9dfdc;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            background: white;
+            transition: 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #c8925e;
+            box-shadow: 0 0 0 3px rgba(200, 146, 94, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 18px;
+        }
+
+        .day-count-badge {
+            display: inline-block;
+            background: rgba(200, 146, 94, 0.1);
+            color: #c8925e;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-top: 6px;
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn-primary, .btn-success, .btn-secondary, .btn-danger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 24px;
+            border-radius: 9px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s ease;
+            font-family: inherit;
+            text-decoration: none;
+        }
+
+        .btn-primary { background: #c8925e; color: white; }
+        .btn-primary:hover { background: #b8824f; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(200, 146, 94, 0.3); }
+
+        .btn-success { background: #2d8f6f; color: white; }
+        .btn-success:hover { background: #1a7a5a; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(45, 143, 111, 0.3); }
+
+        .btn-secondary { background: #f0ebe6; color: #4a5a58; border: 1px solid #e5e0da; }
+        .btn-secondary:hover { background: #e5dfd9; transform: translateY(-1px); }
+
+        .btn-danger { background: transparent; color: #c75b4a; border: 1px solid #f0cec6; }
+        .btn-danger:hover { background: #fce8e4; border-color: #c75b4a; }
+
+        .btn-disabled {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 24px;
+            border-radius: 9px;
+            font-weight: 600;
+            font-size: 14px;
+            background: #d9dfdc;
+            color: #8a9a98;
+            cursor: not-allowed;
+            text-decoration: none;
+        }
+
+        .actions-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-top: 22px;
+            padding-top: 20px;
+            border-top: 1px solid #f0ebe6;
+            flex-wrap: wrap;
+        }
+
+        /* ===== TRIP CONTEXT BANNER ===== */
+        .trip-context {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 16px 22px;
+            background: linear-gradient(135deg, #faf8f6 0%, #f5f0eb 100%);
+            border-left: 4px solid #c8925e;
+            border-radius: 10px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+
+        .trip-context .ctx-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #4a5a58;
+        }
+
+        .trip-context .ctx-item i {
+            color: #c8925e;
+            font-size: 15px;
+        }
+
+        .trip-context .ctx-item strong {
+            color: #0f2b26;
+            font-weight: 700;
+        }
+
+        /* ===== ITINERARY LIST ===== */
+        .itinerary-list {
+            margin-bottom: 16px;
+        }
+
+        .itinerary-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 18px;
+            background: #faf8f6;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border-left: 4px solid #c8925e;
+            transition: 0.2s ease;
+        }
+
+        .itinerary-item:hover { background: #f5f0eb; }
+
+        .itinerary-item .item-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #c8925e;
+            font-size: 18px;
+            flex-shrink: 0;
+            border: 1px solid #f0ebe6;
+        }
+
+        .itinerary-item .item-body { flex: 1; min-width: 0; }
+
+        .itinerary-item .item-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0f2b26;
+            margin-bottom: 4px;
+        }
+
+        .itinerary-item .item-category {
+            font-size: 11px;
+            color: #8a9a98;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .itinerary-item .item-price {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #4a5a58;
+            margin-right: 14px;
+        }
+
+        .itinerary-item .item-price i { color: #c8925e; font-size: 12px; }
+
+        .itinerary-item .day-picker-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .itinerary-item .day-picker-row label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5a58;
+        }
+
+        .itinerary-item .day-picker-row select {
+            padding: 6px 12px;
+            font-size: 13px;
+            border: 1px solid #d9dfdc;
+            border-radius: 8px;
+            background: white;
+            font-family: inherit;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .itinerary-item .day-picker-row select:focus {
+            outline: none;
+            border-color: #c8925e;
+            box-shadow: 0 0 0 3px rgba(200, 146, 94, 0.1);
+        }
+
+        .itinerary-item .item-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+            flex-shrink: 0;
+        }
+
+        .itinerary-item .remove-btn {
+            background: transparent;
+            border: 1px solid #f0cec6;
+            color: #c75b4a;
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .itinerary-item .remove-btn:hover {
+            background: #fce8e4;
+            border-color: #c75b4a;
+        }
+
+        /* ===== TRIP SUMMARY BAR (below list) ===== */
+        .trip-summary-bar {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding: 16px 22px;
+            background: #faf8f6;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .trip-summary-bar .sb-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .trip-summary-bar .sb-item .label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            font-weight: 700;
+            color: #8a9a98;
+        }
+
+        .trip-summary-bar .sb-item .value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0f2b26;
+        }
+
+        .trip-summary-bar .sb-item .value.gold { color: #c8925e; }
+
+        /* ===== BUDGET DISPLAY ===== */
+        .budget-display {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 12px 0 20px;
+        }
+
+        .budget-item {
+            text-align: center;
+            padding: 16px 12px;
+            background: #faf8f6;
+            border-radius: 10px;
+        }
+
+        .budget-item .amount {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a1a;
+            line-height: 1.2;
+        }
+
+        .budget-item .amount.gold { color: #c8925e; }
+        .budget-item .amount.green { color: #2d8f6f; }
+        .budget-item .amount.red { color: #c75b4a; }
+        .budget-item .amount.amber { color: #d4a373; }
+
+        .budget-item .label {
+            font-size: 11px;
+            color: #8a9a98;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        /* ===== BUDGET BAR ===== */
+        .budget-bar-wrap {
+            margin: 16px 0 20px;
+            position: relative;
+        }
+
+        .budget-bar {
+            width: 100%;
+            height: 14px;
+            background: #f0ebe6;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .budget-bar .fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .budget-bar .fill.green { background: linear-gradient(90deg, #2d8f6f, #4ac99a); }
+        .budget-bar .fill.amber { background: linear-gradient(90deg, #d4a373, #e8b88a); }
+        .budget-bar .fill.red { background: linear-gradient(90deg, #c75b4a, #e08a7a); }
+
+        .budget-bar-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #8a9a98;
+            margin-top: 6px;
+        }
+
+        /* ===== BUDGET STATUS MESSAGE ===== */
+        .budget-message {
+            padding: 16px 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .budget-message i { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+
+        .budget-message.fits_comfortably { background: #e6f4ee; border-left: 4px solid #2d8f6f; color: #1a7a5a; }
+        .budget-message.fits_comfortably i { color: #2d8f6f; }
+
+        .budget-message.tight { background: #fef3e0; border-left: 4px solid #b8860b; color: #8a6d0b; }
+        .budget-message.tight i { color: #b8860b; }
+
+        .budget-message.over_budget { background: #fce8e4; border-left: 4px solid #c75b4a; color: #a84535; }
+        .budget-message.over_budget i { color: #c75b4a; }
+
+        .budget-message.no_budget { background: #f0ebe6; border-left: 4px solid #8a9a98; color: #4a5a58; }
+        .budget-message.no_budget i { color: #8a9a98; }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: #8a9a98;
+        }
+
+        .empty-state .icon {
+            font-size: 52px;
+            color: #e0d8d0;
+            display: block;
+            margin-bottom: 14px;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4a5a58;
+            margin-bottom: 6px;
+        }
+
+        .empty-state p { font-size: 14px; margin-bottom: 16px; }
+
+        /* ===== FEATURED EXP SUGGESTIONS ===== */
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-top: 20px;
+        }
+
+        .featured-card {
+            background: #faf8f6;
+            border: 1px solid #f0ebe6;
+            border-radius: 12px;
+            padding: 16px 18px;
+            transition: 0.2s ease;
+        }
+
+        .featured-card:hover {
+            border-color: #c8925e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(200, 146, 94, 0.15);
+        }
+
+        .featured-card .fc-category {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #c8925e;
+            margin-bottom: 6px;
+        }
+
+        .featured-card .fc-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f2b26;
+            margin-bottom: 6px;
+        }
+
+        .featured-card .fc-meta {
+            font-size: 12px;
+            color: #8a9a98;
+            margin-bottom: 12px;
+        }
+
+        .featured-card .fc-price {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a5a58;
+        }
+
+        /* ===== DAY-BY-DAY PREVIEW (Step 4) ===== */
+        .day-group {
+            margin-bottom: 20px;
+        }
+
+        .day-group-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #0f2b26, #1a4a42);
+            color: white;
+            border-radius: 10px 10px 0 0;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .day-group-header .day-num {
+            background: #c8925e;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .day-group-body {
+            background: #faf8f6;
+            border-radius: 0 0 10px 10px;
+            padding: 12px 16px;
+            border: 1px solid #f0ebe6;
+            border-top: none;
+        }
+
+        .day-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0ebe6;
+            font-size: 13px;
+        }
+
+        .day-item:last-child { border-bottom: none; }
+
+        .day-item .di-name { color: #0f2b26; font-weight: 500; }
+        .day-item .di-price { color: #8a9a98; font-size: 12px; }
+
+        /* ===== TOAST ===== */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 380px;
+            width: 100%;
+        }
+
+        .toast {
+            background: #0f2b26;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.4s ease;
+            font-size: 14px;
+            font-weight: 500;
+            min-height: 56px;
+            border-left: 4px solid #c8925e;
+        }
+
+        .toast.success { border-left-color: #2d8f6f; }
+        .toast.info { border-left-color: #3a6ea5; }
+        .toast.remove { border-left-color: #c75b4a; }
+
+        .toast .toast-icon { font-size: 18px; flex-shrink: 0; width: 24px; text-align: center; }
+        .toast .toast-icon.success { color: #2d8f6f; }
+        .toast .toast-icon.info { color: #3a6ea5; }
+        .toast .toast-icon.remove { color: #c75b4a; }
+        .toast .toast-message { flex: 1; line-height: 1.4; }
+
+        .toast .toast-close {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+            transition: 0.2s ease;
+        }
+
+        .toast .toast-close:hover { color: white; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        .toast.hide { animation: slideOut 0.3s ease forwards; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .featured-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 72px; padding: 16px 10px; }
+            .sidebar-brand h1 { font-size: 16px; }
+            .sidebar-brand .subtitle { display: none; }
+            .sidebar-nav .nav-item span { display: none; }
+            .sidebar-nav .nav-item .badge { display: none; }
+            .sidebar-footer .user-card .user-info { display: none; }
+            .main-content { padding: 16px; max-width: 100%; }
+            .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .header-right { width: 100%; justify-content: flex-start; }
+            .step-indicator { flex-direction: column; gap: 10px; padding: 14px; }
+            .step-divider { display: none; }
+            .form-row, .form-row-3 { grid-template-columns: 1fr; }
+            .budget-display { grid-template-columns: 1fr; gap: 10px; }
+            .featured-grid { grid-template-columns: 1fr; }
+            .itinerary-item { flex-direction: column; }
+            .itinerary-item .item-actions { flex-direction: row; align-self: flex-end; }
+            .toast-container { top: 12px; right: 12px; left: 12px; max-width: 100%; }
+            .actions-row { flex-direction: column-reverse; }
+            .actions-row .btn-primary, .actions-row .btn-secondary, .actions-row .btn-success { width: 100%; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+            <h1>Explore <span>Kimberley</span></h1>
+            <div class="subtitle">Tourism Platform</div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="sidebar-section-title">Main</div>
+
+            <a href="/tourist/dashboard/" class="nav-item {% if active_page == 'dashboard' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-home"></i></span>
+                <span>Dashboard</span>
+            </a>
+
+            <a href="{% url 'experiences:list' %}" class="nav-item {% if active_page == 'experiences' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-compass"></i></span>
+                <span>Discover</span>
+            </a>
+
+            <div class="sidebar-section-title">My Trip</div>
+
+            <a href="/tourist/saved/" class="nav-item {% if active_page == 'saved' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-heart"></i></span>
+                <span>Saved Experiences</span>
+            </a>
+
+            <a href="/tourist/plan-my-trip/" class="nav-item {% if active_page == 'plan_trip' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-map"></i></span>
+                <span>Plan My Trip</span>
+            </a>
+
+            <a href="/itineraries/" class="nav-item">
+                <span class="icon"><i class="fas fa-map-signs"></i></span>
+                <span>My Itinerary</span>
+                {% if itinerary_count > 0 %}
+                    <span class="badge">{{ itinerary_count }}</span>
+                {% endif %}
+            </a>
+
+            <div class="sidebar-section-title">Bookings &amp; Reviews</div>
+
+            <a href="/tourist/guides/" class="nav-item {% if active_page == 'guides' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-users"></i></span>
+                <span>Tour Guides</span>
+            </a>
+
+            <a href="/bookings/my/" class="nav-item {% if active_page == 'bookings' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+                <span>My Bookings</span>
+                {% if upcoming_count > 0 %}
+                    <span class="badge">{{ upcoming_count }}</span>
+                {% endif %}
+            </a>
+
+            <a href="/reviews/my/" class="nav-item {% if active_page == 'reviews' %}active{% endif %}">
+                <span class="icon"><i class="fas fa-star"></i></span>
+                <span>My Reviews</span>
+                {% if review_count > 0 %}
+                    <span class="badge">{{ review_count }}</span>
+                {% endif %}
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar">
+                    {% if profile.profile_picture %}
+                        <img src="{{ profile.profile_picture.url }}" alt="{{ user.first_name }}">
+                    {% else %}
+                        {{ user.first_name|slice:":1"|default:"G" }}
+                    {% endif %}
+                </div>
+                <div class="user-info">
+                    <div class="name">{{ user.first_name|default:"Guest" }}</div>
+                    <div class="role">Tourist</div>
+                </div>
+                <a href="/accounts/logout/" class="logout-btn" title="Sign out" style="display:inline-flex;align-items:center;gap:6px;margin-left:auto;padding:6px 10px;border:1px solid rgba(255,255,255,0.14);border-radius:8px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.75);font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;"><i class="fas fa-sign-out-alt"></i> Sign out</a>
+            </div>
+        </div>
+
+    </aside>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <main class="main-content">
+
+        <a href="/tourist/dashboard/" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+
+        <header class="header">
+            <div class="header-left">
+                <h2>Plan My Trip</h2>
+                <p>Build your Kimberley adventure, step by step</p>
+            </div>
+            <div class="header-right">
+                <a href="/notifications/" class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    {% if unread_count > 0 %}
+                        <span class="dot">{{ unread_count }}</span>
+                    {% endif %}
+                </a>
+                <span class="date-display">
+                    <i class="far fa-calendar-alt"></i>
+                    {{ now|date:"M d, Y" }}
+                </span>
+            </div>
+        </header>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert-message {% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
+                    <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- HERO -->
+        <div class="hero">
+            <div class="hero-content">
+                <h1>Plan your Kimberley adventure</h1>
+                <p>Choose your dates, pick the experiences that match your interests, and stay on budget. We'll help you organise everything into a day-by-day plan.</p>
+                <div class="hero-pills">
+                    <span class="hero-pill"><i class="fas fa-calendar-alt"></i> Set your dates</span>
+                    <span class="hero-pill"><i class="fas fa-compass"></i> Pick experiences</span>
+                    <span class="hero-pill"><i class="fas fa-wallet"></i> Plan your budget</span>
+                    <span class="hero-pill"><i class="fas fa-check-circle"></i> Save your trip</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP INDICATOR -->
+        <div class="step-indicator">
+            <div class="step {% if current_step == 1 %}active{% elif current_step > 1 %}completed{% endif %}">
+                <div class="step-num">1</div>
+                <div class="step-text">Trip Details</div>
+            </div>
+            <div class="step-divider {% if current_step > 1 %}completed{% endif %}"></div>
+            <div class="step {% if current_step == 2 %}active{% elif current_step > 2 %}completed{% endif %}">
+                <div class="step-num">2</div>
+                <div class="step-text">Add Experiences</div>
+            </div>
+            <div class="step-divider {% if current_step > 2 %}completed{% endif %}"></div>
+            <div class="step {% if current_step == 3 %}active{% elif current_step > 3 %}completed{% endif %}">
+                <div class="step-num">3</div>
+                <div class="step-text">Budget & Review</div>
+            </div>
+            <div class="step-divider {% if current_step > 3 %}completed{% endif %}"></div>
+            <div class="step {% if current_step >= 4 %}active{% endif %}">
+                <div class="step-num">4</div>
+                <div class="step-text">Save Trip</div>
+            </div>
+        </div>
+
+        <!-- ============ STEP 1: TRIP DETAILS ============ -->
+        <div class="step-content {% if current_step == 1 %}active{% endif %}" id="step-1">
+            <div class="plan-card">
+                <div class="card-title">
+                    <i class="fas fa-pencil-alt"></i> Step 1: Trip Details
+                    <span class="title-right">{% if itinerary %}Editing existing trip{% else %}New trip{% endif %}</span>
+                </div>
+
+                <form method="POST" action="{% url 'tourist:plan_my_trip' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="update_trip">
+
+                    <div class="form-group">
+                        <label>Trip Name <span class="required">*</span></label>
+                        <input type="text" name="trip_name"
+                               value="{{ itinerary.name|default:'My Kimberley Adventure' }}"
+                               placeholder="e.g. Family Adventure 2026"
+                               minlength="3" maxlength="100" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Start Date <span class="required">*</span></label>
+                            <input type="date" name="start_date" id="startDate"
+                                   value="{% if itinerary %}{{ itinerary.start_date|date:'Y-m-d' }}{% else %}{{ now|date:'Y-m-d' }}{% endif %}"
+                                   min="{{ now|date:'Y-m-d' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>End Date <span class="required">*</span></label>
+                            <input type="date" name="end_date" id="endDate"
+                                   value="{% if itinerary %}{{ itinerary.end_date|date:'Y-m-d' }}{% endif %}"
+                                   required>
+                        </div>
+                    </div>
+
+                    <div id="dayCountBadge" style="display:none;">
+                        <span class="day-count-badge">
+                            <i class="fas fa-calendar-check"></i>
+                            <span id="dayCountText">0 days</span>
+                        </span>
+                    </div>
+
+                    <div class="form-row-3" style="margin-top:18px;">
+                        <div class="form-group">
+                            <label>Travellers <span class="required">*</span></label>
+                            <input type="number" name="number_of_travellers"
+                                   value="{{ itinerary.number_of_travellers|default:1 }}"
+                                   min="1" max="20" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Budget <span class="hint">(optional, in Rand)</span></label>
+                            <input type="number" name="total_budget"
+                                   value="{{ budget.total_budget|floatformat:0|default:'' }}"
+                                   placeholder="e.g. 5000"
+                                   min="0" max="1000000" step="100">
+                        </div>
+                        <div></div>
+                    </div>
+
+                    <p style="font-size:12px; color:#8a9a98; margin-top:8px; line-height:1.6;">
+                        <i class="fas fa-info-circle" style="color:#c8925e;"></i>
+                        We use this to estimate your trip cost from the budget brackets of the experiences you add. Final prices are confirmed by providers on booking.
+                    </p>
+
+                    <div class="actions-row">
+                        <a href="/tourist/dashboard/" class="btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </a>
+                        <button type="submit" class="btn-primary">
+                            Save & Continue <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- ============ STEP 2: ADD EXPERIENCES ============ -->
+        <div class="step-content {% if current_step == 2 %}active{% endif %}" id="step-2">
+            <div class="plan-card">
+                <div class="card-title">
+                    <i class="fas fa-plus-circle"></i> Step 2: Add Experiences
+                    <span class="title-right">{{ itinerary_items|length }} in your plan</span>
+                </div>
+
+                {% if not itinerary %}
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-times icon"></i>
+                        <h3>Set your trip dates first</h3>
+                        <p>Please complete Step 1 before adding experiences.</p>
+                        <a href="?step=1" class="btn-primary">
+                            <i class="fas fa-arrow-left"></i> Go to Step 1
+                        </a>
+                    </div>
+
+                {% elif itinerary_items %}
+                    <!-- Trip context banner -->
+                    <div class="trip-context">
+                        <div class="ctx-item">
+                            <i class="fas fa-suitcase"></i>
+                            <span><strong>{{ itinerary.name }}</strong></span>
+                        </div>
+                        <div class="ctx-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>{{ itinerary.start_date|date:"d M" }} – {{ itinerary.end_date|date:"d M Y" }}</span>
+                        </div>
+                        <div class="ctx-item">
+                            <i class="fas fa-sun"></i>
+                            <span><strong>{{ day_options|length }}</strong> day{{ day_options|length|pluralize }}</span>
+                        </div>
+                        <div class="ctx-item">
+                            <i class="fas fa-users"></i>
+                            <span><strong>{{ itinerary.number_of_travellers }}</strong> traveller{{ itinerary.number_of_travellers|pluralize }}</span>
+                        </div>
+                    </div>
+
+                    <div class="itinerary-list">
+                        {% for item in itinerary_items %}
+                            <div class="itinerary-item">
+                                <div class="item-icon">
+                                    {% if item.experience.listing_type == 'food_dining' %}
+                                        <i class="fas fa-utensils"></i>
+                                    {% elif item.experience.listing_type == 'places_to_stay' %}
+                                        <i class="fas fa-bed"></i>
+                                    {% elif item.experience.listing_type == 'attractions' %}
+                                        <i class="fas fa-camera"></i>
+                                    {% else %}
+                                        <i class="fas fa-hiking"></i>
+                                    {% endif %}
+                                </div>
+
+                                <div class="item-body">
+                                    <div class="item-name">{{ item.experience.name }}</div>
+                                    <div class="item-category">{{ item.experience.get_listing_type_display }}</div>
+
+                                    <div>
+                                        <span class="item-price">
+                                            <i class="fas fa-tag"></i>
+                                            {% if item.experience.has_price_bracket %}
+                                                {{ item.experience.price_range_label }} per person
+                                            {% else %}
+                                                Price on request
+                                            {% endif %}
+                                        </span>
+                                    </div>
+
+                                    {% if item.experience.listing_type == 'activities' %}
+                                        <form method="POST" action="{% url 'tourist:plan_my_trip' %}" class="day-picker-row">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="update_item_date">
+                                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                                            <label><i class="fas fa-calendar-day"></i> Day:</label>
+                                            <select name="date" onchange="this.form.submit()">
+                                                {% for opt in day_options %}
+                                                    <option value="{{ opt.value }}" {% if opt.value == item.date|date:"Y-m-d" %}selected{% endif %}>
+                                                        {{ opt.label }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </form>
+                                    {% endif %}
+                                </div>
+
+                                <div class="item-actions">
+                                    <form method="POST" action="{% url 'tourist:plan_my_trip' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="remove_item">
+                                        <input type="hidden" name="item_id" value="{{ item.id }}">
+                                        <button type="submit" class="remove-btn" title="Remove from trip">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Trip summary -->
+                    <div class="trip-summary-bar">
+                        <div class="sb-item">
+                            <span class="label">Experiences</span>
+                            <span class="value">{{ itinerary_items|length }}</span>
+                        </div>
+                        <div class="sb-item">
+                            <span class="label">Days used</span>
+                            <span class="value">{{ day_options|length }}</span>
+                        </div>
+                        <div class="sb-item">
+                            <span class="label">Estimated cost</span>
+                            <span class="value gold">{{ cost_display }}</span>
+                        </div>
+                        <div class="sb-item" style="margin-left:auto;">
+                            <span class="label">For</span>
+                            <span class="value">{{ itinerary.number_of_travellers }} traveller{{ itinerary.number_of_travellers|pluralize }}</span>
+                        </div>
+                    </div>
+
+                    <div class="actions-row">
+                        <a href="?step=1" class="btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </a>
+                        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                            <a href="{% url 'experiences:list' %}?planning=1" class="btn-primary">
+                                <i class="fas fa-plus"></i> Add More
+                            </a>
+                            <a href="?step=3" class="btn-success">
+                                Next: Budget <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-map-signs icon"></i>
+                        <h3>Start building your adventure</h3>
+                        <p>Browse experiences and click "Add to Plan" to place them here.</p>
+                        <a href="{% url 'experiences:list' %}?planning=1" class="btn-primary">
+                            <i class="fas fa-compass"></i> Browse Experiences
+                        </a>
+                    </div>
+                    <div class="actions-row">
+                        <a href="?step=1" class="btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </a>
+                        <span class="btn-disabled">Next: Budget <i class="fas fa-arrow-right"></i></span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ============ STEP 3: BUDGET ============ -->
+        <div class="step-content {% if current_step == 3 %}active{% endif %}" id="step-3">
+            <div class="plan-card">
+                <div class="card-title">
+                    <i class="fas fa-wallet"></i> Step 3: Budget & Review
+                    <span class="title-right">
+                        {% if budget_total > 0 %}Budget: R{{ budget_total|floatformat:0 }}{% else %}No budget set{% endif %}
+                    </span>
+                </div>
+
+                {% if itinerary_items %}
+                    <!-- Budget display -->
+                    <div class="budget-display">
+                        <div class="budget-item">
+                            <div class="amount gold">
+                                {% if budget_total > 0 %}R{{ budget_total|floatformat:0 }}{% else %}—{% endif %}
+                            </div>
+                            <div class="label">Your Budget</div>
+                        </div>
+                        <div class="budget-item">
+                            <div class="amount">{{ cost_display }}</div>
+                            <div class="label">Estimated Trip Cost</div>
+                        </div>
+                        <div class="budget-item">
+                            <div class="amount {% if budget_status == 'over_budget' %}red{% elif budget_status == 'tight' %}amber{% elif budget_status == 'fits_comfortably' %}green{% endif %}">
+                                {% if budget_status == 'over_budget' %}
+                                    -R{{ over_budget_amount|floatformat:0 }}
+                                {% elif budget_status == 'fits_comfortably' %}
+                                    ✓
+                                {% elif budget_status == 'tight' %}
+                                    ⚠
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </div>
+                            <div class="label">
+                                {% if budget_status == 'over_budget' %}Over By{% else %}Status{% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Budget bar -->
+                    {% if budget_total > 0 %}
+                        <div class="budget-bar-wrap">
+                            <div class="budget-bar">
+                                {% if budget_bar_width >= 100 %}
+                                    <div class="fill red" style="width: 100%;"></div>
+                                {% elif budget_bar_width >= 80 %}
+                                    <div class="fill amber" style="width: {{ budget_bar_width|floatformat:0 }}%;"></div>
+                                {% else %}
+                                    <div class="fill green" style="width: {{ budget_bar_width|floatformat:0 }}%;"></div>
+                                {% endif %}
+                            </div>
+                            <div class="budget-bar-labels">
+                                <span>R0</span>
+                                <span>R{{ budget_total|floatformat:0 }}</span>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <!-- Budget status message -->
+                    <div class="budget-message {{ budget_status }}">
+                        {% if budget_status == 'fits_comfortably' %}
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <strong>Fits comfortably within your budget.</strong><br>
+                                Your estimated cost is {{ cost_display }}, well below your R{{ budget_total|floatformat:0 }} budget.
+                                You have room for more experiences if you'd like.
+                            </div>
+                        {% elif budget_status == 'tight' %}
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div>
+                                <strong>Your budget is tight.</strong><br>
+                                Your estimated cost ({{ cost_display }}) is close to your R{{ budget_total|floatformat:0 }} budget.
+                                {% if cost_high == None %}
+                                    Because one of your experiences is in the "R600+" bracket, actual costs could exceed your budget.
+                                {% endif %}
+                            </div>
+                        {% elif budget_status == 'over_budget' %}
+                            <i class="fas fa-times-circle"></i>
+                            <div>
+                                <strong>Over budget by R{{ over_budget_amount|floatformat:0 }}.</strong><br>
+                                Your estimated minimum is {{ cost_display }} — even before final prices are confirmed — which exceeds your R{{ budget_total|floatformat:0 }} budget.
+                                To stay on budget, remove an experience or increase your budget.
+                            </div>
+                        {% elif budget_status == 'no_budget' %}
+                            <i class="fas fa-info-circle"></i>
+                            <div>
+                                <strong>No budget set.</strong><br>
+                                Set a budget to get real feedback on whether your plan fits.
+                            </div>
+                        {% else %}
+                            <i class="fas fa-info-circle"></i>
+                            <div>Your trip has no priced experiences yet.</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Update budget form -->
+                    <div style="margin-top:22px; padding-top:20px; border-top:1px solid #f0ebe6;">
+                        <form method="POST" action="{% url 'tourist:plan_my_trip' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="update_budget">
+
+                            <div class="form-row-3">
+                                <div class="form-group">
+                                    <label>Adjust Budget <span class="hint">(Rand)</span></label>
+                                    <input type="number" name="total_budget"
+                                           value="{{ budget.total_budget|floatformat:0|default:'' }}"
+                                           min="0" max="1000000" step="100" placeholder="e.g. 5000">
+                                </div>
+                                <div class="form-group">
+                                    <label>Number of Travellers</label>
+                                    <input type="number" name="number_of_travellers"
+                                           value="{{ itinerary.number_of_travellers }}"
+                                           min="1" max="20">
+                                </div>
+                                <div class="form-group" style="display:flex; align-items:flex-end;">
+                                    <button type="submit" class="btn-secondary" style="width:100%;">
+                                        <i class="fas fa-sync-alt"></i> Update
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-wallet icon"></i>
+                        <h3>Add experiences first</h3>
+                        <p>Once you've added experiences to your plan, we'll show your budget breakdown here.</p>
+                        <a href="?step=2" class="btn-primary">
+                            <i class="fas fa-arrow-left"></i> Back to Step 2
+                        </a>
+                    </div>
+                {% endif %}
+
+                <div class="actions-row">
+                    <a href="?step=2" class="btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </a>
+                    {% if itinerary_items %}
+                        <a href="?step=4" class="btn-primary">
+                            Next: Review & Save <i class="fas fa-arrow-right"></i>
+                        </a>
+                    {% else %}
+                        <span class="btn-disabled">Next: Review <i class="fas fa-arrow-right"></i></span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- ============ STEP 4: SAVE ============ -->
+        <div class="step-content {% if current_step >= 4 %}active{% endif %}" id="step-4">
+            <div class="plan-card">
+                <div class="card-title">
+                    <i class="fas fa-check-circle"></i> Step 4: Review & Save
+                    <span class="title-right">Ready to save</span>
+                </div>
+
+                {% if saved %}
+                    <div class="alert-message success">
+                        <i class="fas fa-check-circle"></i>
+                        Your trip plan has been saved!
+                    </div>
+                {% endif %}
+
+                {% if itinerary_items %}
+                    <!-- Trip header -->
+                    <div class="trip-summary-bar" style="margin-bottom:24px;">
+                        <div class="sb-item">
+                            <span class="label">Trip Name</span>
+                            <span class="value">{{ itinerary.name }}</span>
+                        </div>
+                        <div class="sb-item">
+                            <span class="label">Dates</span>
+                            <span class="value">{{ itinerary.start_date|date:"d M" }} – {{ itinerary.end_date|date:"d M Y" }}</span>
+                        </div>
+                        <div class="sb-item">
+                            <span class="label">Travellers</span>
+                            <span class="value">{{ itinerary.number_of_travellers }}</span>
+                        </div>
+                        <div class="sb-item">
+                            <span class="label">Estimated cost</span>
+                            <span class="value gold">{{ cost_display }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Day-by-day preview -->
+                    <h3 style="font-size:14px; font-weight:700; color:#0f2b26; margin-bottom:12px;">
+                        <i class="fas fa-list-ol" style="color:#c8925e;"></i>
+                        Your day-by-day plan
+                    </h3>
+
+                    {% regroup itinerary_items by date as items_by_day %}
+                    {% for day_group in items_by_day %}
+                        <div class="day-group">
+                            <div class="day-group-header">
+                                <span class="day-num">DAY {{ forloop.counter }}</span>
+                                <span>{{ day_group.grouper|date:"l, d M Y" }}</span>
+                            </div>
+                            <div class="day-group-body">
+                                {% for item in day_group.list %}
+                                    <div class="day-item">
+                                        <span class="di-name">
+                                            <i class="fas fa-circle" style="font-size:6px; color:#c8925e; margin-right:8px; vertical-align:middle;"></i>
+                                            {{ item.experience.name }}
+                                        </span>
+                                        <span class="di-price">
+                                            {% if item.experience.has_price_bracket %}
+                                                {{ item.experience.price_range_label }} pp
+                                            {% else %}
+                                                Price on request
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <div class="actions-row">
+                        <a href="?step=3" class="btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </a>
+                        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                            <a href="/itineraries/" class="btn-secondary">
+                                <i class="fas fa-eye"></i> View Itinerary
+                            </a>
+                            <form method="POST" action="{% url 'tourist:plan_my_trip' %}" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="save_trip">
+                                <button type="submit" class="btn-success">
+                                    <i class="fas fa-save"></i> Save Trip Plan
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-check-circle icon"></i>
+                        <h3>Nothing to save yet</h3>
+                        <p>Complete Steps 1–3 to build your trip first.</p>
+                        <a href="?step=1" class="btn-primary">
+                            <i class="fas fa-play"></i> Start Planning
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // ===== TOAST SYSTEM =====
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+
+            let iconClass = 'fa-check-circle';
+            let iconColor = 'success';
+            if (type === 'info') {
+                iconClass = 'fa-info-circle';
+                iconColor = 'info';
+            } else if (type === 'remove') {
+                iconClass = 'fa-trash-alt';
+                iconColor = 'remove';
+            }
+
+            toast.innerHTML = `
+                <span class="toast-icon ${iconColor}"><i class="fas ${iconClass}"></i></span>
+                <span class="toast-message"></span>
+                <button class="toast-close" onclick="this.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            toast.querySelector('.toast-message').textContent = message;
+
+            container.appendChild(toast);
+
+            setTimeout(function() {
+                if (toast.parentElement) {
+                    toast.classList.add('hide');
+                    setTimeout(function() {
+                        if (toast.parentElement) toast.remove();
+                    }, 300);
+                }
+            }, 4000);
+        }
+
+        // ===== SHOW TOAST FROM URL =====
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const toastMsg = urlParams.get('toast');
+            if (toastMsg) {
+                showToast(toastMsg, 'success');
+                const step = urlParams.get('step') || '2';
+                const newUrl = window.location.pathname + '?step=' + step;
+                window.history.replaceState({}, document.title, newUrl);
+            }
+        });
+
+        // ===== LIVE DAY COUNT =====
+        const startInput = document.getElementById('startDate');
+        const endInput = document.getElementById('endDate');
+        const badge = document.getElementById('dayCountBadge');
+        const badgeText = document.getElementById('dayCountText');
+
+        function updateDayCount() {
+            if (!startInput || !endInput || !badge || !badgeText) return;
+            const s = startInput.value;
+            const e = endInput.value;
+            if (!s || !e) { badge.style.display = 'none'; return; }
+
+            const startDate = new Date(s);
+            const endDate = new Date(e);
+            const diffMs = endDate - startDate;
+            const days = Math.round(diffMs / (1000 * 60 * 60 * 24)) + 1;
+
+            if (days < 1) {
+                badge.style.display = 'block';
+                badgeText.textContent = 'Invalid range';
+                badgeText.parentElement.style.background = '#fce8e4';
+                badgeText.parentElement.style.color = '#c75b4a';
+                return;
+            }
+
+            if (days > 30) {
+                badge.style.display = 'block';
+                badgeText.textContent = days + ' days (too long — max 30)';
+                badgeText.parentElement.style.background = '#fce8e4';
+                badgeText.parentElement.style.color = '#c75b4a';
+                return;
+            }
+
+            badge.style.display = 'block';
+            badgeText.textContent = days + ' day' + (days !== 1 ? 's' : '');
+            badgeText.parentElement.style.background = 'rgba(200, 146, 94, 0.1)';
+            badgeText.parentElement.style.color = '#c8925e';
+        }
+
+        if (startInput) startInput.addEventListener('change', updateDayCount);
+        if (endInput) endInput.addEventListener('change', updateDayCount);
+        updateDayCount();
+    </script>
+
+</body>
+</html>

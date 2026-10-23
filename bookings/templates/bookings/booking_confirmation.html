@@ -1,0 +1,110 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmed | Explore Kimberley</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body style="margin:0;font-family:'Inter',Arial,sans-serif;background:#f7f4ef;color:#1f3d3a;">
+
+<!-- NAVBAR -->
+<nav style="height:68px;background:#1f3d3a;display:flex;align-items:center;justify-content:space-between;padding:0 6%;box-sizing:border-box;">
+    <a href="/" style="color:white;text-decoration:none;font-size:21px;font-weight:700;letter-spacing:-0.5px;">
+        Explore <span style="color:#d69b5b;">Kimberley</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:20px;">
+        <span style="color:#d69b5b;font-size:11px;font-weight:600;text-transform:uppercase;">
+            <i class="fas fa-user"></i> Tourist
+        </span>
+        <span style="color:#cbd5d3;font-size:13px;">{{ user.first_name }}</span>
+        <a href="/accounts/logout/" style="color:#aebdbb;text-decoration:none;font-size:12px;padding:6px 14px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main style="padding:30px 6%;max-width:700px;margin:auto;box-sizing:border-box;">
+
+    <div style="background:white;border-radius:12px;padding:40px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+
+        <div style="width:80px;height:80px;background:#d4edda;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+            <i class="fas fa-check" style="font-size:40px;color:#28a745;"></i>
+        </div>
+
+        <h1 style="margin:0 0 5px;font-size:28px;font-weight:600;">Booking Request Sent!</h1>
+        <p style="color:#89918f;font-size:14px;margin:0 0 25px;">
+            Our team will review your request and confirm shortly.
+        </p>
+
+        <div style="background:#f7f4ef;border-radius:8px;padding:20px;text-align:left;margin-bottom:25px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;">
+
+                <div>
+                    <div style="font-size:11px;color:#89918f;font-weight:500;text-transform:uppercase;">Booking ID</div>
+                    <div style="font-size:16px;font-weight:600;">#{{ booking.id }}</div>
+                </div>
+
+                <div>
+                    <div style="font-size:11px;color:#89918f;font-weight:500;text-transform:uppercase;">Status</div>
+                    <div style="font-size:16px;font-weight:600;color:#d69b5b;">{{ booking.get_status_display }}</div>
+                </div>
+
+                <div>
+                    <div style="font-size:11px;color:#89918f;font-weight:500;text-transform:uppercase;">Guide</div>
+                    <div style="font-size:16px;font-weight:600;">
+                        {% if booking.guide %}{{ booking.guide.full_name }}{% else %}To be assigned{% endif %}
+                    </div>
+                </div>
+
+                {% if booking.experience %}
+                <div>
+                    <div style="font-size:11px;color:#89918f;font-weight:500;text-transform:uppercase;">Experience</div>
+                    <div style="font-size:16px;font-weight:600;">{{ booking.experience.name }}</div>
+                </div>
+                {% endif %}
+
+                <div>
+                    <div style="font-size:11px;color:#89918f;font-weight:500;text-transform:uppercase;">Date</div>
+                    <div style="font-size:16px;font-weight:600;">{{ booking.booking_date|date:"d M Y" }}</div>
+                </div>
+
+                <div>
+                    <div style="font-size:11px;color:#89918f;font-weight:500;text-transform:uppercase;">Time</div>
+                    <div style="font-size:16px;font-weight:600;">{{ booking.booking_time|time:"H:i" }}</div>
+                </div>
+
+                <div>
+                    <div style="font-size:11px;color:#89918f;font-weight:500;text-transform:uppercase;">Participants</div>
+                    <div style="font-size:16px;font-weight:600;">{{ booking.number_of_participants }}</div>
+                </div>
+
+                <div>
+                    <div style="font-size:11px;color:#89918f;font-weight:500;text-transform:uppercase;">Total Price</div>
+                    <div style="font-size:16px;font-weight:600;color:#d69b5b;">R{{ booking.total_price }}</div>
+                </div>
+
+            </div>
+        </div>
+
+        <div style="display:flex;gap:15px;justify-content:center;">
+            <a href="{% url 'bookings:my_bookings' %}" style="background:#1f3d3a;color:white;text-decoration:none;padding:12px 24px;border-radius:7px;font-weight:500;">
+                <i class="fas fa-list"></i> My Bookings
+            </a>
+            <a href="/tourist/guides/" style="background:#d69b5b;color:white;text-decoration:none;padding:12px 24px;border-radius:7px;font-weight:500;">
+                <i class="fas fa-search"></i> Browse More Guides
+            </a>
+        </div>
+    </div>
+
+</main>
+
+</body>
+</html>

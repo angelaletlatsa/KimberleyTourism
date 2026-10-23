@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: explore-kimberley
+    runtime: python
+    plan: free
+    buildCommand: bash build.sh
+    startCommand: gunicorn config.wsgi:application
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.2
+      - key: DATABASE_URL
+        fromDatabase:
+          name: explore-kimberley-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: SECURE_SSL_REDIRECT
+        value: "True"
+      - key: SESSION_COOKIE_SECURE
+        value: "True"
+      - key: CSRF_COOKIE_SECURE
+        value: "True"
+      - key: SECURE_HSTS_SECONDS
+        value: "31536000"
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: OWNER_EMAIL_HOST_USER
+        sync: false
+      - key: OWNER_EMAIL_HOST_PASSWORD
+        sync: false
+
+databases:
+  - name: explore-kimberley-db
+    plan: free
+    databaseName: explore_kimberley
+    user: explore_kimberley

@@ -1,0 +1,656 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviews | Explore Kimberley</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f0eb; color: #1a1a1a; display: flex; min-height: 100vh; }
+        a { text-decoration: none; color: inherit; }
+
+        /* Sidebar */
+        .sidebar { width: 250px; background: #0f2b26; color: white; min-height: 100vh; padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-brand { padding: 0 12px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); margin-bottom: 24px; }
+        .sidebar-brand h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        .sidebar-brand h1 span { color: #c8925e; }
+        .sidebar-brand .subtitle { font-size: 11px; color: rgba(255, 255, 255, 0.35); margin-top: 2px; }
+        .sidebar-nav { flex: 1; }
+        .sidebar-section { margin-bottom: 16px; }
+        .sidebar-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255, 255, 255, 0.3); padding: 8px 14px; margin-bottom: 4px; }
+        .sidebar-nav .nav-item { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 10px; color: rgba(255, 255, 255, 0.6); font-size: 14px; font-weight: 500; transition: all 0.25s ease; margin-bottom: 2px; }
+        .sidebar-nav .nav-item:hover { background: rgba(255, 255, 255, 0.06); color: white; }
+        .sidebar-nav .nav-item.active { background: rgba(200, 146, 94, 0.15); color: #c8925e; }
+        .sidebar-nav .nav-item .icon { width: 22px; text-align: center; font-size: 16px; flex-shrink: 0; }
+        .sidebar-nav .nav-item .badge { margin-left: auto; background: #c75b4a; color: white; font-size: 10px; font-weight: 700; padding: 1px 10px; border-radius: 12px; }
+        .sidebar-footer { border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 16px; margin-top: auto; }
+        .sidebar-footer .user-card { display: flex; align-items: center; gap: 12px; padding: 10px 12px; }
+        .sidebar-footer .user-card .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #c8925e, #e8b88a); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; flex-shrink: 0; }
+        .sidebar-footer .user-card .user-info .name { font-size: 13px; font-weight: 600; color: white; }
+        .sidebar-footer .user-card .user-info .role { font-size: 11px; color: rgba(255, 255, 255, 0.4); }
+        .sidebar-footer .user-card .logout { color: rgba(255, 255, 255, 0.3); }
+
+        /* Main */
+        .main-content { flex: 1; padding: 28px 40px 40px; min-height: 100vh; max-width: calc(100% - 250px); }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+        .header-left h2 { font-size: 26px; font-weight: 700; color: #0f2b26; }
+        .header-left p { font-size: 14px; color: #8a9a98; margin-top: 4px; }
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .header-right .notification-btn { position: relative; width: 42px; height: 42px; border-radius: 50%; border: none; background: white; color: #4a5a58; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); }
+        .header-right .notification-btn .dot { position: absolute; top: 6px; right: 6px; min-width: 18px; height: 18px; background: #c75b4a; color: white; font-size: 10px; font-weight: 700; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+        .header-right .date-display { font-size: 13px; color: #8a9a98; background: white; padding: 10px 20px; border-radius: 10px; font-weight: 500; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); }
+
+        /* Moderation banner */
+        .mod-banner { background: linear-gradient(135deg, #fef3e0 0%, #fff8ec 100%); border-left: 5px solid #b8860b; border-radius: 12px; padding: 16px 22px; margin-bottom: 20px; display: flex; align-items: center; gap: 14px; }
+        .mod-banner i { color: #b8860b; font-size: 22px; flex-shrink: 0; }
+        .mod-banner .mod-banner-text { font-size: 14px; color: #8a6d0b; line-height: 1.6; }
+        .mod-banner .mod-banner-text strong { color: #6b5408; }
+        .mod-banner.all-clear { background: linear-gradient(135deg, #e6f4ee 0%, #f0faf4 100%); border-left-color: #2d8f6f; }
+        .mod-banner.all-clear i { color: #2d8f6f; }
+        .mod-banner.all-clear .mod-banner-text { color: #1a7a5a; }
+        .mod-banner.all-clear .mod-banner-text strong { color: #0f5c40; }
+
+        /* Status stats */
+        .status-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px; }
+        .status-stat-card { background: white; border-radius: 14px; padding: 20px 22px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); border: 1px solid rgba(0, 0, 0, 0.02); border-left: 4px solid #c8925e; transition: 0.25s ease; cursor: pointer; }
+        .status-stat-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
+        .status-stat-card.active { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); transform: translateY(-2px); }
+        .status-stat-card.all { border-left-color: #7a5a9a; }
+        .status-stat-card.pending { border-left-color: #f5b342; }
+        .status-stat-card.reported { border-left-color: #c75b4a; }
+        .status-stat-card.approved { border-left-color: #2d8f6f; }
+        .status-stat-card.rejected { border-left-color: #b84a3a; }
+        .status-stat-card.removed { border-left-color: #6b7a78; }
+        .status-stat-card .status-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #8a9a98; margin-bottom: 4px; }
+        .status-stat-card .status-value { font-size: 26px; font-weight: 700; color: #0f2b26; }
+        .status-stat-card .status-hint { font-size: 11px; color: #b8c5c2; margin-top: 4px; }
+
+        /* Filters */
+        .filters-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; gap: 16px; flex-wrap: wrap; }
+        .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+        .filter-tabs a { padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 500; background: white; color: #8a9a98; border: 1px solid #e5e0da; transition: 0.2s ease; }
+        .filter-tabs a:hover { border-color: #c8925e; color: #c8925e; }
+        .filter-tabs a.active { background: #c8925e; color: white; border-color: #c8925e; }
+        .search-form { display: flex; gap: 8px; }
+        .search-form input { padding: 10px 16px; border: 1px solid #d9dfdc; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 14px; width: 250px; background: white; }
+        .search-form input:focus { outline: none; border-color: #c8925e; }
+        .search-form button { background: #c8925e; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; }
+
+        /* Review card */
+        .review-card { background: white; border-radius: 16px; padding: 24px 28px; margin-bottom: 16px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); border: 1px solid rgba(0, 0, 0, 0.02); transition: 0.25s ease; border-left: 5px solid #c8925e; }
+        .review-card.status-pending { border-left-color: #f5b342; }
+        .review-card.status-reported { border-left-color: #c75b4a; }
+        .review-card.status-approved { border-left-color: #2d8f6f; }
+        .review-card.status-rejected { border-left-color: #b84a3a; }
+        .review-card.status-removed { border-left-color: #6b7a78; opacity: 0.85; }
+        .review-card:hover { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); }
+        .review-card .review-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 14px; flex-wrap: wrap; gap: 12px; }
+        .review-card .review-header .review-meta { flex: 1; min-width: 0; }
+        .review-card .review-header .review-meta .type-tag { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
+        .review-card .review-header .review-meta .type-tag.guide { background: #fef3e0; color: #8a6d0b; }
+        .review-card .review-header .review-meta .type-tag.experience { background: #e6f4ee; color: #1a7a5a; }
+        .review-card .review-header .review-meta .subject-name { font-size: 16px; font-weight: 600; color: #1a1a1a; }
+        .review-card .review-header .review-meta .reviewer { font-size: 13px; color: #8a9a98; margin-top: 4px; }
+        .review-card .review-header .review-meta .reviewer .flagged-pill { display: inline-flex; align-items: center; gap: 4px; background: #fce8e4; color: #a04234; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-left: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .review-card .review-header .status-badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .status-badge.pending { background: #fef3e0; color: #b8860b; }
+        .status-badge.approved { background: #e6f4ee; color: #1a7a5a; }
+        .status-badge.rejected { background: #fce8e4; color: #b84a3a; }
+        .status-badge.reported { background: #fce8e4; color: #b84a3a; }
+        .status-badge.removed { background: #f0ebe6; color: #687572; }
+
+        .review-card .stars { font-size: 18px; color: #f5b342; margin-bottom: 10px; }
+        .review-card .stars .empty { color: #d9dfdc; }
+        .review-card .review-title { font-size: 15px; font-weight: 600; color: #1a1a1a; margin-bottom: 6px; }
+        .review-card .review-text { font-size: 14px; color: #687572; line-height: 1.6; margin-bottom: 12px; }
+        .review-card .review-date { font-size: 12px; color: #8a9a98; margin-bottom: 16px; }
+        .review-card .review-date i { margin-right: 6px; }
+
+        /* Moderation history */
+        .mod-history { background: #faf8f6; border-radius: 10px; padding: 12px 16px; margin-bottom: 14px; border-left: 3px solid #c8925e; font-size: 12px; color: #4a5a58; }
+        .mod-history .mh-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #8a9a98; margin-bottom: 6px; }
+        .mod-history .mh-line { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+        .mod-history .mh-line:last-child { margin-bottom: 0; }
+        .mod-history .mh-line i { color: #c8925e; width: 14px; font-size: 11px; }
+        .mod-history .mh-line .mh-when { color: #8a9a98; font-size: 11px; margin-left: auto; }
+        .mod-history.removed { background: #fce8e4; border-left-color: #a04234; color: #a04234; }
+        .mod-history.removed .mh-label { color: #a04234; }
+
+        /* Report info */
+        .report-info { background: #fce8e4; border-radius: 10px; padding: 12px 16px; margin-bottom: 14px; border-left: 3px solid #c75b4a; font-size: 12px; color: #a04234; }
+        .report-info .ri-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+        .report-info .ri-line { margin-bottom: 2px; }
+
+        /* Actions */
+        .review-card .review-actions { display: flex; gap: 10px; flex-wrap: wrap; padding-top: 14px; border-top: 1px solid #f0ebe6; }
+        .review-card .review-actions button, .review-card .review-actions a { padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s ease; border: none; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; }
+        .btn-approve { background: #2d8f6f; color: white; }
+        .btn-approve:hover { background: #1a7a5a; transform: translateY(-2px); }
+        .btn-reject { background: #c75b4a; color: white; }
+        .btn-reject:hover { background: #a84535; transform: translateY(-2px); }
+        .btn-remove { background: #f0ebe6; color: #b84a3a; border: 1px solid #f4d4ce; }
+        .btn-remove:hover { background: #fce8e4; border-color: #c75b4a; transform: translateY(-2px); }
+        .btn-flag { background: #fef3e0; color: #8a6d0b; border: 1px solid #f4d9a0; }
+        .btn-flag:hover { background: #fde7b3; transform: translateY(-2px); }
+        .btn-view { background: #f0ebe6; color: #1a1a1a; }
+        .btn-view:hover { background: #c8925e; color: white; transform: translateY(-2px); }
+
+        /* Pagination */
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 24px; }
+        .pagination a, .pagination span { display: inline-block; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; }
+        .pagination a { background: white; color: #1a1a1a; border: 1px solid #d9dfdc; }
+        .pagination a:hover { border-color: #c8925e; color: #c8925e; }
+        .pagination .current { background: #c8925e; color: white; }
+
+        /* Empty */
+        .empty-state { text-align: center; padding: 80px 20px; background: white; border-radius: 16px; }
+        .empty-state i { font-size: 64px; color: #e0d8d0; display: block; margin-bottom: 20px; }
+        .empty-state h3 { font-size: 22px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
+        .empty-state p { color: #8a9a98; font-size: 14px; max-width: 400px; margin: 0 auto 20px; }
+        .empty-state .empty-action { display: inline-block; padding: 10px 24px; background: #c8925e; color: white; border-radius: 10px; font-weight: 600; font-size: 14px; }
+        .empty-state .empty-action:hover { background: #b8824f; }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 43, 38, 0.5); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 16px; padding: 32px 36px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: modalIn 0.3s ease; }
+        @keyframes modalIn { from { opacity: 0; transform: translateY(-20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .modal .modal-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 18px; }
+        .modal .modal-icon.approve { background: #e6f4ee; color: #2d8f6f; }
+        .modal .modal-icon.reject { background: #fce8e4; color: #c75b4a; }
+        .modal .modal-icon.remove { background: #f0ebe6; color: #6b7a78; }
+        .modal .modal-icon.flag { background: #fef3e0; color: #b8860b; }
+        .modal h3 { font-size: 20px; font-weight: 700; color: #0f2b26; text-align: center; margin-bottom: 8px; }
+        .modal .modal-subtitle { font-size: 14px; color: #8a9a98; text-align: center; margin-bottom: 24px; line-height: 1.5; }
+        .modal .form-group { margin-bottom: 20px; }
+        .modal .form-group label { display: block; font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 8px; }
+        .modal .form-group textarea, .modal .form-group select { width: 100%; padding: 12px 16px; border: 1px solid #d9dfdc; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 14px; min-height: 100px; resize: vertical; }
+        .modal .form-group textarea:focus, .modal .form-group select:focus { outline: none; border-color: #c8925e; }
+        .modal .modal-actions { display: flex; gap: 12px; justify-content: center; }
+        .modal .modal-actions button { padding: 10px 28px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; }
+        .modal .modal-actions .btn-cancel { background: #f0ebe6; color: #1a1a1a; }
+        .modal .modal-actions .btn-confirm-approve { background: #2d8f6f; color: white; }
+        .modal .modal-actions .btn-confirm-reject { background: #c75b4a; color: white; }
+        .modal .modal-actions .btn-confirm-remove { background: #b84a3a; color: white; }
+        .modal .modal-actions .btn-confirm-flag { background: #b8860b; color: white; }
+
+        /* Toast */
+        .toast-container { position: fixed; top: 24px; right: 24px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; max-width: 380px; width: 100%; }
+        .toast { background: #0f2b26; color: white; padding: 14px 20px; border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25); display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; border-left: 4px solid #2d8f6f; }
+        .toast.error { border-left-color: #c75b4a; }
+        .toast .toast-icon { font-size: 18px; color: #4ac99a; }
+        .toast.error .toast-icon { color: #e88a7a; }
+
+        @media (max-width: 1200px) { .status-stats { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) {
+            .sidebar { width: 72px; padding: 16px 10px; }
+            .sidebar-brand h1 { font-size: 16px; }
+            .sidebar-brand .subtitle, .sidebar-section-title, .sidebar-nav .nav-item span, .sidebar-nav .nav-item .badge, .sidebar-footer .user-card .user-info { display: none; }
+            .main-content { padding: 16px; max-width: 100%; }
+            .header { flex-direction: column; align-items: flex-start; }
+            .status-stats { grid-template-columns: 1fr 1fr; }
+            .filters-row { flex-direction: column; align-items: stretch; }
+            .search-form input { width: 100%; }
+            .review-card .review-actions { flex-direction: column; }
+            .review-card .review-actions button, .review-card .review-actions a { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h1>Explore <span>Kimberley</span></h1>
+            <div class="subtitle">Tourism Platform</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Main</div>
+                <a href="{% url 'admin_dashboard:dashboard' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-home"></i></span><span>Dashboard</span>
+                </a>
+            </div>
+            {% include "admin_dashboard/_owner_sidebar.html" %}
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">User Management</div>
+                <a href="{% url 'admin_dashboard:all_users' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-users"></i></span><span>All Users</span>
+                </a>
+                <a href="{% url 'admin_dashboard:providers' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-building"></i></span><span>Providers</span>
+                    {% if pending_providers_count > 0 %}<span class="badge">{{ pending_providers_count }}</span>{% endif %}
+                </a>
+                <a href="{% url 'admin_dashboard:guides' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-user-tie"></i></span><span>Guides</span>
+                    {% if pending_guides_count > 0 %}<span class="badge">{{ pending_guides_count }}</span>{% endif %}
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Content</div>
+                <a href="{% url 'admin_dashboard:experiences' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-suitcase"></i></span><span>Experiences</span>
+                    {% if pending_experiences_count > 0 %}<span class="badge">{{ pending_experiences_count }}</span>{% endif %}
+                </a>
+                <a href="{% url 'admin_dashboard:reviews' %}" class="nav-item active">
+                    <span class="icon"><i class="fas fa-star"></i></span><span>Reviews</span>
+                    {% if counts.pending > 0 %}<span class="badge">{{ counts.pending }}</span>{% endif %}
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Operations</div>
+                <a href="{% url 'admin_dashboard:bookings' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-calendar-alt"></i></span><span>Bookings</span>
+                    {% if total_bookings > 0 %}<span class="badge">{{ total_bookings }}</span>{% endif %}
+                </a>
+                <a href="{% url 'admin_dashboard:pending_assignments' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-user-check"></i></span><span>Assignments</span>
+                    {% if pending_assignments_count > 0 %}<span class="badge">{{ pending_assignments_count }}</span>{% endif %}
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Insights</div>
+                <a href="{% url 'admin_dashboard:analytics' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-chart-bar"></i></span><span>Analytics</span>
+                </a>
+                <a href="{% url 'admin_dashboard:audit_logs' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-history"></i></span><span>Audit Logs</span>
+                </a>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar">{{ user.first_name|slice:":1"|default:"A" }}</div>
+                <div class="user-info">
+                    <div class="name">{{ user.first_name|default:"Admin" }}</div>
+                    <div class="role">Administrator</div>
+                </div>
+                <a href="/accounts/logout/" class="logout-btn" title="Sign out" style="display:inline-flex;align-items:center;gap:6px;margin-left:auto;padding:6px 10px;border:1px solid rgba(255,255,255,0.14);border-radius:8px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.75);font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;"><i class="fas fa-sign-out-alt"></i> Sign out</a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="header">
+            <div class="header-left">
+                <h2>Reviews</h2>
+                <p>{{ counts.all }} review{{ counts.all|pluralize }} on the platform</p>
+            </div>
+            <div class="header-right">
+                <a href="/notifications/" class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    {% if unread_count > 0 %}<span class="dot">{{ unread_count }}</span>{% endif %}
+                </a>
+                <span class="date-display"><i class="far fa-calendar-alt"></i> {{ now|date:"M d, Y" }}</span>
+            </div>
+        </header>
+
+        {% if counts.pending > 0 or counts.reported > 0 %}
+            <div class="mod-banner">
+                <i class="fas fa-shield-halved"></i>
+                <div class="mod-banner-text">
+                    <strong>Moderation needed.</strong>
+                    {% if counts.pending > 0 %} {{ counts.pending }} review{{ counts.pending|pluralize }} pending.{% endif %}
+                    {% if counts.reported > 0 %} {{ counts.reported }} reported.{% endif %}
+                </div>
+            </div>
+        {% else %}
+            <div class="mod-banner all-clear">
+                <i class="fas fa-check-circle"></i>
+                <div class="mod-banner-text">
+                    <strong>All caught up.</strong> No reviews need your attention right now.
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="status-stats">
+            <div class="status-stat-card all {% if current_status == 'all' %}active{% endif %}" onclick="window.location.href='?status=all{% if search %}&search={{ search }}{% endif %}'">
+                <div class="status-label">Total</div>
+                <div class="status-value">{{ counts.all }}</div>
+                <div class="status-hint">All reviews</div>
+            </div>
+            <div class="status-stat-card pending {% if current_status == 'pending' %}active{% endif %}" onclick="window.location.href='?status=pending{% if search %}&search={{ search }}{% endif %}'">
+                <div class="status-label">Pending</div>
+                <div class="status-value">{{ counts.pending }}</div>
+                <div class="status-hint">{% if counts.pending > 0 %}Need action{% else %}All caught up{% endif %}</div>
+            </div>
+            <div class="status-stat-card reported {% if current_status == 'reported' %}active{% endif %}" onclick="window.location.href='?status=reported{% if search %}&search={{ search }}{% endif %}'">
+                <div class="status-label">Reported</div>
+                <div class="status-value">{{ counts.reported }}</div>
+                <div class="status-hint">Flagged by users</div>
+            </div>
+            <div class="status-stat-card approved {% if current_status == 'approved' %}active{% endif %}" onclick="window.location.href='?status=approved{% if search %}&search={{ search }}{% endif %}'">
+                <div class="status-label">Approved</div>
+                <div class="status-value">{{ counts.approved }}</div>
+                <div class="status-hint">Public</div>
+            </div>
+            <div class="status-stat-card removed {% if current_status == 'removed' %}active{% endif %}" onclick="window.location.href='?status=removed{% if search %}&search={{ search }}{% endif %}'">
+                <div class="status-label">Removed</div>
+                <div class="status-value">{{ counts.removed }}</div>
+                <div class="status-hint">Policy violations</div>
+            </div>
+        </div>
+
+        <div class="filters-row">
+            <div class="filter-tabs">
+                <a href="?status=all{% if search %}&search={{ search }}{% endif %}" class="{% if current_status == 'all' %}active{% endif %}">All</a>
+                <a href="?status=pending{% if search %}&search={{ search }}{% endif %}" class="{% if current_status == 'pending' %}active{% endif %}">Pending</a>
+                <a href="?status=reported{% if search %}&search={{ search }}{% endif %}" class="{% if current_status == 'reported' %}active{% endif %}">Reported</a>
+                <a href="?status=approved{% if search %}&search={{ search }}{% endif %}" class="{% if current_status == 'approved' %}active{% endif %}">Approved</a>
+                <a href="?status=rejected{% if search %}&search={{ search }}{% endif %}" class="{% if current_status == 'rejected' %}active{% endif %}">Rejected</a>
+                <a href="?status=removed{% if search %}&search={{ search }}{% endif %}" class="{% if current_status == 'removed' %}active{% endif %}">Removed</a>
+            </div>
+            <form method="GET" class="search-form">
+                <input type="hidden" name="status" value="{{ current_status }}">
+                <input type="text" name="search" placeholder="Search reviews..." value="{{ search }}">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+
+        {% if reviews %}
+            {% for review in reviews %}
+                <div class="review-card status-{{ review.moderation_status }}" id="review-card-{{ review.id }}">
+                    <div class="review-header">
+                        <div class="review-meta">
+                            {% if review.review_type == 'guide' %}
+                                <span class="type-tag guide"><i class="fas fa-user-tie"></i> Guide Review</span>
+                                <div class="subject-name">
+                                    {% if review.guide %}{{ review.guide.full_name }}{% else %}Unknown guide{% endif %}
+                                </div>
+                            {% elif review.review_type == 'experience' %}
+                                <span class="type-tag experience"><i class="fas fa-suitcase"></i> Experience Review</span>
+                                <div class="subject-name">
+                                    {% if review.experience %}{{ review.experience.name }}{% else %}Unknown experience{% endif %}
+                                </div>
+                            {% else %}
+                                <div class="subject-name">Review #{{ review.id }}</div>
+                            {% endif %}
+
+                            <div class="reviewer">
+                                by {{ review.reviewer_name }}
+                                {% if review.report_count >= 3 %}
+                                    <span class="flagged-pill"><i class="fas fa-flag"></i> Repeat Reporter</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <span class="status-badge {{ review.moderation_status }}">
+                            {{ review.get_moderation_status_display }}
+                        </span>
+                    </div>
+
+                    {% if review.report_count > 0 and review.reports %}
+                        <div class="report-info">
+                            <div class="ri-label"><i class="fas fa-flag"></i> {{ review.report_count }} report{{ review.report_count|pluralize }}</div>
+                            {% for r in review.reports|slice:":3" %}
+                                <div class="ri-line">· {{ r.reason }}</div>
+                            {% endfor %}
+                            {% if review.report_count > 3 %}
+                                <div class="ri-line" style="font-style: italic;">… and {{ review.report_count|add:"-3" }} more</div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    <div class="stars">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= review.rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="fas fa-star empty"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    {% if review.title %}
+                        <div class="review-title">{{ review.title }}</div>
+                    {% endif %}
+
+                    <div class="review-text">{{ review.comment }}</div>
+
+                    <div class="review-date">
+                        <i class="far fa-clock"></i> Submitted {{ review.created_at|date:"d M Y H:i" }}
+                        · {{ review.created_at|timesince }} ago
+                    </div>
+
+                    {% if review.moderated_at %}
+                        <div class="mod-history {% if review.moderation_status == 'removed' %}removed{% endif %}">
+                            <div class="mh-label">
+                                {% if review.moderation_status == 'removed' %}<i class="fas fa-shield-alt"></i> Removal Record{% else %}Moderation History{% endif %}
+                            </div>
+                            <div class="mh-line">
+                                <i class="fas fa-user-shield"></i>
+                                <span>
+                                    {% if review.moderated_by %}
+                                        {{ review.moderated_by.get_full_name|default:review.moderated_by.username }}
+                                    {% else %}
+                                        (deleted admin)
+                                    {% endif %}
+                                    set status to
+                                    <strong>{{ review.get_moderation_status_display }}</strong>
+                                </span>
+                                <span class="mh-when">{{ review.moderated_at|date:"d M Y H:i" }}</span>
+                            </div>
+                            {% if review.moderation_notes %}
+                                <div class="mh-line">
+                                    <i class="fas fa-comment-dots"></i>
+                                    <span>Reason: <em>{{ review.moderation_notes }}</em></span>
+                                </div>
+                            {% endif %}
+                            {% if review.removed_at and review.moderation_status == 'removed' %}
+                                <div class="mh-line">
+                                    <i class="fas fa-trash"></i>
+                                    <span>Removed for policy violation on {{ review.removed_at|date:"d M Y" }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    <div class="review-actions">
+                        {% if review.moderation_status == 'pending' or review.moderation_status == 'reported' %}
+                            <button onclick="openApproveModal({{ review.id }}, '{{ review.subject_name|escapejs }}')" class="btn-approve">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                            <button onclick="openRejectModal({{ review.id }}, '{{ review.subject_name|escapejs }}')" class="btn-reject">
+                                <i class="fas fa-times"></i> Reject
+                            </button>
+                            <button onclick="openRemoveModal({{ review.id }}, '{{ review.subject_name|escapejs }}')" class="btn-remove">
+                                <i class="fas fa-ban"></i> Remove
+                            </button>
+                        {% elif review.moderation_status == 'approved' %}
+                            <button onclick="openRemoveModal({{ review.id }}, '{{ review.subject_name|escapejs }}')" class="btn-remove">
+                                <i class="fas fa-ban"></i> Remove
+                            </button>
+                        {% endif %}
+
+                        <button onclick="openFlagUserModal({{ review.id }}, '{{ review.reviewer_name|escapejs }}')" class="btn-flag">
+                            <i class="fas fa-flag"></i> Flag User
+                        </button>
+
+                        <a href="?status=all&search={{ review.reviewer_name|urlencode }}" class="btn-view">
+                            <i class="fas fa-list"></i> All by this user
+                        </a>
+
+                        {% if review.review_type == 'experience' and review.experience %}
+                            <a href="{% url 'experiences:detail' review.experience.id %}" class="btn-view" target="_blank">
+                                <i class="fas fa-eye"></i> View Experience
+                            </a>
+                        {% elif review.review_type == 'guide' and review.guide %}
+                            <a href="{% url 'admin_dashboard:guide_detail' review.guide.id %}" class="btn-view">
+                                <i class="fas fa-eye"></i> View Guide
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+
+            {% if reviews.has_other_pages %}
+                <div class="pagination">
+                    {% if reviews.has_previous %}
+                        <a href="?page={{ reviews.previous_page_number }}&status={{ current_status }}{% if search %}&search={{ search }}{% endif %}">‹ Previous</a>
+                    {% endif %}
+                    <span class="current">Page {{ reviews.number }} of {{ reviews.paginator.num_pages }}</span>
+                    {% if reviews.has_next %}
+                        <a href="?page={{ reviews.next_page_number }}&status={{ current_status }}{% if search %}&search={{ search }}{% endif %}">Next ›</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-star"></i>
+                <h3>No reviews found</h3>
+                <p>{% if search %}No reviews match your search.{% else %}Reviews will appear here when tourists leave feedback after tours.{% endif %}</p>
+                {% if search %}
+                    <a href="?status=all" class="empty-action">Clear Search</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </main>
+
+    <!-- Action Modal -->
+    <div class="modal-overlay" id="actionModal">
+        <div class="modal">
+            <div class="modal-icon" id="modalIcon"></div>
+            <h3 id="modalTitle">Confirm Action</h3>
+            <p class="modal-subtitle" id="modalSubtitle"></p>
+            <form id="modalForm" method="POST">
+                {% csrf_token %}
+                <div class="form-group" id="reasonGroup" style="display:none;">
+                    <label id="reasonLabel">Reason <span style="color: #c75b4a;">*</span></label>
+                    <textarea name="reason" id="reasonField" placeholder="Explain the reason..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" onclick="closeModal()" class="btn-cancel">Cancel</button>
+                    <button type="submit" id="modalConfirmBtn">Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        let currentAction = { reviewId: null, action: null };
+        const modal = document.getElementById('actionModal');
+        const modalForm = document.getElementById('modalForm');
+        const modalIcon = document.getElementById('modalIcon');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalSubtitle = document.getElementById('modalSubtitle');
+        const reasonGroup = document.getElementById('reasonGroup');
+        const reasonLabel = document.getElementById('reasonLabel');
+        const reasonField = document.getElementById('reasonField');
+        const modalConfirmBtn = document.getElementById('modalConfirmBtn');
+
+        function openApproveModal(id, name) {
+            currentAction = { reviewId: id, action: 'approve' };
+            modalIcon.className = 'modal-icon approve';
+            modalIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+            modalTitle.textContent = 'Approve Review?';
+            modalSubtitle.textContent = name;
+            reasonGroup.style.display = 'none';
+            reasonField.required = false;
+            modalConfirmBtn.className = 'btn-confirm-approve';
+            modalConfirmBtn.textContent = 'Approve';
+            modal.classList.add('active');
+        }
+
+        function openRejectModal(id, name) {
+            currentAction = { reviewId: id, action: 'reject' };
+            modalIcon.className = 'modal-icon reject';
+            modalIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
+            modalTitle.textContent = 'Reject Review?';
+            modalSubtitle.textContent = 'This review will be hidden from public view. ' + name;
+            reasonGroup.style.display = 'block';
+            reasonLabel.innerHTML = 'Reason for rejection <span style="color: #c75b4a;">*</span>';
+            reasonField.placeholder = 'Explain why this review is being rejected...';
+            reasonField.required = true;
+            reasonField.value = '';
+            modalConfirmBtn.className = 'btn-confirm-reject';
+            modalConfirmBtn.textContent = 'Reject';
+            modal.classList.add('active');
+        }
+
+        function openRemoveModal(id, name) {
+            currentAction = { reviewId: id, action: 'remove' };
+            modalIcon.className = 'modal-icon remove';
+            modalIcon.innerHTML = '<i class="fas fa-ban"></i>';
+            modalTitle.textContent = 'Remove Review for Policy Violation?';
+            modalSubtitle.textContent = 'This is a stronger action than rejection. The review will be permanently hidden and marked as a policy violation. ' + name;
+            reasonGroup.style.display = 'block';
+            reasonLabel.innerHTML = 'Policy violation reason <span style="color: #c75b4a;">*</span>';
+            reasonField.placeholder = 'e.g. Hate speech, spam, fake review, harassment...';
+            reasonField.required = true;
+            reasonField.value = '';
+            modalConfirmBtn.className = 'btn-confirm-remove';
+            modalConfirmBtn.textContent = 'Remove';
+            modal.classList.add('active');
+        }
+
+        function openFlagUserModal(id, userName) {
+            currentAction = { reviewId: id, action: 'flag_user' };
+            modalIcon.className = 'modal-icon flag';
+            modalIcon.innerHTML = '<i class="fas fa-flag"></i>';
+            modalTitle.textContent = 'Flag This User?';
+            modalSubtitle.textContent = userName + ' will be flagged for admin attention. This does not change their account status — it logs a warning in the audit trail.';
+            reasonGroup.style.display = 'block';
+            reasonLabel.innerHTML = 'Reason for flagging <span style="color: #c75b4a;">*</span>';
+            reasonField.placeholder = 'e.g. Repeated policy violations, suspicious activity...';
+            reasonField.required = true;
+            reasonField.value = '';
+            modalConfirmBtn.className = 'btn-confirm-flag';
+            modalConfirmBtn.textContent = 'Flag User';
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+            currentAction = { reviewId: null, action: null };
+        }
+
+        modalForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const csrfToken = modalForm.querySelector('[name=csrfmiddlewaretoken]').value;
+            const reason = reasonField.value;
+            const url = `/admin_dashboard/action/review/${currentAction.reviewId}/${currentAction.action}/`;
+            const formData = new FormData();
+            formData.append('csrfmiddlewaretoken', csrfToken);
+            if (currentAction.action !== 'approve') {
+                formData.append('reason', reason);
+            }
+            fetch(url, { method: 'POST', body: formData, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    const card = document.getElementById(`review-card-${currentAction.reviewId}`);
+                    if (card) { card.style.opacity = '0'; setTimeout(() => card.remove(), 300); }
+                    closeModal();
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showToast(data.error || 'Something went wrong', 'error');
+                }
+            })
+            .catch(err => showToast('Error: ' + err.message, 'error'));
+        });
+
+        modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            toast.innerHTML = `<span class="toast-icon"><i class="fas ${icon}"></i></span><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.classList.remove('hide'); setTimeout(() => toast.remove(), 300); }, 4000);
+        }
+    </script>
+
+</body>
+</html>

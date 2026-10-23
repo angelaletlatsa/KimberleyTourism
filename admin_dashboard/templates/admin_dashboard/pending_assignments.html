@@ -1,0 +1,534 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pending Assignments | Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: #f5f0eb; color: #1a1a1a; display: flex; min-height: 100vh; }
+        a { text-decoration: none; color: inherit; }
+
+        /* Sidebar */
+        .sidebar { width: 250px; background: #0f2b26; color: white; min-height: 100vh; padding: 24px 16px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-brand { padding: 0 12px 24px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); margin-bottom: 24px; }
+        .sidebar-brand h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+        .sidebar-brand h1 span { color: #c8925e; }
+        .sidebar-brand .subtitle { font-size: 11px; color: rgba(255, 255, 255, 0.35); margin-top: 2px; }
+        .sidebar-nav { flex: 1; }
+        .sidebar-section { margin-bottom: 16px; }
+        .sidebar-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: rgba(255, 255, 255, 0.3); padding: 8px 14px; margin-bottom: 4px; }
+        .sidebar-nav .nav-item { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 10px; color: rgba(255, 255, 255, 0.6); font-size: 14px; font-weight: 500; transition: all 0.25s ease; margin-bottom: 2px; }
+        .sidebar-nav .nav-item:hover { background: rgba(255, 255, 255, 0.06); color: white; }
+        .sidebar-nav .nav-item.active { background: rgba(200, 146, 94, 0.15); color: #c8925e; }
+        .sidebar-nav .nav-item .icon { width: 22px; text-align: center; font-size: 16px; flex-shrink: 0; }
+        .sidebar-nav .nav-item .badge { margin-left: auto; background: #c75b4a; color: white; font-size: 10px; font-weight: 700; padding: 1px 10px; border-radius: 12px; }
+        .sidebar-footer { border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 16px; margin-top: auto; }
+        .sidebar-footer .user-card { display: flex; align-items: center; gap: 12px; padding: 10px 12px; }
+        .sidebar-footer .user-card .avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #c8925e, #e8b88a); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; flex-shrink: 0; }
+        .sidebar-footer .user-card .user-info .name { font-size: 13px; font-weight: 600; color: white; }
+        .sidebar-footer .user-card .user-info .role { font-size: 11px; color: rgba(255, 255, 255, 0.4); }
+        .sidebar-footer .user-card .logout { color: rgba(255, 255, 255, 0.3); }
+
+        /* Main */
+        .main-content { flex: 1; padding: 28px 40px 40px; min-height: 100vh; max-width: calc(100% - 250px); }
+        .back-button { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; background: white; color: #4a5a58; border-radius: 10px; font-size: 13px; font-weight: 500; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: 0.2s; }
+        .back-button:hover { background: #c8925e; color: white; }
+
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+        .header-left h2 { font-size: 26px; font-weight: 700; color: #0f2b26; }
+        .header-left p { font-size: 14px; color: #8a9a98; margin-top: 4px; }
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .header-right .notification-btn { position: relative; width: 42px; height: 42px; border-radius: 50%; border: none; background: white; color: #4a5a58; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); }
+        .header-right .notification-btn .dot { position: absolute; top: 6px; right: 6px; min-width: 18px; height: 18px; background: #c75b4a; color: white; font-size: 10px; font-weight: 700; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+        .header-right .date-display { font-size: 13px; color: #8a9a98; background: white; padding: 10px 20px; border-radius: 10px; font-weight: 500; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); }
+
+        .info-banner { background: #fef3e0; border-left: 4px solid #b8860b; border-radius: 10px; padding: 16px 22px; margin-bottom: 24px; display: flex; align-items: flex-start; gap: 14px; }
+        .info-banner i { color: #b8860b; font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+        .info-banner .banner-title { font-size: 14px; font-weight: 700; color: #8a6d0b; margin-bottom: 4px; }
+        .info-banner .banner-text { font-size: 13px; color: #8a6d0b; line-height: 1.6; }
+
+        .filter-bar { background: white; border-radius: 12px; padding: 14px 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); }
+        .filter-bar .filter-group { display: flex; align-items: center; gap: 8px; }
+        .filter-bar .filter-label { font-size: 12px; font-weight: 600; color: #8a9a98; text-transform: uppercase; letter-spacing: 0.5px; }
+        .filter-bar .filter-btn { padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; background: #faf8f6; color: #4a5a58; border: 1px solid #e5e0da; transition: 0.2s; text-decoration: none; }
+        .filter-bar .filter-btn:hover { border-color: #c8925e; color: #c8925e; }
+        .filter-bar .filter-btn.active { background: #c8925e; color: white; border-color: #c8925e; }
+
+        /* Booking card */
+        .booking-card { background: white; border-radius: 16px; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04); border: 1px solid rgba(0, 0, 0, 0.02); margin-bottom: 20px; overflow: hidden; }
+        .booking-card .card-top { padding: 20px 24px; background: #faf8f6; border-bottom: 1px solid #f0ebe6; display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; }
+        .booking-card .booking-id { font-size: 12px; font-weight: 700; color: #8a9a98; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+        .booking-card .tour-date { font-size: 20px; font-weight: 700; color: #0f2b26; display: flex; align-items: center; gap: 10px; }
+        .booking-card .tour-date i { color: #c8925e; font-size: 18px; }
+        .booking-card .tour-meta { font-size: 13px; color: #8a9a98; margin-top: 4px; display: flex; gap: 16px; flex-wrap: wrap; }
+        .booking-card .tour-meta i { color: #c8925e; margin-right: 4px; }
+
+        .booking-card .parties { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .party-mini { display: flex; align-items: center; gap: 10px; background: white; padding: 8px 14px; border-radius: 10px; border: 1px solid #f0ebe6; }
+        .party-mini .party-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #c8925e, #e8b88a); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 12px; flex-shrink: 0; overflow: hidden; }
+        .party-mini .party-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .party-mini .party-info { display: flex; flex-direction: column; }
+        .party-mini .party-role { font-size: 9px; font-weight: 700; color: #8a9a98; text-transform: uppercase; letter-spacing: 0.6px; }
+        .party-mini .party-name { font-size: 13px; font-weight: 600; color: #0f2b26; }
+
+        .booking-card .body { padding: 20px 24px; }
+
+        .stops-block { margin-bottom: 18px; }
+        .stops-block .stops-label { font-size: 11px; font-weight: 700; color: #8a9a98; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+        .stops-block .stops-label i { color: #c8925e; }
+        .stops-inline { display: flex; flex-wrap: wrap; gap: 6px; }
+        .stop-chip { background: #faf8f6; border: 1px solid #e5e0da; border-radius: 14px; padding: 4px 12px; font-size: 12px; color: #0f2b26; font-weight: 500; display: inline-flex; align-items: center; gap: 5px; }
+        .stop-chip .order { color: #c8925e; font-weight: 700; font-size: 11px; }
+        .stops-empty { font-size: 12px; color: #b8c5c2; font-style: italic; }
+
+        .requests-block { background: #faf8f6; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #4a5a58; line-height: 1.6; font-style: italic; margin-bottom: 18px; border-left: 3px solid #c8925e; }
+
+        /* Guide card (preferred + alternative) */
+        .guide-card { background: #faf8f6; border-radius: 12px; padding: 16px 18px; margin-bottom: 14px; border: 1px solid #f0ebe6; }
+        .guide-card.alt { padding: 14px 16px; }
+
+        .guide-card .gc-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+        .guide-card .gc-label { font-size: 10px; font-weight: 700; color: #8a9a98; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; }
+        .guide-card .gc-info { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 240px; }
+        .guide-card .gc-avatar { width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, #2d8f6f, #4ac99a); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 20px; flex-shrink: 0; overflow: hidden; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .guide-card .gc-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .guide-card .gc-name { font-size: 15px; font-weight: 700; color: #0f2b26; margin-bottom: 3px; }
+        .guide-card .gc-meta { font-size: 12px; color: #8a9a98; display: flex; gap: 10px; flex-wrap: wrap; }
+        .guide-card .gc-meta .rating { color: #c8925e; font-weight: 600; }
+        .guide-card .gc-meta i { margin-right: 3px; }
+
+        .gc-pills { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+        .gc-pill { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 12px; }
+        .gc-pill.lang { background: #eef4f7; border: 1px solid #d5e3eb; color: #3a6ea5; }
+        .gc-pill.spec { background: #f5efe8; border: 1px solid #e8dcc9; color: #8a6d3b; }
+        .gc-pill.empty { background: transparent; border: 1px dashed #d9dfdc; color: #b8c5c2; font-style: italic; }
+
+        .gc-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+        /* Clash badges */
+        .clash-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+        .clash-badge.ok { background: #e6f4ee; color: #1a7a5a; }
+        .clash-badge.warning { background: #fef3e0; color: #8a6d0b; border: 1px solid #f4e3b8; }
+        .clash-badge.blocker { background: #fce8e4; color: #b84a3a; }
+
+        /* Alternatives section */
+        .alternatives-section { border-top: 1px solid #f0ebe6; padding-top: 16px; margin-top: 6px; }
+        .alternatives-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 12px; }
+        .alternatives-header .al-title { font-size: 13px; font-weight: 700; color: #0f2b26; display: flex; align-items: center; gap: 8px; }
+        .alternatives-header .al-title i { color: #c8925e; }
+        .alternatives-header .al-note { font-size: 12px; color: #8a9a98; }
+
+        .warning-note { background: #fef9ec; border: 1px solid #f4e3b8; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #8a6d0b; line-height: 1.6; margin-bottom: 14px; display: flex; gap: 10px; align-items: flex-start; }
+        .warning-note i { color: #b8860b; font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+        .alternatives-list { display: flex; flex-direction: column; gap: 10px; }
+
+        /* Buttons */
+        .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; font-family: inherit; text-decoration: none; white-space: nowrap; }
+        .btn-confirm { background: #2d8f6f; color: white; }
+        .btn-confirm:hover { background: #1a7a5a; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(45, 143, 111, 0.25); }
+        .btn-assign { background: #c8925e; color: white; padding: 9px 18px; font-size: 13px; }
+        .btn-assign:hover { background: #b8824f; transform: translateY(-1px); }
+
+        /* Empty state */
+        .empty-state { text-align: center; padding: 80px 20px; background: white; border-radius: 16px; }
+        .empty-state i { font-size: 64px; color: #2d8f6f; display: block; margin-bottom: 20px; }
+        .empty-state h3 { font-size: 22px; font-weight: 600; color: #0f2b26; margin-bottom: 8px; }
+        .empty-state p { color: #8a9a98; font-size: 14px; max-width: 400px; margin: 0 auto 20px; }
+        .empty-state .empty-action { display: inline-block; padding: 10px 24px; background: #c8925e; color: white; border-radius: 10px; font-weight: 600; font-size: 14px; }
+        .empty-state .empty-action:hover { background: #b8824f; }
+
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 24px; }
+        .pagination a, .pagination span { display: inline-block; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; }
+        .pagination a { background: white; color: #1a1a1a; border: 1px solid #d9dfdc; }
+        .pagination a:hover { border-color: #c8925e; color: #c8925e; }
+        .pagination .current { background: #c8925e; color: white; }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 72px; padding: 16px 10px; }
+            .sidebar-brand h1 { font-size: 16px; }
+            .sidebar-brand .subtitle, .sidebar-section-title, .sidebar-nav .nav-item span, .sidebar-nav .nav-item .badge, .sidebar-footer .user-card .user-info { display: none; }
+            .main-content { padding: 16px; max-width: 100%; }
+            .header { flex-direction: column; align-items: flex-start; }
+            .booking-card .card-top { flex-direction: column; }
+            .guide-card .gc-top { flex-direction: column; align-items: stretch; }
+            .guide-card .gc-actions { justify-content: flex-end; }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <h1>Explore <span>Kimberley</span></h1>
+            <div class="subtitle">Tourism Platform</div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Main</div>
+                <a href="{% url 'admin_dashboard:dashboard' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-home"></i></span><span>Dashboard</span>
+                </a>
+            </div>
+            {% include "admin_dashboard/_owner_sidebar.html" %}
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">User Management</div>
+                <a href="{% url 'admin_dashboard:all_users' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-users"></i></span><span>All Users</span>
+                </a>
+                <a href="{% url 'admin_dashboard:providers' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-building"></i></span><span>Providers</span>
+                    {% if pending_providers_count > 0 %}<span class="badge">{{ pending_providers_count }}</span>{% endif %}
+                </a>
+                <a href="{% url 'admin_dashboard:guides' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-user-tie"></i></span><span>Guides</span>
+                    {% if pending_guides_count > 0 %}<span class="badge">{{ pending_guides_count }}</span>{% endif %}
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Content</div>
+                <a href="{% url 'admin_dashboard:experiences' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-suitcase"></i></span><span>Experiences</span>
+                    {% if pending_experiences_count > 0 %}<span class="badge">{{ pending_experiences_count }}</span>{% endif %}
+                </a>
+                <a href="{% url 'admin_dashboard:reviews' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-star"></i></span><span>Reviews</span>
+                    {% if pending_reviews_count > 0 %}<span class="badge">{{ pending_reviews_count }}</span>{% endif %}
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Operations</div>
+                <a href="{% url 'admin_dashboard:bookings' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-calendar-alt"></i></span><span>Bookings</span>
+                    {% if total_bookings > 0 %}<span class="badge">{{ total_bookings }}</span>{% endif %}
+                </a>
+                <a href="{% url 'admin_dashboard:pending_assignments' %}" class="nav-item active">
+                    <span class="icon"><i class="fas fa-user-check"></i></span><span>Assignments</span>
+                    {% if pending_assignments_count > 0 %}<span class="badge">{{ pending_assignments_count }}</span>{% endif %}
+                </a>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title">Insights</div>
+                <a href="{% url 'admin_dashboard:analytics' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-chart-bar"></i></span><span>Analytics</span>
+                </a>
+                <a href="{% url 'admin_dashboard:audit_logs' %}" class="nav-item">
+                    <span class="icon"><i class="fas fa-history"></i></span><span>Audit Logs</span>
+                </a>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="avatar">{{ user.first_name|slice:":1"|default:"A" }}</div>
+                <div class="user-info">
+                    <div class="name">{{ user.first_name|default:"Admin" }}</div>
+                    <div class="role">Administrator</div>
+                </div>
+                <a href="/accounts/logout/" class="logout-btn" title="Sign out" style="display:inline-flex;align-items:center;gap:6px;margin-left:auto;padding:6px 10px;border:1px solid rgba(255,255,255,0.14);border-radius:8px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.75);font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;"><i class="fas fa-sign-out-alt"></i> Sign out</a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+
+        <a href="{% url 'admin_dashboard:bookings' %}" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back to All Bookings
+        </a>
+
+        <header class="header">
+            <div class="header-left">
+                <h2>Pending Assignments</h2>
+                <p>Confirm guide assignments before guides are notified</p>
+            </div>
+            <div class="header-right">
+                <a href="/notifications/" class="notification-btn">
+                    <i class="fas fa-bell"></i>
+                    {% if unread_count > 0 %}<span class="dot">{{ unread_count }}</span>{% endif %}
+                </a>
+                <span class="date-display"><i class="far fa-calendar-alt"></i> {{ now|date:"M d, Y" }}</span>
+            </div>
+        </header>
+
+        {% if total_pending > 0 %}
+            <div class="info-banner">
+                <i class="fas fa-shield-alt"></i>
+                <div>
+                    <div class="banner-title">{{ total_pending }} booking{{ total_pending|pluralize }} awaiting your confirmation</div>
+                    <div class="banner-text">
+                        Every new booking passes through you first. If the preferred guide is clear, confirm the assignment.
+                        If there is a clash or another pending request for the same slot, review the alternative guides below.
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <span class="filter-label">Sort alternatives by</span>
+                    <a href="?sort=rating&show={{ current_show }}" class="filter-btn {% if current_sort == 'rating' %}active{% endif %}">Rating</a>
+                    <a href="?sort=name&show={{ current_show }}" class="filter-btn {% if current_sort == 'name' %}active{% endif %}">Name</a>
+                    <a href="?sort=specialization&show={{ current_show }}" class="filter-btn {% if current_sort == 'specialization' %}active{% endif %}">Specialization</a>
+                </div>
+                <div class="filter-group" style="margin-left:auto;">
+                    <span class="filter-label">Show</span>
+                    <a href="?sort={{ current_sort }}&show=5" class="filter-btn {% if not show_all %}active{% endif %}">Top 5</a>
+                    <a href="?sort={{ current_sort }}&show=all" class="filter-btn {% if show_all %}active{% endif %}">All</a>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if bookings_with_info %}
+            {% for item in bookings_with_info %}
+                {% with booking=item.booking preferred_clash=item.preferred_clash alternatives=item.alternatives alternatives_total=item.alternatives_total %}
+                <div class="booking-card">
+
+                    <div class="card-top">
+                        <div>
+                            <div class="booking-id">Booking #{{ booking.id }}</div>
+                            <div class="tour-date">
+                                <i class="fas fa-calendar-alt"></i>
+                                {{ booking.booking_date|date:"D, d M Y" }}
+                            </div>
+                            <div class="tour-meta">
+                                <span><i class="fas fa-clock"></i> {{ booking.booking_time|time:"H:i" }}</span>
+                                <span><i class="fas fa-users"></i> {{ booking.number_of_participants }} {{ booking.number_of_participants|pluralize:"person,people" }}</span>
+                                {% if booking.experience %}
+                                    <span><i class="fas fa-suitcase"></i> {{ booking.experience.name }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="parties">
+                            <div class="party-mini">
+                                <div class="party-avatar">
+                                    {% if booking.visitor.profile.profile_picture %}
+                                        <img src="{{ booking.visitor.profile.profile_picture.url }}" alt="Tourist">
+                                    {% else %}
+                                        {{ booking.visitor.profile.user.first_name|slice:":1"|default:"T" }}
+                                    {% endif %}
+                                </div>
+                                <div class="party-info">
+                                    <span class="party-role">Tourist</span>
+                                    <span class="party-name">{{ booking.visitor.profile.user.get_full_name|default:booking.visitor.profile.user.username }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="body">
+
+                        <div class="stops-block">
+                            <div class="stops-label"><i class="fas fa-map-marked-alt"></i> Tour Stops</div>
+                            <div class="stops-inline">
+                                {% if booking.destinations.all %}
+                                    {% for stop in booking.destinations.all %}
+                                        <span class="stop-chip"><span class="order">{{ forloop.counter }}.</span>{{ stop.name }}</span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="stops-empty">No stops added</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% if booking.special_requests %}
+                            <div class="requests-block">
+                                <strong>Special requests:</strong> {{ booking.special_requests }}
+                            </div>
+                        {% endif %}
+
+                        {# ===== Preferred guide card ===== #}
+                        <div class="guide-card">
+                            <div class="gc-top">
+                                <div>
+                                    <div class="gc-label">Preferred Guide</div>
+                                    {% if booking.guide %}
+                                        <div class="gc-info">
+                                            <div class="gc-avatar">
+                                                {% if booking.guide.profile.profile_picture %}
+                                                    <img src="{{ booking.guide.profile.profile_picture.url }}" alt="{{ booking.guide.full_name }}">
+                                                {% else %}
+                                                    {{ booking.guide.full_name|slice:":1" }}
+                                                {% endif %}
+                                            </div>
+                                            <div>
+                                                <div class="gc-name">{{ booking.guide.full_name }}</div>
+                                                <div class="gc-meta">
+                                                    <span class="rating"><i class="fas fa-star"></i> {{ booking.guide.average_rating|floatformat:1 }}</span>
+                                                    <span><i class="fas fa-suitcase"></i> {{ booking.guide.total_tours_given }} tour{{ booking.guide.total_tours_given|pluralize }}</span>
+                                                    {% if booking.guide.experience_display %}
+                                                        <span><i class="fas fa-briefcase"></i> {{ booking.guide.experience_display }}</span>
+                                                    {% endif %}
+                                                </div>
+                                                {% if booking.guide.languages or booking.guide.specializations %}
+                                                    <div class="gc-pills">
+                                                        {% for lang in booking.guide.languages|slice:":4" %}
+                                                            <span class="gc-pill lang">{{ lang }}</span>
+                                                        {% endfor %}
+                                                        {% for spec in booking.guide.specializations|slice:":3" %}
+                                                            <span class="gc-pill spec">{{ spec }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="gc-name" style="color: #b84a3a;">No guide selected</div>
+                                    {% endif %}
+                                </div>
+                                <div class="gc-actions">
+                                    {% if not booking.guide %}
+                                        <span class="clash-badge blocker"><i class="fas fa-exclamation-triangle"></i> No guide</span>
+                                    {% elif preferred_clash.severity == 'ok' %}
+                                        <span class="clash-badge ok"><i class="fas fa-check-circle"></i> No clash</span>
+                                        <form method="POST" action="{% url 'admin_dashboard:approve_assignment' booking.id %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-confirm">
+                                                <i class="fas fa-check"></i> Confirm Assignment
+                                            </button>
+                                        </form>
+                                    {% elif preferred_clash.severity == 'warning' %}
+                                        <span class="clash-badge warning"><i class="fas fa-exclamation-triangle"></i> Another pending request</span>
+                                    {% else %}
+                                        <span class="clash-badge blocker"><i class="fas fa-times-circle"></i> {{ preferred_clash.reason }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        {# ===== Alternatives — shown when preferred guide has warning or blocker ===== #}
+                        {% if booking.guide and preferred_clash.severity != 'ok' %}
+                            <div class="alternatives-section">
+
+                                {% if preferred_clash.severity == 'warning' %}
+                                    <div class="warning-note">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <div>
+                                            <strong>{{ booking.guide.full_name }}</strong> already has another pending request for this slot.
+                                            Confirm one of the two, then the other will need a different guide — or pick an alternative below for this booking.
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                <div class="alternatives-header">
+                                    <div class="al-title">
+                                        <i class="fas fa-user-plus"></i>
+                                        Alternative guides for this slot
+                                    </div>
+                                    <div class="al-note">
+                                        {% if alternatives_total > 0 %}
+                                            {{ alternatives_total }} guide{{ alternatives_total|pluralize }} total
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                {% if alternatives %}
+                                    <div class="alternatives-list">
+                                        {% for alt in alternatives %}
+                                            <div class="guide-card alt">
+                                                <div class="gc-top">
+                                                    <div class="gc-info">
+                                                        <div class="gc-avatar">
+                                                            {% if alt.guide.profile.profile_picture %}
+                                                                <img src="{{ alt.guide.profile.profile_picture.url }}" alt="{{ alt.guide.full_name }}">
+                                                            {% else %}
+                                                                {{ alt.guide.full_name|slice:":1" }}
+                                                            {% endif %}
+                                                        </div>
+                                                        <div>
+                                                            <div class="gc-name">{{ alt.guide.full_name }}</div>
+                                                            <div class="gc-meta">
+                                                                <span class="rating"><i class="fas fa-star"></i> {{ alt.guide.average_rating|floatformat:1 }}</span>
+                                                                <span><i class="fas fa-suitcase"></i> {{ alt.guide.total_tours_given }} tour{{ alt.guide.total_tours_given|pluralize }}</span>
+                                                                {% if alt.guide.experience_display %}
+                                                                    <span><i class="fas fa-briefcase"></i> {{ alt.guide.experience_display }}</span>
+                                                                {% endif %}
+                                                            </div>
+                                                            {% if alt.guide.languages or alt.guide.specializations %}
+                                                                <div class="gc-pills">
+                                                                    {% for lang in alt.guide.languages|slice:":4" %}
+                                                                        <span class="gc-pill lang">{{ lang }}</span>
+                                                                    {% endfor %}
+                                                                    {% for spec in alt.guide.specializations|slice:":3" %}
+                                                                        <span class="gc-pill spec">{{ spec }}</span>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="gc-actions">
+                                                        {% if alt.clash.severity == 'blocker' %}
+                                                            <span class="clash-badge blocker"><i class="fas fa-times-circle"></i> {{ alt.clash.reason }}</span>
+                                                        {% elif alt.clash.severity == 'warning' %}
+                                                            <span class="clash-badge warning"><i class="fas fa-exclamation-triangle"></i> Pending request at this slot</span>
+                                                            <form method="POST" action="{% url 'admin_dashboard:approve_assignment' booking.id %}" style="display:inline;">
+                                                                {% csrf_token %}
+                                                                <input type="hidden" name="guide_id" value="{{ alt.guide.id }}">
+                                                                <button type="submit" class="btn btn-assign">
+                                                                    <i class="fas fa-check"></i> Assign
+                                                                </button>
+                                                            </form>
+                                                        {% else %}
+                                                            <span class="clash-badge ok"><i class="fas fa-check-circle"></i> Available</span>
+                                                            <form method="POST" action="{% url 'admin_dashboard:approve_assignment' booking.id %}" style="display:inline;">
+                                                                {% csrf_token %}
+                                                                <input type="hidden" name="guide_id" value="{{ alt.guide.id }}">
+                                                                <button type="submit" class="btn btn-assign">
+                                                                    <i class="fas fa-check"></i> Assign
+                                                                </button>
+                                                            </form>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+
+                                    {% if not show_all and alternatives_total > 5 %}
+                                        <div style="text-align:center; margin-top: 12px;">
+                                            <a href="?sort={{ current_sort }}&show=all" class="filter-btn" style="display:inline-block;">
+                                                <i class="fas fa-chevron-down"></i> Show all {{ alternatives_total }} guides
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="stops-empty">No other verified guides are available right now.</div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+                {% endwith %}
+            {% endfor %}
+
+            {% if page_obj.has_other_pages %}
+                <div class="pagination">
+                    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&sort={{ current_sort }}&show={{ current_show }}">‹ Previous</a>{% endif %}
+                    <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&sort={{ current_sort }}&show={{ current_show }}">Next ›</a>{% endif %}
+                </div>
+            {% endif %}
+
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-check-circle"></i>
+                <h3>All caught up</h3>
+                <p>
+                    There are no pending assignment confirmations right now.
+                    New booking requests will appear here automatically.
+                </p>
+                <a href="{% url 'admin_dashboard:bookings' %}" class="empty-action">
+                    <i class="fas fa-calendar-alt"></i> View All Bookings
+                </a>
+            </div>
+        {% endif %}
+
+    </main>
+
+</body>
+</html>

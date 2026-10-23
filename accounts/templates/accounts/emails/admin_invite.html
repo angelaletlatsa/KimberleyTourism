@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Invitation</title>
+</head>
+<body style="margin:0; padding:0; background:#f5f0eb; font-family:'Inter', Arial, sans-serif; color:#1a1a1a;">
+
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f5f0eb; padding:40px 16px;">
+        <tr>
+            <td align="center">
+
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width:600px; background:white; border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(15,43,38,0.08);">
+
+                    <!-- HEADER -->
+                    <tr>
+                        <td style="background:linear-gradient(135deg, #0f2b26, #1a4a42); padding:32px 40px;">
+                            <div style="font-size:22px; font-weight:700; color:white; letter-spacing:-0.5px;">
+                                Explore <span style="color:#c8925e;">Kimberley</span>
+                            </div>
+                            <div style="font-size:11px; color:rgba(255,255,255,0.55); margin-top:2px; letter-spacing:0.5px;">
+                                ADMIN INVITATION
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- BODY -->
+                    <tr>
+                        <td style="padding:36px 40px;">
+
+                            <div style="font-size:11px; font-weight:700; letter-spacing:1.6px; color:#c8925e; margin-bottom:8px;">
+                                YOU'VE BEEN INVITED
+                            </div>
+
+                            <h1 style="margin:0 0 16px; font-size:24px; font-weight:700; color:#0f2b26; letter-spacing:-0.4px; line-height:1.3;">
+                                Join Explore Kimberley as an Administrator
+                            </h1>
+
+                            <p style="margin:0 0 20px; font-size:14px; color:#4a5a58; line-height:1.7;">
+                                <strong>{{ inviter_name }}</strong> has invited you to join the Explore Kimberley platform as an administrator.
+                                Accept the invitation below to set your password and get started.
+                            </p>
+
+                            {% if personal_message %}
+                            <div style="background:#faf8f6; border-left:3px solid #c8925e; border-radius:8px; padding:14px 18px; margin:0 0 24px;">
+                                <div style="font-size:10px; font-weight:700; letter-spacing:1.4px; color:#c8925e; margin-bottom:6px;">
+                                    PERSONAL MESSAGE FROM {{ inviter_name|upper }}
+                                </div>
+                                <div style="font-size:13px; color:#4a5a58; line-height:1.6; font-style:italic;">
+                                    &ldquo;{{ personal_message }}&rdquo;
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <!-- CTA BUTTON -->
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0 24px;">
+                                <tr>
+                                    <td align="center" bgcolor="#c8925e" style="border-radius:10px;">
+                                        <a href="{{ accept_url }}"
+                                           style="display:inline-block; padding:14px 32px; font-size:14px; font-weight:700; color:white; text-decoration:none; letter-spacing:0.2px;">
+                                            Accept Invitation &rarr;
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="margin:0 0 8px; font-size:12px; color:#8a9a98; line-height:1.6;">
+                                Or paste this link into your browser:
+                            </p>
+                            <div style="background:#faf8f6; border:1px solid #f0ebe6; border-radius:6px; padding:10px 14px; margin-bottom:24px; word-break:break-all;">
+                                <a href="{{ accept_url }}" style="color:#c8925e; font-size:12px; text-decoration:none; font-family:monospace;">
+                                    {{ accept_url }}
+                                </a>
+                            </div>
+
+                            <div style="background:#fef3e0; border-left:3px solid #b8860b; border-radius:8px; padding:12px 16px; margin-bottom:24px;">
+                                <div style="font-size:12px; color:#8a6d0b; line-height:1.6;">
+                                    <strong>This invitation expires on {{ expires_at|date:"d F Y" }}</strong> — {{ expires_days }} days from when it was sent.
+                                </div>
+                            </div>
+
+                            <p style="margin:0; font-size:12px; color:#8a9a98; line-height:1.6;">
+                                If you weren't expecting this invitation, you can safely ignore this email — no account will be created.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <!-- FOOTER -->
+                    <tr>
+                        <td style="background:#faf8f6; padding:24px 40px; border-top:1px solid #f0ebe6;">
+                            <div style="font-size:11px; color:#8a9a98; line-height:1.7;">
+                                Questions? Reply to this email or contact us at
+                                <a href="mailto:{{ support_email }}" style="color:#c8925e; text-decoration:none;">{{ support_email }}</a>.
+                            </div>
+                            <div style="font-size:10px; color:#b8c5c2; margin-top:12px;">
+                                &copy; {{ current_year }} Explore Kimberley. All rights reserved.
+                            </div>
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>

@@ -1,0 +1,112 @@
+<style>
+    #appConfirmDialog {
+        width: min(460px, calc(100% - 32px));
+        padding: 30px;
+        border: 0;
+        border-radius: 16px;
+        color: #1a1a1a;
+        font-family: 'Inter', sans-serif;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    #appConfirmDialog::backdrop {
+        background: rgba(15, 43, 38, 0.58);
+        backdrop-filter: blur(3px);
+    }
+    #appConfirmDialog .confirm-icon {
+        width: 48px;
+        height: 48px;
+        display: grid;
+        place-items: center;
+        margin: 0 auto 16px;
+        border-radius: 50%;
+        background: #fce8e4;
+        color: #c75b4a;
+        font-size: 20px;
+    }
+    #appConfirmDialog h2 {
+        margin: 0 0 10px;
+        color: #0f2b26;
+        font-size: 20px;
+        text-align: center;
+    }
+    #appConfirmDialog p {
+        margin: 0 0 24px;
+        color: #596966;
+        font-size: 14px;
+        line-height: 1.6;
+        text-align: center;
+    }
+    #appConfirmDialog .confirm-actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+    }
+    #appConfirmDialog button {
+        padding: 10px 22px;
+        border: 0;
+        border-radius: 9px;
+        font: 600 14px 'Inter', sans-serif;
+        cursor: pointer;
+    }
+    #appConfirmDialog .confirm-cancel {
+        background: #f0ebe6;
+        color: #1a1a1a;
+    }
+    #appConfirmDialog .confirm-accept {
+        background: #c75b4a;
+        color: white;
+    }
+    #appConfirmDialog .confirm-accept:hover {
+        background: #a84535;
+    }
+</style>
+
+<dialog id="appConfirmDialog" aria-labelledby="appConfirmTitle" aria-describedby="appConfirmMessage">
+    <div class="confirm-icon"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i></div>
+    <h2 id="appConfirmTitle">Please confirm</h2>
+    <p id="appConfirmMessage"></p>
+    <div class="confirm-actions">
+        <button type="button" class="confirm-cancel" id="appConfirmCancel">Cancel</button>
+        <button type="button" class="confirm-accept" id="appConfirmAccept">Confirm</button>
+    </div>
+</dialog>
+
+<script>
+    (() => {
+        const dialog = document.getElementById('appConfirmDialog');
+        const title = document.getElementById('appConfirmTitle');
+        const message = document.getElementById('appConfirmMessage');
+        const acceptButton = document.getElementById('appConfirmAccept');
+        let pendingForm = null;
+
+        document.querySelectorAll('form[data-app-confirm]').forEach(form => {
+            form.addEventListener('submit', event => {
+                if (form.dataset.confirmed === 'true') {
+                    delete form.dataset.confirmed;
+                    return;
+                }
+
+                event.preventDefault();
+                pendingForm = form;
+                title.textContent = form.dataset.confirmTitle || 'Please confirm';
+                message.textContent = form.dataset.confirmMessage || 'Are you sure you want to continue?';
+                acceptButton.textContent = form.dataset.confirmAction || 'Confirm';
+                dialog.showModal();
+            });
+        });
+
+        document.getElementById('appConfirmCancel').addEventListener('click', () => dialog.close());
+        dialog.addEventListener('close', () => {
+            pendingForm = null;
+        });
+        acceptButton.addEventListener('click', () => {
+            if (!pendingForm) return;
+
+            const form = pendingForm;
+            pendingForm = null;
+            dialog.close();
+            form.dataset.confirmed = 'true';
+            form.requestSubmit();
+        });
+    })();
+</script>

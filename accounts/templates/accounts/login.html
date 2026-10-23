@@ -1,0 +1,548 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Explore Kimberley</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Inter', Arial, sans-serif;
+            background: #f7f4ef;
+            color: #1f3d3a;
+        }
+
+        /* Navbar */
+        .navbar {
+            height: 68px;
+            background: #1f3d3a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6%;
+        }
+        .navbar-brand {
+            color: white;
+            text-decoration: none;
+            font-size: 21px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .navbar-brand span { color: #d69b5b; }
+        .navbar-text {
+            font-size: 13px;
+            color: #cbd5d3;
+        }
+        .navbar-text a {
+            color: #e0ad78;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        /* Main */
+        .main-wrap {
+            min-height: calc(100vh - 68px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 6%;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: white;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 15px 45px rgba(31,61,58,0.12);
+        }
+
+        /* Left image */
+        .login-image {
+            min-height: 540px;
+            background-image:
+                linear-gradient(rgba(20,48,45,0.38), rgba(20,48,45,0.78)),
+                url('{% static "images/kimberley.jpg" %}');
+            background-size: cover;
+            background-position: center;
+            padding: 42px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            color: white;
+        }
+        .login-image .tag {
+            color: #e2ae78;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 13px;
+        }
+        .login-image h1 {
+            margin: 0 0 14px;
+            font-size: 38px;
+            line-height: 1.08;
+            letter-spacing: -1.2px;
+        }
+        .login-image p {
+            margin: 0;
+            max-width: 330px;
+            color: #edf2f0;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        /* Right form */
+        .login-form-section {
+            padding: 55px 45px;
+            display: flex;
+            align-items: center;
+        }
+        .login-form-wrap { width: 100%; }
+
+        .form-tag {
+            color: #c7854c;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.7px;
+            margin-bottom: 7px;
+        }
+        .form-title {
+            margin: 0 0 7px;
+            font-size: 29px;
+            line-height: 1.2;
+            letter-spacing: -0.8px;
+        }
+        .form-subtitle {
+            margin: 0 0 25px;
+            color: #7b8583;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* Error */
+        .error-box {
+            background: #fff5f1;
+            color: #874c3b;
+            border: 1px solid #edcfc3;
+            border-left: 4px solid #c96d4c;
+            border-radius: 7px;
+            padding: 10px 13px;
+            margin-bottom: 17px;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+        .error-box i { margin-right: 6px; }
+
+        /* Form fields */
+        .form-label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .input-wrap {
+            position: relative;
+            margin-bottom: 18px;
+        }
+        .input-wrap .icon-left {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #89918f;
+            font-size: 12px;
+            z-index: 2;
+        }
+        .input-wrap input {
+            width: 100%;
+            height: 44px;
+            padding: 0 13px 0 37px;
+            border: 1px solid #d9dfdc;
+            border-radius: 7px;
+            outline: none;
+            font-family: inherit;
+            font-size: 11px;
+            transition: border-color 0.2s;
+        }
+        .input-wrap input:focus {
+            border-color: #c7854c;
+        }
+        .input-wrap input.has-suffix {
+            padding-right: 43px;
+        }
+        .input-wrap .icon-right-btn {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: none;
+            cursor: pointer;
+            color: #7b8583;
+            padding: 5px;
+        }
+
+        /* Role badge */
+        .role-badge {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            margin-top: -8px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            animation: fadeIn 0.25s ease;
+        }
+        .role-badge.show { display: flex; }
+        .role-badge.success {
+            background: #eef7f2;
+            border: 1px solid #c8e2d5;
+            color: #1a5c3f;
+        }
+        .role-badge.warning {
+            background: #fef8ee;
+            border: 1px solid #f0dab8;
+            color: #8a6d3b;
+        }
+        .role-badge.error {
+            background: #fdf2f0;
+            border: 1px solid #f0cec5;
+            color: #8a3f2f;
+        }
+        .role-badge .badge-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c7854c, #e0ad78);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+        .role-badge .badge-content { flex: 1; }
+        .role-badge .badge-greeting { font-weight: 600; }
+        .role-badge .badge-role {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 4px;
+        }
+        .role-badge .badge-role.tourist { background: #d9e8f5; color: #2a5a7a; }
+        .role-badge .badge-role.guide { background: #d5efe1; color: #1a7a5a; }
+        .role-badge .badge-role.provider { background: #fcecd0; color: #b8860b; }
+        .role-badge .badge-role.admin { background: #fadbd5; color: #b84a3a; }
+        .role-badge .badge-icon {
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .role-badge.success .badge-icon { color: #2d8f6f; }
+        .role-badge.warning .badge-icon { color: #b8860b; }
+        .role-badge.error .badge-icon { color: #c75b4a; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Remember me */
+        .remember-row {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            cursor: pointer;
+            margin: 14px 0 22px;
+            color: #777;
+            font-size: 10px;
+        }
+
+        /* Submit */
+        .login-btn {
+            width: 100%;
+            height: 44px;
+            border: none;
+            border-radius: 7px;
+            background: #c7854c;
+            color: white;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(199,133,76,0.25);
+            transition: 0.2s;
+        }
+        .login-btn:hover { background: #b87642; }
+
+        /* Register link */
+        .register-link-row {
+            text-align: center;
+            margin-top: 19px;
+            color: #89918f;
+            font-size: 10px;
+        }
+        .register-link-row a {
+            color: #1f3d3a;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 3px;
+        }
+
+        .forgot-link {
+            color: #c7854c;
+            text-decoration: none;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 800px) {
+            .login-card { grid-template-columns: 1fr; }
+            .login-image { min-height: 260px; padding: 30px; }
+            .login-image h1 { font-size: 28px; }
+            .login-form-section { padding: 40px 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a href="/" class="navbar-brand">Explore <span>Kimberley</span></a>
+        <div class="navbar-text">
+            Don't have an account?
+            <a href="/accounts/register/">Register</a>
+        </div>
+    </nav>
+
+    <!-- MAIN -->
+    <main class="main-wrap">
+        <div class="login-card">
+
+            <!-- Left: Image -->
+            <section class="login-image">
+                <div class="tag">WELCOME BACK</div>
+                <h1>Continue your<br>Kimberley<br>journey.</h1>
+                <p>Sign in to continue discovering places, experiences and local guides around Kimberley.</p>
+            </section>
+
+            <!-- Right: Form -->
+            <section class="login-form-section">
+                <div class="login-form-wrap">
+
+                    <div class="form-tag">SIGN IN</div>
+                    <h2 class="form-title">Welcome back</h2>
+                    <p class="form-subtitle">Sign in to your Explore Kimberley account.</p>
+
+                    {% if error %}
+                        <div class="error-box">
+                            <i class="fa-solid fa-circle-exclamation"></i>{{ error }}
+                        </div>
+                    {% endif %}
+                    {% if verification_required %}
+                        <p class="form-subtitle">
+                            <a href="{% url 'accounts:resend_verification' %}">Resend the verification email</a>
+                        </p>
+                    {% endif %}
+
+                    <form method="POST" id="loginForm" autocomplete="on">
+                        {% csrf_token %}
+
+                        <!-- Email -->
+                        <label class="form-label" for="loginEmail">Email address</label>
+                        <div class="input-wrap">
+                            <i class="fa-regular fa-envelope icon-left"></i>
+                            <input
+                                type="email"
+                                id="loginEmail"
+                                name="email"
+                                placeholder="you@example.com"
+                                required
+                                autocomplete="email"
+                            >
+                        </div>
+
+                        <!-- Role badge (populated by AJAX) -->
+                        <div class="role-badge" id="roleBadge">
+                            <div class="badge-avatar" id="badgeAvatar">?</div>
+                            <div class="badge-content">
+                                <div class="badge-greeting" id="badgeGreeting"></div>
+                                <div id="badgeRoleWrap"></div>
+                            </div>
+                            <i class="fas fa-info-circle badge-icon" id="badgeIcon" style="display:none;"></i>
+                        </div>
+
+                        <!-- Password -->
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:7px;">
+                            <label class="form-label" for="loginPassword" style="margin-bottom:0;">Password</label>
+                            <a href="/accounts/forgot-password/" class="forgot-link">Forgot password?</a>
+                        </div>
+
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-lock icon-left"></i>
+                            <input
+                                id="loginPassword"
+                                type="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                required
+                                autocomplete="current-password"
+                                class="has-suffix"
+                            >
+                            <button
+                                type="button"
+                                class="icon-right-btn"
+                                onclick="toggleLoginPassword()"
+                                aria-label="Show password"
+                            >
+                                <i id="loginPasswordEye" class="fa-regular fa-eye" style="font-size:13px;"></i>
+                            </button>
+                        </div>
+
+                        <!-- Remember me -->
+                        <label class="remember-row">
+                            <input type="checkbox" name="remember_me">
+                            Remember me
+                        </label>
+
+                        <!-- Submit -->
+                        <button type="submit" class="login-btn">
+                            <i class="fa-solid fa-right-to-bracket" style="margin-right:7px;"></i>
+                            Login
+                        </button>
+
+                        <div class="register-link-row">
+                            Don't have an account?
+                            <a href="/accounts/register/">Create an account</a>
+                        </div>
+                    </form>
+
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        // ========== Password toggle ==========
+        function toggleLoginPassword() {
+            const password = document.getElementById("loginPassword");
+            const eye = document.getElementById("loginPasswordEye");
+            if (password.type === "password") {
+                password.type = "text";
+                eye.classList.remove("fa-eye");
+                eye.classList.add("fa-eye-slash");
+            } else {
+                password.type = "password";
+                eye.classList.remove("fa-eye-slash");
+                eye.classList.add("fa-eye");
+            }
+        }
+
+        // ========== Role lookup ==========
+        const emailInput = document.getElementById('loginEmail');
+        const roleBadge = document.getElementById('roleBadge');
+        const badgeAvatar = document.getElementById('badgeAvatar');
+        const badgeGreeting = document.getElementById('badgeGreeting');
+        const badgeRoleWrap = document.getElementById('badgeRoleWrap');
+        const badgeIcon = document.getElementById('badgeIcon');
+
+        let lookupTimeout = null;
+        let lastLookedUpEmail = '';
+
+        emailInput.addEventListener('input', function () {
+            clearTimeout(lookupTimeout);
+            const email = this.value.trim().toLowerCase();
+
+            // Reset if empty
+            if (!email || email === lastLookedUpEmail) {
+                if (!email) {
+                    roleBadge.classList.remove('show');
+                }
+                return;
+            }
+
+            // Debounce 400ms
+            lookupTimeout = setTimeout(() => {
+                lookupUser(email);
+            }, 400);
+        });
+
+        emailInput.addEventListener('blur', function () {
+            const email = this.value.trim().toLowerCase();
+            if (email && email !== lastLookedUpEmail) {
+                clearTimeout(lookupTimeout);
+                lookupUser(email);
+            }
+        });
+
+        function lookupUser(email) {
+            lastLookedUpEmail = email;
+
+            fetch(`/accounts/lookup-email/?email=${encodeURIComponent(email)}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.found) {
+                        showRoleBadge(data);
+                    } else {
+                        showNotFound(email);
+                    }
+                })
+                .catch(() => {
+                    roleBadge.classList.remove('show');
+                });
+        }
+
+        function showRoleBadge(data) {
+            const roleClass = data.role || 'tourist';
+            const roleDisplay = data.role_display || 'User';
+            const initial = (data.first_name || '?').charAt(0).toUpperCase();
+
+            badgeAvatar.textContent = initial;
+            badgeGreeting.textContent = `Welcome back, ${data.first_name}!`;
+
+            const roleText = data.is_suspended
+                ? `This account is suspended`
+                : `Logging in as`;
+
+            badgeRoleWrap.innerHTML = data.is_suspended
+                ? `<span style="font-size:11px; color:#8a3f2f;">${roleText}</span>`
+                : `<span style="font-size:11px; color:#1a5c3f;">${roleText}</span>
+                   <span class="badge-role ${roleClass}">${roleDisplay}</span>`;
+
+            badgeIcon.style.display = 'none';
+
+            roleBadge.className = 'role-badge show ' + (data.is_suspended ? 'warning' : 'success');
+        }
+
+        function showNotFound(email) {
+            badgeAvatar.textContent = '?';
+            badgeGreeting.textContent = 'No account found';
+            badgeRoleWrap.innerHTML = `<span style="font-size:11px; color:#8a6d3b;">This email isn't registered yet.</span>`;
+            badgeIcon.style.display = 'block';
+            roleBadge.className = 'role-badge show warning';
+        }
+    </script>
+
+</body>
+</html>

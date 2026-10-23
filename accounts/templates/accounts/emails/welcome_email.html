@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Explore Kimberley</title>
+</head>
+<body style="font-family: 'Helvetica Neue', Arial, sans-serif; background: #f0ebe5; margin: 0; padding: 0; -webkit-font-smoothing: antialiased;">
+
+    <!-- Outer wrapper -->
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background: #f0ebe5;">
+        <tr>
+            <td align="center" style="padding: 40px 20px;">
+
+                <!-- Main card -->
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="max-width: 600px; width: 100%; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(15, 43, 38, 0.08);">
+
+                    <!-- ============ HEADER ============ -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #0f2b26 0%, #1a4a40 100%); padding: 48px 40px 44px; text-align: center;">
+
+                            <!-- Brand name -->
+                            <h1 style="color: #ffffff; margin: 0; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;">
+                                Explore <span style="color: #c8925e;">Kimberley</span>
+                            </h1>
+
+                            <p style="color: rgba(255, 255, 255, 0.55); margin: 8px 0 0; font-size: 12px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;">
+                                Tourism Platform
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <!-- ============ WELCOME HERO ============ -->
+                    <tr>
+                        <td style="padding: 44px 44px 12px; text-align: center;">
+
+                            <!-- Welcome icon circle -->
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin: 0 auto 20px;">
+                                <tr>
+                                    <td align="center" width="72" height="72" style="background: linear-gradient(135deg, #e6f4ee, #d0ebdf); border-radius: 50%;">
+                                        <span style="font-size: 32px; line-height: 72px;">🎉</span>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <h2 style="color: #0f2b26; margin: 0 0 10px; font-size: 26px; font-weight: 700; letter-spacing: -0.4px;">
+                                Welcome, {{ user_name }}!
+                            </h2>
+
+                            <p style="color: #8a9a98; margin: 0; font-size: 15px; line-height: 1.6;">
+                                You're officially part of the Kimberley tourism community.
+                            </p>
+
+                        </td>
+                    </tr>
+
+                    <!-- ============ INTRO ============ -->
+                    <tr>
+                        <td style="padding: 24px 44px 0;">
+                            <p style="color: #4a5a58; margin: 0 0 16px; font-size: 15px; line-height: 1.7;">
+                                Thank you for joining <strong style="color: #0f2b26;">Explore Kimberley</strong> — the platform that connects tourists, expert guides, and trusted providers in the Diamond City.
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- ============ ROLE CARD ============ -->
+                    <tr>
+                        <td style="padding: 8px 44px 24px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background: #faf8f6; border-radius: 12px; border-left: 4px solid #c8925e;">
+
+                                <tr>
+                                    <td style="padding: 20px 24px 8px;">
+                                        <div style="font-size: 10px; font-weight: 700; letter-spacing: 1.2px; color: #8a9a98; text-transform: uppercase; margin-bottom: 6px;">
+                                            Your Role
+                                        </div>
+                                        <div style="font-size: 18px; font-weight: 700; color: #0f2b26;">
+                                            {{ role_label }}
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding: 8px 24px 20px;">
+                                        {% if role == 'tourist' %}
+                                            <p style="color: #4a5a58; margin: 0; font-size: 14px; line-height: 1.6;">
+                                                Discover incredible experiences, book expert guides, and plan your perfect Kimberley adventure.
+                                            </p>
+                                        {% elif role == 'guide' %}
+                                            <p style="color: #4a5a58; margin: 0; font-size: 14px; line-height: 1.6;">
+                                                Complete your profile and get verified to start receiving booking requests from tourists.
+                                            </p>
+                                        {% elif role == 'provider' %}
+                                            <p style="color: #4a5a58; margin: 0; font-size: 14px; line-height: 1.6;">
+                                                Complete your business profile and get verified to start listing your experiences on the platform.
+                                            </p>
+                                        {% elif role == 'admin' %}
+                                            <p style="color: #4a5a58; margin: 0; font-size: 14px; line-height: 1.6;">
+                                                You now have full access to the administrative dashboard to oversee the platform.
+                                            </p>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- ============ WHAT YOU CAN DO ============ -->
+                    <tr>
+                        <td style="padding: 0 44px 24px;">
+
+                            <div style="font-size: 11px; font-weight: 700; letter-spacing: 1px; color: #8a9a98; text-transform: uppercase; margin-bottom: 14px;">
+                                What you can do next
+                            </div>
+
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+
+                                {% if role == 'tourist' %}
+                                    <tr>
+                                        <td width="28" valign="top" style="padding-bottom: 12px;"><span style="font-size: 16px;">🔍</span></td>
+                                        <td style="padding-bottom: 12px; color: #4a5a58; font-size: 14px; line-height: 1.5;"><strong style="color: #0f2b26;">Discover</strong> experiences across Kimberley</td>
+                                    </tr>
+                                    <tr>
+                                        <td width="28" valign="top" style="padding-bottom: 12px;"><span style="font-size: 16px;">❤️</span></td>
+                                        <td style="padding-bottom: 12px; color: #4a5a58; font-size: 14px; line-height: 1.5;"><strong style="color: #0f2b26;">Save</strong> your favourite experiences</td>
+                                    </tr>
+                                    <tr>
+                                        <td width="28" valign="top" style="padding-bottom: 12px;"><span style="font-size: 16px;">📅</span></td>
+                                        <td style="padding-bottom: 12px; color: #4a5a58; font-size: 14px; line-height: 1.5;"><strong style="color: #0f2b26;">Book</strong> verified tour guides</td>
+                                    </tr>
+                                    <tr>
+                                        <td width="28" valign="top"><span style="font-size: 16px;">🗺️</span></td>
+                                        <td style="color: #4a5a58; font-size: 14px; line-height: 1.5;"><strong style="color: #0f2b26;">Plan</strong> your perfect trip</td>
+                                    </tr>
+                                {% elif role == 'guide' %}
+                                    <tr>
+                                        <td width="28" valign="top" style="padding-bottom: 12px;"><span style="font-size: 16px;">👤</span></td>
+                                        <td style="padding-bottom: 12px; color: #4a5a58; font-size: 14px; line-height: 1.5;"><strong style="color: #0f2b26;">Complete</strong> your professional profile</td>
+                                    </tr>
+                                    <tr>
+                                        <td width="28" valign="top" style="padding-bottom: 12px;"><span style="font-size: 16px;">✅</span></td>
+                                        <td style="padding-bottom: 12px; color: #4a5a58; font-size: 14px; line-height: 1.5;"><strong style="color: #0f2b26;">Submit</strong> for verification</td>
+                                    </tr>
+                                    <tr>
+                                        <td width="28" valign="top" style="padding-bottom: 12px;"><span style="font-size: 16px;">📆</span></td>
+                                        <td style="padding-bottom: 12px; color: #4a5a58; font-size: 14px; line-height: 1.5;"><strong style="color: #0f2b26;">Set</strong> your availability</td>
+                                    </tr>
+                                    <tr>
+                                        <td width="28" valign="top"><span style="font-size: 16px;">💼</span></td>
+                                        <td style="color: #4a5a58; font-size: 14px; line-height: 1.5;"><strong style="color: #0f2b26;">Start</strong> accepting booking requests</td>
+                                    </tr>
+                                {% elif role == 'provider' %}
+                                    <tr>
+                                        <td width="28" valign="top" style="padding-bottom: 12px;"><span style="font-size: 16px;">🏢</span></td>
+                                        <td style="padding-bottom: 12px; color: #4a5a58; font-size: 14px; line-height: 1.5;"><strong style="color: #0f2b26;">Complete</strong> your business profile</td>
+                                    </tr>
+                                    <tr>
+                                        <td width="28" valign="top" style="padding-bottom: 12px;"><span style="font-size: 16px;">✅</span></td>
+                                        <td style="padding-bottom: 12px; color: #4a5a58; font-size: 14px; line-height: 1.5;"><strong style="color: #0f2b26;">Submit</strong> for verification</td>
+                                    </tr>
+                                    <tr>
+                                        <td width="28" valign="top" style="padding-bottom: 12px;"><span style="font-size: 16px;">📝</span></td>
+                                        <td style="padding-bottom: 12px; color: #4a5a58; font-size: 14px; line-height: 1.5;"><strong style="color: #0f2b26;">Create</strong> your first experience</td>
+                                    </tr>
+                                    <tr>
+                                        <td width="28" valign="top"><span style="font-size: 16px;">📊</span></td>
+                                        <td style="color: #4a5a58; font-size: 14px; line-height: 1.5;"><strong style="color: #0f2b26;">Track</strong> your business performance</td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td width="28" valign="top"><span style="font-size: 16px;">🎛️</span></td>
+                                        <td style="color: #4a5a58; font-size: 14px; line-height: 1.5;"><strong style="color: #0f2b26;">Manage</strong> the platform</td>
+                                    </tr>
+                                {% endif %}
+
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- ============ CTA BUTTON ============ -->
+                    <tr>
+                        <td align="center" style="padding: 8px 44px 32px;">
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center">
+                                <tr>
+                                    <td align="center" style="background: linear-gradient(135deg, #c8925e, #b8824f); border-radius: 10px;">
+                                        <a href="{{ dashboard_url }}" style="display: inline-block; padding: 16px 40px; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 700; letter-spacing: 0.3px;">
+                                            Go to Your Dashboard &nbsp;→
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- ============ HELP CARD ============ -->
+                    <tr>
+                        <td style="padding: 0 44px 36px;">
+
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background: #f0ebe5; border-radius: 10px;">
+                                <tr>
+                                    <td style="padding: 18px 22px;">
+                                        <p style="margin: 0; color: #4a5a58; font-size: 13px; line-height: 1.6;">
+                                            💬 <strong style="color: #0f2b26;">Need help?</strong>
+                                            Simply reply to this email or reach out to
+                                            <a href="mailto:{{ support_email }}" style="color: #c8925e; text-decoration: none; font-weight: 600;">{{ support_email }}</a>.
+                                            We're here to help.
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- ============ FOOTER ============ -->
+                    <tr>
+                        <td style="background: #0f2b26; padding: 28px 44px; text-align: center;">
+
+                            <p style="color: #ffffff; margin: 0 0 6px; font-size: 15px; font-weight: 700;">
+                                Explore <span style="color: #c8925e;">Kimberley</span>
+                            </p>
+
+                            <p style="color: rgba(255, 255, 255, 0.4); margin: 0 0 14px; font-size: 12px; line-height: 1.5;">
+                                Connecting people with the best of the Diamond City.
+                            </p>
+
+                            <p style="color: rgba(255, 255, 255, 0.3); margin: 0; font-size: 11px;">
+                                &copy; {{ current_year }} Explore Kimberley · All rights reserved
+                            </p>
+
+                        </td>
+                    </tr>
+
+                </table>
+
+                <!-- Small note below card -->
+                <p style="color: #8a9a98; font-size: 11px; margin: 20px 0 0; text-align: center;">
+                    You received this email because you registered at Explore Kimberley.
+                </p>
+
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>
