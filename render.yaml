@@ -25,6 +25,13 @@ services:
         value: "True"
       - key: SECURE_HSTS_SECONDS
         value: "31536000"
+      - key: DEMO_ADMIN_USERNAME
+        sync: false
+      - key: DEMO_ADMIN_EMAIL
+        sync: false
+      - key: DEMO_ADMIN_PASSWORD
+        sync: false
+
 databases:
   - name: explore-kimberley-db
     plan: free
